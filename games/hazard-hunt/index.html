@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hazard Hunt</title>
+    <meta name="description" content="Inspect a construction site, find OH&S hazards, and make the site safe.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="app-shell">
+        <section class="game-column">
+            <div class="topbar">
+                <a class="back-link" href="../../mini-games.html">Back to Mini Games</a>
+                <button class="fullscreen-btn" id="fullscreen-btn" type="button">Fullscreen: F</button>
+            </div>
+            <canvas id="game-canvas" width="960" height="540" aria-label="Hazard Hunt game canvas"></canvas>
+        </section>
+
+        <aside class="hud-panel">
+            <div class="brand">
+                <p class="eyebrow">Construction Safety</p>
+                <h1>Hazard Hunt</h1>
+                <p>Walk the site, stop unsafe conditions, and clear the checklist before risk or time runs out.</p>
+            </div>
+
+            <div class="stats-grid">
+                <article>
+                    <span class="stat-label">Hazards Secured</span>
+                    <strong id="hazards-found">0 / 5</strong>
+                </article>
+                <article>
+                    <span class="stat-label">Risk Meter</span>
+                    <strong id="risk-meter">0%</strong>
+                </article>
+                <article>
+                    <span class="stat-label">Time Left</span>
+                    <strong id="time-left">90s</strong>
+                </article>
+                <article>
+                    <span class="stat-label">Current Zone</span>
+                    <strong id="zone-label">Site entry</strong>
+                </article>
+            </div>
+
+            <div class="status-card">
+                <h2>Status</h2>
+                <p id="status-text">Inspect each flashing hazard. Stand nearby and press space to secure it.</p>
+            </div>
+
+            <div class="checklist-card">
+                <h2>Checklist</h2>
+                <ul id="hazard-list"></ul>
+            </div>
+
+            <div class="controls-card">
+                <h2>Controls</h2>
+                <p>Move: Arrow keys or WASD</p>
+                <p>Secure hazard: Space or Enter</p>
+                <p>Flag hazard: Click the flashing zone</p>
+                <p>Pause: P</p>
+                <p>Fullscreen: F</p>
+            </div>
+        </aside>
+    </main>
+
+    <section class="overlay visible" id="start-overlay">
+        <div class="overlay-card">
+            <p class="eyebrow">Safety Briefing</p>
+            <h2>Make The Site Safe</h2>
+            <p>You are the site safety spotter. Search the slab, scaffolds, trench, and plant area for active hazards before the crew starts work.</p>
+            <ul>
+                <li>Find all 5 hazards.</li>
+                <li>Standing too close to an active hazard raises the risk meter.</li>
+                <li>If risk hits 100% or time runs out, the round fails.</li>
+            </ul>
+            <button id="start-btn" class="primary-btn" type="button">Start Shift</button>
+        </div>
+    </section>
+
+    <section class="overlay" id="end-overlay">
+        <div class="overlay-card">
+            <p class="eyebrow" id="end-kicker">Round Complete</p>
+            <h2 id="end-title">Site secured</h2>
+            <p id="end-summary"></p>
+            <button id="restart-btn" class="primary-btn" type="button">Restart Shift</button>
+        </div>
+    </section>
+
+    <script src="game.js"></script>
+</body>
+</html>

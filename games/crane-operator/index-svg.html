@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Crane Operator — Construction Game</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Oswald:wght@500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #A69D93;
+    overflow: hidden;
+    font-family: 'Chakra Petch', monospace;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* Start Screen */
+  #startScreen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #8C90A1, #A69D93, #BBC0CD);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  #startScreen.hiding {
+    opacity: 0;
+    transform: scale(1.1);
+    pointer-events: none;
+  }
+
+  #startScreen h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    color: #F5C942;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 40px rgba(245,198,66,0.4), 0 4px 0 #F37329;
+    margin-bottom: 0.3em;
+  }
+
+  #startScreen p {
+    color: #193E75;
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    margin-bottom: 2em;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  #startBtn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.4rem;
+    padding: 0.8em 3em;
+    background: linear-gradient(180deg, #F5C942, #F37329);
+    color: #193E75;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    box-shadow: 0 6px 0 #F1732A, 0 8px 30px rgba(245,198,66,0.3);
+    transition: all 0.15s;
+  }
+
+  #startBtn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #F1732A, 0 12px 40px rgba(245,198,66,0.4); }
+  #startBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #F1732A; }
+
+  /* HUD */
+  #hud {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    display: none;
+    z-index: 50;
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  #hudRow1 {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hud-box {
+    background: rgba(193,62,75,0.85);
+    border: 1px solid rgba(245,198,66,0.3);
+    border-radius: 6px;
+    padding: 4px 10px;
+    color: #F5C942;
+    font-size: clamp(0.65rem, 2.2vw, 0.85rem);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    backdrop-filter: blur(8px);
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  #spotterBox {
+    background: rgba(25,62,117,0.9);
+    border: 1px solid rgba(136,204,255,0.4);
+    border-radius: 6px;
+    padding: 5px 12px;
+    color: #88ccff;
+    font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    backdrop-filter: blur(8px);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Damage bar */
+  #damageWrap {
+    background: rgba(25,62,117,0.85);
+    border: 1px solid rgba(245,198,66,0.3);
+    border-radius: 6px;
+    padding: 3px;
+    flex: 1;
+    max-width: 160px;
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(8px);
+  }
+
+  #damageLabel {
+    color: #F5C942;
+    font-size: clamp(0.55rem, 1.8vw, 0.7rem);
+    font-weight: 600;
+    padding-left: 4px;
+    white-space: nowrap;
+  }
+
+  #damageTrack {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  #damageFill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #3CA63C, #F5C942, #f55);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  /* Controls */
+  #controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    z-index: 50;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .ctrl-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ctrl-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .ctrl-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    border: 2px solid rgba(245,198,66,0.5);
+    background: rgba(25,62,117,0.8);
+    color: #F5C942;
+    font-size: 1.4rem;
+    font-family: 'Chakra Petch', monospace;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: all 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .ctrl-btn:active, .ctrl-btn.active {
+    background: rgba(245,198,66,0.3);
+    border-color: #F5C942;
+    transform: scale(0.93);
+  }
+
+  .ctrl-btn.hook-btn {
+    width: 80px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+  }
+
+  .ctrl-btn.hook-btn.hooked {
+    background: rgba(245,60,60,0.3);
+    border-color: #f55;
+    color: #f55;
+  }
+
+  /* End Screen (win & game over) */
+  #endScreen {
+    position: fixed;
+    inset: 0;
+    background: rgba(25,62,117,0.92);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+  }
+
+  #endScreen h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5em;
+  }
+
+  #endScreen h2.win-title {
+    color: #3CA63C;
+    text-shadow: 0 0 40px rgba(60,166,60,0.5);
+  }
+
+  #endScreen h2.lose-title {
+    color: #f55;
+    text-shadow: 0 0 40px rgba(255,80,80,0.5);
+  }
+
+  #endScreen p { color: #aaa; margin-bottom: 1.5em; }
+
+  #restartBtn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+    padding: 0.7em 2.5em;
+    background: linear-gradient(180deg, #3CA63C, #2a8a2a);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    box-shadow: 0 4px 0 #1a6a1a, 0 6px 20px rgba(60,166,60,0.3);
+  }
+
+  #restartBtn.lose-btn {
+    background: linear-gradient(180deg, #F5C942, #F37329);
+    box-shadow: 0 4px 0 #F1732A, 0 6px 20px rgba(245,198,66,0.3);
+  }
+
+  @media (max-width: 600px) {
+    .ctrl-btn { width: 48px; height: 48px; font-size: 1.2rem; }
+    .ctrl-btn.hook-btn { width: 68px; font-size: 0.65rem; }
+  }
+
+  /* Landscape: move controls to the left */
+  @media (orientation: landscape) and (max-height: 500px) {
+    #controls {
+      left: 16px;
+      bottom: 50%;
+      transform: translateY(50%);
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ctrl-btn { width: 44px; height: 44px; font-size: 1.1rem; }
+    .ctrl-btn.hook-btn { width: 64px; height: 44px; font-size: 0.6rem; }
+  }
+
+  @media (orientation: landscape) and (min-height: 501px) {
+    #controls {
+      left: 16px;
+      bottom: 50%;
+      transform: translateY(50%);
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  /* Hidden SVG container for loading assets */
+  #svg-assets {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<!-- SVG Assets Container -->
+<div id="svg-assets"></div>
+
+<!-- Start Screen -->
+<div id="startScreen">
+  <h1>Crane Operator</h1>
+  <p>Move the crate to the drop zone</p>
+  <button id="startBtn">Start Game</button>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="hudRow1">
+    <div class="hud-box" id="scoreText">Crates: 0/3</div>
+    <div id="damageWrap">
+      <span id="damageLabel">DMG</span>
+      <div id="damageTrack"><div id="damageFill"></div></div>
+    </div>
+  </div>
+  <div id="spotterBox">Ready</div>
+</div>
+
+<!-- On-screen Controls -->
+<div id="controls">
+  <div class="ctrl-group">
+    <div class="ctrl-row">
+      <div style="width:56px"></div>
+      <button class="ctrl-btn" data-dir="up">&#9650;</button>
+      <div style="width:56px"></div>
+    </div>
+    <div class="ctrl-row">
+      <button class="ctrl-btn" data-dir="left">&#9664;</button>
+      <button class="ctrl-btn" data-dir="down">&#9660;</button>
+      <button class="ctrl-btn" data-dir="right">&#9654;</button>
+    </div>
+  </div>
+  <button class="ctrl-btn hook-btn" id="hookBtn">Hook</button>
+</div>
+
+<!-- End Screen -->
+<div id="endScreen">
+  <h2 id="endTitle">Job Complete!</h2>
+  <p id="endMsg">All crates delivered.</p>
+  <button id="restartBtn">Play Again</button>
+</div>
+
+<script>
+// ============ SVG ASSET LOADING ============
+const svgAssets = {};
+const assetPaths = {
+  crane: 'img/crane.svg',
+  crate: 'img/crate.svg',
+  drum: 'img/drum.svg',
+  block: 'img/block.svg'
+};
+
+async function loadSVGAssets() {
+  const container = document.getElementById('svg-assets');
+  for (const [name, path] of Object.entries(assetPaths)) {
+    try {
+      const response = await fetch(path);
+      const svgText = await response.text();
+      const div = document.createElement('div');
+      div.innerHTML = svgText;
+      const svgEl = div.querySelector('svg');
+      if (svgEl) {
+        container.appendChild(svgEl);
+        svgAssets[name] = svgEl;
+      }
+    } catch (e) {
+      console.warn(`Failed to load ${name}:`, e);
+    }
+  }
+}
+
+// ============ GAME ENGINE ============
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth * devicePixelRatio;
+  canvas.height = window.innerHeight * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+}
+resize();
+window.addEventListener('resize', resize);
+
+const W = () => window.innerWidth;
+const H = () => window.innerHeight;
+
+// ============ GAME STATE ============
+const WORLD = {
+  groundY: 700,
+  craneBaseX: 200,
+  craneTopY: 50,
+  jibLength: 900,
+  towerHeight: 650,
+};
+
+let gameState = 'start';
+let camera = { x: 0, y: 0, zoom: 0.55 };
+let targetCamera = { x: 0, y: 0, zoom: 0.55 };
+
+let trolley = {
+  x: WORLD.craneBaseX + 200,
+  ropeLength: 200,
+  speed: 0,
+  ropeSpeed: 0,
+};
+
+const TROLLEY_MIN_X = WORLD.craneBaseX + 30;
+const TROLLEY_MAX_X = WORLD.craneBaseX + WORLD.jibLength - 30;
+const ROPE_MIN = 60;
+const ROPE_MAX = 680;
+
+let hook = {
+  x: 0, y: 0, vx: 0, vy: 0,
+  angle: 0, angleVel: 0,
+};
+
+let crates = [];
+let obstacles = [];
+let dropZone = { x: 900, y: WORLD.groundY - 25, width: 120, height: 50 };
+let hookedCrate = null;
+let score = 0;
+let totalCrates = 3;
+let damage = 0;
+let hitCooldown = 0;
+let droppedCrates = [];
+let spotterMsg = '';
+let spotterArrow = null;
+const DROP_ZONE_TOP_Y = () => dropZone.y - 80;
+
+let inputState = { left: false, right: false, up: false, down: false };
+
+let wireSegments = [];
+const WIRE_SEG_COUNT = 20;
+
+function initWireSegments() {
+  wireSegments = [];
+  for (let i = 0; i <= WIRE_SEG_COUNT; i++) {
+    wireSegments.push({ x: trolley.x, y: WORLD.craneTopY + (trolley.ropeLength * i / WIRE_SEG_COUNT) });
+  }
+}
+
+function initGame() {
+  trolley.x = WORLD.craneBaseX + 150;
+  trolley.ropeLength = 200;
+  trolley.speed = 0;
+  trolley.ropeSpeed = 0;
+
+  hook.x = trolley.x;
+  hook.y = WORLD.craneTopY + trolley.ropeLength;
+  hook.vx = 0; hook.vy = 0;
+  hook.angle = 0; hook.angleVel = 0;
+
+  crates = [
+    { x: WORLD.craneBaseX + 100, y: WORLD.groundY - 50, w: 60, h: 40, color: '#F37329', type: 'drum', delivered: false },
+    { x: WORLD.craneBaseX + 250, y: WORLD.groundY - 60, w: 50, h: 50, color: '#F9893D', type: 'crate', delivered: false },
+    { x: WORLD.craneBaseX + 400, y: WORLD.groundY - 45, w: 70, h: 35, color: '#9A6C48', type: 'drum', delivered: false },
+  ];
+
+  obstacles = [
+    { x: WORLD.craneBaseX + 580, y: WORLD.groundY - 180, w: 50, h: 180, color: '#C0C9CE', type: 'block' },
+    { x: WORLD.craneBaseX + 580, y: WORLD.groundY - 250, w: 80, h: 20, color: '#808F96', type: 'block' },
+  ];
+
+  dropZone.x = WORLD.craneBaseX + WORLD.jibLength - 200;
+  hookedCrate = null;
+  score = 0;
+  totalCrates = crates.length;
+  damage = 0;
+  hitCooldown = 0;
+  droppedCrates = [];
+  spotterMsg = '';
+  spotterArrow = null;
+
+  resetHookBtn();
+  initWireSegments();
+  updateHUD();
+}
+
+function resetHookBtn() {
+  document.getElementById('hookBtn').textContent = 'Hook';
+  document.getElementById('hookBtn').classList.remove('hooked');
+}
+
+// ============ SPOTTER SYSTEM ============
+function updateSpotter() {
+  const obstacleX = WORLD.craneBaseX + 580;
+  const obstacleTopY = WORLD.groundY - 250;
+
+  if (!hookedCrate) {
+    const avail = crates.find(c => !c.delivered && !droppedCrates.includes(c));
+    if (!avail) {
+      if (score >= totalCrates) {
+        spotterMsg = '';
+        spotterArrow = null;
+      } else {
+        spotterMsg = 'No crates left!';
+        spotterArrow = null;
+      }
+      return;
+    }
+    const cx = avail.x + avail.w / 2;
+    const cy = avail.y + avail.h / 2;
+    const dist = Math.hypot(hook.x - cx, hook.y - cy);
+
+    if (dist < 60) {
+      spotterMsg = '\u261d PRESS HOOK to attach';
+      spotterArrow = { x: cx, y: cy - 50, dir: 'down' };
+    } else if (hook.y < cy - 80) {
+      spotterMsg = '\u2b07 LOWER the hook to the crate';
+      spotterArrow = { x: cx, y: cy - 60, dir: 'down' };
+    } else {
+      const dx = cx - hook.x;
+      if (Math.abs(dx) > 40) {
+        spotterMsg = (dx > 0 ? '\u27a1' : '\u2b05') + ' Move hook over the crate';
+        spotterArrow = { x: cx, y: cy - 60, dir: dx > 0 ? 'right' : 'left' };
+      } else {
+        spotterMsg = '\u2b07 LOWER the hook';
+        spotterArrow = { x: cx, y: cy - 60, dir: 'down' };
+      }
+    }
+    return;
+  }
+
+  const crateX = hookedCrate.x + hookedCrate.w / 2;
+  const crateY = hookedCrate.y + hookedCrate.h;
+  const dzCenterX = dropZone.x + dropZone.width / 2;
+
+  if (crateX > dropZone.x && crateX < dropZone.x + dropZone.width) {
+    if (crateY >= DROP_ZONE_TOP_Y()) {
+      spotterMsg = '\u2b07 RELEASE now! In the green zone!';
+      spotterArrow = { x: dzCenterX, y: dropZone.y - 40, dir: 'down' };
+    } else {
+      spotterMsg = '\u2b07 Lower into the green zone first!';
+      spotterArrow = { x: dzCenterX, y: dropZone.y - 40, dir: 'down' };
+    }
+    return;
+  }
+
+  if (crateX > obstacleX + 80) {
+    spotterMsg = '\u27a1 Almost there! Move to drop zone';
+    spotterArrow = { x: dzCenterX, y: dropZone.y - 60, dir: 'right' };
+    return;
+  }
+
+  if (crateX > obstacleX - 100 && crateX < obstacleX + 130) {
+    if (crateY > obstacleTopY - 20) {
+      spotterMsg = '\u2b06 RAISE the load! Clear the obstacle!';
+      spotterArrow = { x: obstacleX + 25, y: obstacleTopY - 60, dir: 'up' };
+    } else {
+      spotterMsg = '\u27a1 Clear! Move past the obstacle';
+      spotterArrow = { x: obstacleX + 130, y: obstacleTopY - 40, dir: 'right' };
+    }
+    return;
+  }
+
+  spotterMsg = '\u27a1 Move right towards drop zone';
+  spotterArrow = { x: obstacleX - 30, y: crateY - 60, dir: 'right' };
+}
+
+// ============ PHYSICS ============
+const TROLLEY_ACCEL = 320;
+const TROLLEY_FRICTION = 0.93;
+const ROPE_ACCEL = 220;
+const ROPE_FRICTION = 0.92;
+const GRAVITY = 9.81;
+const SWING_DAMPING = 0.988;
+
+function updatePhysics(dt) {
+  if (inputState.left) trolley.speed -= TROLLEY_ACCEL * dt;
+  if (inputState.right) trolley.speed += TROLLEY_ACCEL * dt;
+  trolley.speed *= TROLLEY_FRICTION;
+  trolley.x += trolley.speed * dt;
+  trolley.x = Math.max(TROLLEY_MIN_X, Math.min(TROLLEY_MAX_X, trolley.x));
+
+  if (inputState.down) trolley.ropeSpeed += ROPE_ACCEL * dt;
+  if (inputState.up) trolley.ropeSpeed -= ROPE_ACCEL * dt;
+  trolley.ropeSpeed *= ROPE_FRICTION;
+  trolley.ropeLength += trolley.ropeSpeed * dt;
+  trolley.ropeLength = Math.max(ROPE_MIN, Math.min(ROPE_MAX, trolley.ropeLength));
+
+  const trolleyAccel = (inputState.left ? -TROLLEY_ACCEL : 0) + (inputState.right ? TROLLEY_ACCEL : 0);
+  const speedFactor = 1 + Math.abs(trolley.speed) * 0.003;
+  const gravityRestore = -GRAVITY * Math.sin(hook.angle) * 1.3;
+  const trolleyForce = -trolleyAccel * Math.cos(hook.angle) * 0.008 * speedFactor;
+  const pendulumAccel = (gravityRestore + trolleyForce) / (trolley.ropeLength * 0.009);
+  hook.angleVel += pendulumAccel * dt;
+  hook.angleVel *= SWING_DAMPING;
+  hook.angleVel -= trolley.speed * 0.00001;
+  hook.angle += hook.angleVel * dt;
+  hook.angle = Math.max(-0.75, Math.min(0.75, hook.angle));
+
+  const anchorX = trolley.x;
+  const anchorY = WORLD.craneTopY;
+  const targetHookX = anchorX + Math.sin(hook.angle) * trolley.ropeLength;
+  const targetHookY = anchorY + Math.cos(hook.angle) * trolley.ropeLength;
+
+  wireSegments[0].x = anchorX;
+  wireSegments[0].y = anchorY;
+
+  for (let i = 1; i <= WIRE_SEG_COUNT; i++) {
+    const t = i / WIRE_SEG_COUNT;
+    const targetX = anchorX + (targetHookX - anchorX) * t;
+    const targetY = anchorY + (targetHookY - anchorY) * t;
+    const speedSag = Math.abs(trolley.speed) * 0.015;
+    const sag = Math.sin(t * Math.PI) * (trolley.ropeLength * 0.018 + Math.abs(hook.angleVel) * 4 + speedSag);
+    const lateralDrag = -trolley.speed * 0.12 * Math.sin(t * Math.PI);
+    const lerpSpeed = 0.08 + (1 - Math.sin(t * Math.PI)) * 0.06;
+    wireSegments[i].x += (targetX + lateralDrag - wireSegments[i].x) * lerpSpeed;
+    wireSegments[i].y += (targetY + sag - wireSegments[i].y) * lerpSpeed;
+  }
+
+  hook.x = wireSegments[WIRE_SEG_COUNT].x;
+  hook.y = wireSegments[WIRE_SEG_COUNT].y;
+
+  const prevSeg = wireSegments[WIRE_SEG_COUNT - 1];
+  const lastSeg = wireSegments[WIRE_SEG_COUNT];
+  const currentWireAngle = -Math.atan2(lastSeg.x - prevSeg.x, lastSeg.y - prevSeg.y);
+
+  if (hookedCrate) {
+    hookedCrate.x = hook.x - hookedCrate.w / 2;
+    hookedCrate.y = hook.y + 15;
+    hookedCrate.rotation = currentWireAngle;
+  }
+
+  for (let i = droppedCrates.length - 1; i >= 0; i--) {
+    const dc = droppedCrates[i];
+    dc.vy += 800 * dt;
+    dc.x += dc.vx * dt;
+    dc.y += dc.vy * dt;
+    dc.rotation *= 0.96;
+
+    if (dc.y + dc.h >= WORLD.groundY) {
+      dc.y = WORLD.groundY - dc.h;
+      dc.vy = 0;
+      dc.vx *= 0.3;
+      dc.landed = true;
+    }
+
+    for (const obs of obstacles) {
+      if (dc.x + dc.w > obs.x && dc.x < obs.x + obs.w &&
+          dc.y + dc.h > obs.y && dc.y < obs.y + obs.h) {
+        if (dc.y + dc.h - obs.y < obs.y + obs.h - dc.y) {
+          dc.y = obs.y - dc.h;
+          dc.vy = 0;
+          dc.vx *= 0.3;
+          dc.landed = true;
+        }
+      }
+    }
+
+    if (dc.landed && !dc.scored) {
+      dc.scored = true;
+      const cx = dc.x + dc.w / 2;
+      const inZone = cx > dropZone.x && cx < dropZone.x + dropZone.width;
+
+      if (dc.releasedTooHigh) {
+        dc.broken = true;
+        dc.delivered = false;
+        setSpotterAlert('\u26a0 DROPPED TOO HIGH! Crate destroyed!');
+        addDamage(30);
+        setTimeout(() => {
+          const idx = droppedCrates.indexOf(dc);
+          if (idx !== -1) droppedCrates.splice(idx, 1);
+        }, 1200);
+      } else if (inZone) {
+        dc.delivered = true;
+        dc.x = dropZone.x + (dropZone.width - dc.w) / 2;
+        dc.y = dropZone.y - dc.h + 25;
+        const deliveredCount = crates.filter(c => c.delivered).length;
+        dc.y -= (deliveredCount - 1) * 35;
+        dc.rotation = 0;
+        score++;
+        updateHUD();
+        setSpotterAlert('\u2705 Delivered! Good work!');
+
+        if (score >= totalCrates) {
+          setTimeout(() => {
+            gameState = 'win';
+            showEndScreen(true);
+          }, 800);
+        }
+        setTimeout(() => {
+          const idx = droppedCrates.indexOf(dc);
+          if (idx !== -1) droppedCrates.splice(idx, 1);
+        }, 500);
+      } else {
+        setSpotterAlert('\u274c Missed the drop zone! Crate lost.');
+        setTimeout(() => {
+          const idx = droppedCrates.indexOf(dc);
+          if (idx !== -1) droppedCrates.splice(idx, 1);
+        }, 1500);
+      }
+    }
+  }
+
+  if (!hookedCrate) {
+    const btn = document.getElementById('hookBtn');
+    if (btn.classList.contains('hooked')) resetHookBtn();
+  }
+
+  if (hitCooldown > 0) hitCooldown -= dt;
+
+  for (const obs of obstacles) {
+    let wasHit = false;
+    if (hook.x > obs.x && hook.x < obs.x + obs.w &&
+        hook.y > obs.y && hook.y < obs.y + obs.h) {
+      hook.angleVel *= -0.5;
+      if (hook.x < obs.x + obs.w / 2) trolley.speed = Math.min(trolley.speed, -40);
+      else trolley.speed = Math.max(trolley.speed, 40);
+      wasHit = true;
+    }
+    if (hookedCrate) {
+      if (hookedCrate.x + hookedCrate.w > obs.x && hookedCrate.x < obs.x + obs.w &&
+          hookedCrate.y + hookedCrate.h > obs.y && hookedCrate.y < obs.y + obs.h) {
+        hook.angleVel *= -0.5;
+        if (hookedCrate.x < obs.x) trolley.speed = Math.min(trolley.speed, -60);
+        else trolley.speed = Math.max(trolley.speed, 60);
+        wasHit = true;
+      }
+    }
+    if (wasHit && hitCooldown <= 0) {
+      hitCooldown = 1.0;
+      addDamage(25);
+      setSpotterAlert('\u26a0 COLLISION! Avoid the obstacle!');
+    }
+  }
+
+  if (gameState === 'playing' && !spotterAlertTimer) {
+    updateSpotter();
+    document.getElementById('spotterBox').textContent = spotterMsg;
+  }
+}
+
+let spotterAlertTimer = null;
+function setSpotterAlert(msg) {
+  document.getElementById('spotterBox').textContent = msg;
+  if (spotterAlertTimer) clearTimeout(spotterAlertTimer);
+  spotterAlertTimer = setTimeout(() => { spotterAlertTimer = null; }, 2000);
+}
+
+function addDamage(amount) {
+  damage = Math.min(100, damage + amount);
+  updateHUD();
+  if (damage >= 100) {
+    setTimeout(() => {
+      gameState = 'gameover';
+      showEndScreen(false);
+    }, 600);
+  }
+}
+
+function updateCamera(dt) {
+  if (gameState === 'zooming') {
+    targetCamera.zoom = 1.4;
+    targetCamera.x = hook.x;
+    targetCamera.y = hook.y;
+  } else if (gameState === 'playing') {
+    targetCamera.zoom = 1.3;
+    targetCamera.x = hook.x;
+    targetCamera.y = hook.y + 30;
+  }
+  const lerpSpeed = 2.5 * dt;
+  camera.x += (targetCamera.x - camera.x) * lerpSpeed;
+  camera.y += (targetCamera.y - camera.y) * lerpSpeed;
+  camera.zoom += (targetCamera.zoom - camera.zoom) * lerpSpeed;
+}
+
+// ============ RENDERING ============
+function drawWorld() {
+  const w = W();
+  const h = H();
+  ctx.save();
+
+  const cx = w / 2 - camera.x * camera.zoom;
+  const cy = h / 2 - camera.y * camera.zoom;
+  ctx.translate(cx, cy);
+  ctx.scale(camera.zoom, camera.zoom);
+
+  // Sky - lighter gradient
+  const skyGrad = ctx.createLinearGradient(0, -200, 0, WORLD.groundY);
+  skyGrad.addColorStop(0, '#D8DBE3');
+  skyGrad.addColorStop(0.5, '#BBC0CD');
+  skyGrad.addColorStop(1, '#A6ADC1');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(-2000, -500, 5000, WORLD.groundY + 500);
+
+  // Ground - brownish/gray tones
+  const gndGrad = ctx.createLinearGradient(0, WORLD.groundY - 10, 0, WORLD.groundY + 300);
+  gndGrad.addColorStop(0, '#9A6C48');
+  gndGrad.addColorStop(0.05, '#B17F57');
+  gndGrad.addColorStop(1, '#8C90A1');
+  ctx.fillStyle = gndGrad;
+  ctx.fillRect(-2000, WORLD.groundY - 10, 5000, 500);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let i = -2000; i < 3000; i += 40) {
+    ctx.beginPath();
+    ctx.moveTo(i, WORLD.groundY);
+    ctx.lineTo(i + 20, WORLD.groundY + 200);
+    ctx.stroke();
+  }
+
+  drawCrane();
+  drawDropZone();
+  obstacles.forEach(obs => drawObstacle(obs));
+
+  crates.forEach(c => { if (!c.delivered || c === hookedCrate) return; drawCrate(c); });
+  crates.forEach(c => { if (c.delivered || c === hookedCrate || droppedCrates.includes(c)) return; drawCrate(c); });
+
+  drawWire();
+  drawHook();
+
+  droppedCrates.forEach(dc => drawCrate(dc));
+  if (hookedCrate) drawCrate(hookedCrate);
+
+  if (!hookedCrate && gameState === 'playing') {
+    const nearby = findNearestCrate();
+    if (nearby) {
+      ctx.strokeStyle = 'rgba(245,198,66,0.5)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.strokeRect(nearby.x - 4, nearby.y - 4, nearby.w + 8, nearby.h + 8);
+      ctx.setLineDash([]);
+    }
+  }
+
+  if (spotterArrow && gameState === 'playing') {
+    drawSpotterArrow(spotterArrow);
+  }
+
+  ctx.restore();
+}
+
+function drawSpotterArrow(arrow) {
+  const { x, y, dir } = arrow;
+  const t = performance.now() / 1000;
+  const bob = Math.sin(t * 4) * 6;
+
+  ctx.save();
+  ctx.translate(x, y + bob);
+  ctx.fillStyle = 'rgba(136,204,255,0.8)';
+  ctx.strokeStyle = 'rgba(136,204,255,0.9)';
+  ctx.lineWidth = 2;
+
+  const s = 14;
+  ctx.beginPath();
+  if (dir === 'down') {
+    ctx.moveTo(0, s);
+    ctx.lineTo(-s * 0.7, -s * 0.3);
+    ctx.lineTo(s * 0.7, -s * 0.3);
+  } else if (dir === 'up') {
+    ctx.moveTo(0, -s);
+    ctx.lineTo(-s * 0.7, s * 0.3);
+    ctx.lineTo(s * 0.7, s * 0.3);
+  } else if (dir === 'right') {
+    ctx.moveTo(s, 0);
+    ctx.lineTo(-s * 0.3, -s * 0.7);
+    ctx.lineTo(-s * 0.3, s * 0.7);
+  } else if (dir === 'left') {
+    ctx.moveTo(-s, 0);
+    ctx.lineTo(s * 0.3, -s * 0.7);
+    ctx.lineTo(s * 0.3, s * 0.7);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawCraneSVG(svg, x, y, width, height) {
+  const img = new Image();
+  const svgData = new XMLSerializer().serializeToString(svg);
+  const blob = new Blob([svgData], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  img.src = url;
+  ctx.drawImage(img, x, y, width, height);
+  URL.revokeObjectURL(url);
+}
+
+function drawCrane() {
+  const bx = WORLD.craneBaseX;
+  const topY = WORLD.craneTopY;
+  const gndY = WORLD.groundY;
+
+  // Base - using yellow/orange tones from SVG
+  ctx.fillStyle = '#B18058';
+  ctx.fillRect(bx - 80, gndY - 15, 180, 25);
+
+  // Tower structure - crane yellow
+  ctx.strokeStyle = '#F5C942';
+  ctx.lineWidth = 3;
+  const towerW = 30;
+
+  ctx.beginPath();
+  ctx.moveTo(bx - towerW / 2, gndY - 15);
+  ctx.lineTo(bx - towerW / 2, topY);
+  ctx.moveTo(bx + towerW / 2, gndY - 15);
+  ctx.lineTo(bx + towerW / 2, topY);
+  ctx.stroke();
+
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = '#F37329';
+  const segH = 50;
+  for (let y = gndY - 15; y > topY; y -= segH) {
+    ctx.beginPath();
+    ctx.moveTo(bx - towerW / 2, y);
+    ctx.lineTo(bx + towerW / 2, y - segH);
+    ctx.moveTo(bx + towerW / 2, y);
+    ctx.lineTo(bx - towerW / 2, y - segH);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(bx - towerW / 2, y - segH);
+    ctx.lineTo(bx + towerW / 2, y - segH);
+    ctx.stroke();
+  }
+
+  // Jib - crane yellow
+  const jibY = topY;
+  const jibEnd = bx + WORLD.jibLength;
+
+  ctx.strokeStyle = '#F5C942';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(bx, jibY);
+  ctx.lineTo(jibEnd, jibY);
+  ctx.moveTo(bx, jibY + 14);
+  ctx.lineTo(jibEnd, jibY + 14);
+  ctx.stroke();
+
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#F37329';
+  const jibSegW = 40;
+  for (let x = bx; x < jibEnd; x += jibSegW) {
+    ctx.beginPath();
+    ctx.moveTo(x, jibY);
+    ctx.lineTo(x + jibSegW, jibY + 14);
+    ctx.moveTo(x + jibSegW, jibY);
+    ctx.lineTo(x, jibY + 14);
+    ctx.stroke();
+  }
+
+  // Counter jib
+  ctx.strokeStyle = '#F5C942';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(bx, jibY);
+  ctx.lineTo(bx - 100, jibY);
+  ctx.moveTo(bx, jibY + 14);
+  ctx.lineTo(bx - 100, jibY + 14);
+  ctx.stroke();
+
+  // Counterweight
+  ctx.fillStyle = '#808F96';
+  ctx.fillRect(bx - 100, jibY - 5, 40, 40);
+  ctx.fillStyle = '#C0C9CE';
+  ctx.fillRect(bx - 95, jibY, 30, 30);
+
+  // Support cables
+  ctx.strokeStyle = '#193E75';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(bx, topY - 40);
+  ctx.lineTo(bx - 60, jibY);
+  ctx.moveTo(bx, topY - 40);
+  ctx.lineTo(bx + 80, jibY);
+  ctx.stroke();
+
+  ctx.strokeStyle = 'rgba(25,62,117,0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(bx, topY - 40);
+  ctx.lineTo(jibEnd - 50, jibY);
+  ctx.stroke();
+
+  // Cabin
+  ctx.fillStyle = '#F5C942';
+  ctx.fillRect(bx - 5, topY + 14, 35, 30);
+  ctx.fillStyle = '#3268A5';
+  ctx.globalAlpha = 0.5;
+  ctx.fillRect(bx, topY + 16, 26, 14);
+  ctx.globalAlpha = 1;
+
+  // Trolley
+  ctx.fillStyle = '#808F96';
+  ctx.fillRect(trolley.x - 12, topY + 5, 24, 12);
+  ctx.fillStyle = '#193E75';
+  ctx.beginPath();
+  ctx.arc(trolley.x - 6, topY + 5, 4, 0, Math.PI * 2);
+  ctx.arc(trolley.x + 6, topY + 5, 4, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawWire() {
+  const SPREAD = 6;
+
+  for (let side = -1; side <= 1; side += 2) {
+    const offset = side * SPREAD;
+
+    ctx.beginPath();
+    for (let i = 0; i <= WIRE_SEG_COUNT; i++) {
+      const sx = wireSegments[i].x + offset;
+      const sy = wireSegments[i].y;
+      if (i === 0) {
+        ctx.moveTo(sx, sy);
+      } else {
+        const prevSx = wireSegments[i - 1].x + offset;
+        const prevSy = wireSegments[i - 1].y;
+        const cpx = (prevSx + sx) / 2;
+        const cpy = (prevSy + sy) / 2;
+        ctx.quadraticCurveTo(prevSx, prevSy, cpx, cpy);
+      }
+    }
+    ctx.strokeStyle = '#193E75';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    const hlOff = offset + (side > 0 ? 0.8 : -0.8);
+    ctx.beginPath();
+    for (let i = 0; i <= WIRE_SEG_COUNT; i++) {
+      const sx = wireSegments[i].x + hlOff;
+      const sy = wireSegments[i].y;
+      if (i === 0) {
+        ctx.moveTo(sx, sy);
+      } else {
+        const prevSx = wireSegments[i - 1].x + hlOff;
+        const prevSy = wireSegments[i - 1].y;
+        const cpx = (prevSx + sx) / 2;
+        const cpy = (prevSy + sy) / 2;
+        ctx.quadraticCurveTo(prevSx, prevSy, cpx, cpy);
+      }
+    }
+    ctx.strokeStyle = 'rgba(25,62,117,0.12)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+}
+
+function drawHook() {
+  const hx = hook.x;
+  const hy = hook.y;
+  const prevSeg = wireSegments[WIRE_SEG_COUNT - 1];
+  const lastSeg = wireSegments[WIRE_SEG_COUNT];
+  const wireAngle = -Math.atan2(lastSeg.x - prevSeg.x, lastSeg.y - prevSeg.y);
+
+  ctx.save();
+  ctx.translate(hx, hy);
+  ctx.rotate(wireAngle);
+
+  // Pulley block
+  ctx.fillStyle = '#808F96';
+  ctx.fillRect(-10, -8, 20, 18);
+  ctx.fillStyle = '#C0C9CE';
+  ctx.fillRect(-8, -6, 16, 14);
+  ctx.fillStyle = '#193E75';
+  ctx.beginPath();
+  ctx.arc(-4, 0, 3.5, 0, Math.PI * 2);
+  ctx.arc(4, 0, 3.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#3268A5';
+  ctx.beginPath();
+  ctx.arc(-4, 0, 1.5, 0, Math.PI * 2);
+  ctx.arc(4, 0, 1.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Hook
+  ctx.strokeStyle = hookedCrate ? '#f55' : '#F5C942';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(0, 10);
+  ctx.lineTo(0, 20);
+  ctx.quadraticCurveTo(10, 24, 10, 18);
+  ctx.quadraticCurveTo(10, 10, 0, 12);
+  ctx.stroke();
+  ctx.restore();
+
+  if (!hookedCrate && gameState === 'playing') {
+    const nearby = findNearestCrate();
+    if (nearby) {
+      ctx.beginPath();
+      ctx.arc(hx, hy, 20, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(245,198,66,0.15)';
+      ctx.fill();
+    }
+  }
+}
+
+function drawCrate(c) {
+  ctx.save();
+  const cx = c.x + c.w / 2;
+  const cy = c.y + c.h / 2;
+  const rot = c.rotation || 0;
+
+  ctx.translate(cx, cy);
+  ctx.rotate(rot);
+
+  if (c.broken) {
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = '#555';
+    ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+    ctx.strokeStyle = '#f55';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-c.w / 2 + 5, -c.h / 2 + 5);
+    ctx.lineTo(c.w / 2 - 5, c.h / 2 - 5);
+    ctx.moveTo(c.w / 2 - 5, -c.h / 2 + 5);
+    ctx.lineTo(-c.w / 2 + 5, c.h / 2 - 5);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+    return;
+  }
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.fillRect(-c.w / 2 + 3, -c.h / 2 + 3, c.w, c.h);
+
+  // Main body with SVG-inspired colors
+  ctx.fillStyle = c.color;
+  ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+
+  // Highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h * 0.3);
+
+  // Border
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(-c.w / 2, -c.h / 2, c.w, c.h);
+
+  // Detail lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(-c.w / 2 + 5, -c.h / 2 + 5);
+  ctx.lineTo(c.w / 2 - 5, c.h / 2 - 5);
+  ctx.moveTo(c.w / 2 - 5, -c.h / 2 + 5);
+  ctx.lineTo(-c.w / 2 + 5, c.h / 2 - 5);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawObstacle(obs) {
+  ctx.save();
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillRect(obs.x + 4, obs.y + 4, obs.w, obs.h);
+
+  // Main body
+  ctx.fillStyle = obs.color;
+  ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+
+  // Diagonal stripes
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(obs.x, obs.y, obs.w, obs.h);
+  ctx.clip();
+  ctx.strokeStyle = 'rgba(255,198,66,0.3)';
+  ctx.lineWidth = 4;
+  const stripeGap = 16;
+  for (let i = -obs.h; i < obs.w + obs.h; i += stripeGap) {
+    ctx.beginPath();
+    ctx.moveTo(obs.x + i, obs.y);
+    ctx.lineTo(obs.x + i - obs.h, obs.y + obs.h);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Border
+  ctx.strokeStyle = 'rgba(128,143,150,0.6)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+
+  // Highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  ctx.fillRect(obs.x, obs.y, obs.w, obs.h * 0.15);
+
+  if (obs.w >= 60) {
+    ctx.fillStyle = '#F5C942';
+    ctx.font = 'bold 14px "Chakra Petch", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('\u26a0 DANGER', obs.x + obs.w / 2, obs.y + obs.h / 2 + 5);
+    ctx.textAlign = 'left';
+  }
+  ctx.restore();
+}
+
+function drawDropZone() {
+  const dz = dropZone;
+
+  // Green safe zone
+  ctx.fillStyle = 'rgba(60,166,60,0.1)';
+  ctx.fillRect(dz.x, dz.y - 80, dz.width, 130);
+
+  ctx.strokeStyle = '#3CA63C';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 6]);
+  ctx.strokeRect(dz.x, dz.y - 80, dz.width, 130);
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = '#3CA63C';
+  ctx.font = '12px "Chakra Petch", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('DROP ZONE', dz.x + dz.width / 2, dz.y - 88);
+  ctx.textAlign = 'left';
+
+  // Landing platform
+  ctx.fillStyle = 'rgba(60,166,60,0.3)';
+  ctx.fillRect(dz.x, dz.y - 10, dz.width, 35);
+}
+
+// ============ HOOK/UNHOOK ============
+function findNearestCrate() {
+  let best = null;
+  let bestDist = 60;
+  for (const c of crates) {
+    if (c.delivered || droppedCrates.includes(c)) continue;
+    const cx = c.x + c.w / 2;
+    const cy = c.y + c.h / 2;
+    const dist = Math.hypot(hook.x - cx, hook.y - cy);
+    if (dist < bestDist) { bestDist = dist; best = c; }
+  }
+  return best;
+}
+
+function toggleHook() {
+  if (hookedCrate) {
+    hookedCrate.vx = trolley.speed * 0.3;
+    hookedCrate.vy = 0;
+    hookedCrate.landed = false;
+    hookedCrate.scored = false;
+    hookedCrate.broken = false;
+    hookedCrate.releasedTooHigh = (hookedCrate.y + hookedCrate.h) < DROP_ZONE_TOP_Y();
+    droppedCrates.push(hookedCrate);
+    hookedCrate = null;
+    resetHookBtn();
+  } else {
+    const crate = findNearestCrate();
+    if (crate) {
+      hookedCrate = crate;
+      document.getElementById('hookBtn').textContent = 'Release';
+      document.getElementById('hookBtn').classList.add('hooked');
+    }
+  }
+}
+
+function updateHUD() {
+  document.getElementById('scoreText').textContent = `Crates: ${score}/${totalCrates}`;
+  const pct = Math.min(100, Math.max(0, damage));
+  document.getElementById('damageFill').style.width = pct + '%';
+  const lbl = document.getElementById('damageLabel');
+  if (pct > 75) lbl.style.color = '#f55';
+  else if (pct > 40) lbl.style.color = '#F5C942';
+  else lbl.style.color = '#3CA63C';
+}
+
+function showEndScreen(won) {
+  const el = document.getElementById('endScreen');
+  const title = document.getElementById('endTitle');
+  const msg = document.getElementById('endMsg');
+  const btn = document.getElementById('restartBtn');
+  el.style.display = 'flex';
+  if (won) {
+    title.textContent = 'Job Complete!';
+    title.className = 'win-title';
+    msg.textContent = `All crates delivered. Damage: ${Math.round(damage)}%`;
+    btn.className = '';
+    btn.textContent = 'Play Again';
+  } else {
+    title.textContent = 'Game Over';
+    title.className = 'lose-title';
+    msg.textContent = `Too much damage! Delivered ${score}/${totalCrates} crates.`;
+    btn.className = 'lose-btn';
+    btn.textContent = 'Try Again';
+  }
+}
+
+// ============ INPUT ============
+const keyDirMap = {
+  ArrowLeft: 'left', a: 'left',
+  ArrowRight: 'right', d: 'right',
+  ArrowUp: 'up', w: 'up',
+  ArrowDown: 'down', s: 'down',
+};
+
+function setDirBtnActive(dir, active) {
+  const btn = document.querySelector(`.ctrl-btn[data-dir="${dir}"]`);
+  if (btn) btn.classList.toggle('active', active);
+}
+
+window.addEventListener('keydown', e => {
+  if (gameState !== 'playing') return;
+  const dir = keyDirMap[e.key];
+  if (dir) { inputState[dir] = true; setDirBtnActive(dir, true); }
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    toggleHook();
+    const hb = document.getElementById('hookBtn');
+    hb.classList.add('active');
+    setTimeout(() => hb.classList.remove('active'), 150);
+  }
+});
+
+window.addEventListener('keyup', e => {
+  const dir = keyDirMap[e.key];
+  if (dir) { inputState[dir] = false; setDirBtnActive(dir, false); }
+});
+
+document.querySelectorAll('.ctrl-btn[data-dir]').forEach(btn => {
+  const dir = btn.dataset.dir;
+  const start = () => { if (gameState === 'playing') { inputState[dir] = true; btn.classList.add('active'); } };
+  const end = () => { inputState[dir] = false; btn.classList.remove('active'); };
+  btn.addEventListener('mousedown', start);
+  btn.addEventListener('mouseup', end);
+  btn.addEventListener('mouseleave', end);
+  btn.addEventListener('touchstart', e => { e.preventDefault(); start(); });
+  btn.addEventListener('touchend', e => { e.preventDefault(); end(); });
+  btn.addEventListener('touchcancel', end);
+});
+
+document.getElementById('hookBtn').addEventListener('click', () => { if (gameState === 'playing') toggleHook(); });
+document.getElementById('hookBtn').addEventListener('touchstart', e => { e.preventDefault(); if (gameState === 'playing') toggleHook(); });
+
+// ============ GAME FLOW ============
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('restartBtn').addEventListener('click', () => {
+  document.getElementById('endScreen').style.display = 'none';
+  startGame();
+});
+
+function startGame() {
+  initGame();
+  gameState = 'zooming';
+
+  camera = { x: WORLD.craneBaseX + WORLD.jibLength / 2, y: WORLD.groundY / 2, zoom: 0.45 };
+  targetCamera = { ...camera };
+
+  document.getElementById('startScreen').classList.add('hiding');
+  document.getElementById('hud').style.display = 'flex';
+  document.getElementById('controls').style.display = 'flex';
+
+  document.getElementById('spotterBox').textContent = 'Stand by...';
+
+  setTimeout(() => { document.getElementById('startScreen').style.display = 'none'; }, 900);
+
+  setTimeout(() => {
+    gameState = 'playing';
+    document.getElementById('spotterBox').textContent = '\u2b07 Lower the hook to a crate';
+  }, 2000);
+}
+
+// ============ MAIN LOOP ============
+let lastTime = 0;
+
+function gameLoop(time) {
+  const dt = Math.min((time - lastTime) / 1000, 0.05);
+  lastTime = time;
+
+  if (gameState === 'playing' || gameState === 'zooming') {
+    updatePhysics(dt);
+    updateCamera(dt);
+  }
+
+  ctx.clearRect(0, 0, W(), H());
+  ctx.fillStyle = '#A69D93';
+  ctx.fillRect(0, 0, W(), H());
+
+  if (gameState !== 'start') drawWorld();
+
+  const vGrad = ctx.createRadialGradient(W() / 2, H() / 2, W() * 0.3, W() / 2, H() / 2, W() * 0.8);
+  vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  vGrad.addColorStop(1, 'rgba(0,0,0,0.4)');
+  ctx.fillStyle = vGrad;
+  ctx.fillRect(0, 0, W(), H());
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ============ INITIALIZATION ============
+loadSVGAssets().then(() => {
+  console.log('SVG assets loaded', svgAssets);
+  requestAnimationFrame(gameLoop);
+});
+</script>
+</body>
+</html>

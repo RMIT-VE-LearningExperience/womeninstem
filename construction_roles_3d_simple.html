@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Roles Pathway Map - 3D Interactive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 350px;
+            font-size: 14px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        #info h1 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            color: #4FC3F7;
+        }
+
+        #info p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        #tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            max-width: 350px;
+            font-size: 12px;
+            z-index: 1000;
+            border: 2px solid #4FC3F7;
+        }
+
+        #tooltip.visible {
+            opacity: 1;
+        }
+
+        #tooltip h3 {
+            margin: 0 0 10px 0;
+            color: #4FC3F7;
+            font-size: 16px;
+            border-bottom: 1px solid #4FC3F7;
+            padding-bottom: 5px;
+        }
+
+        #tooltip .section {
+            margin: 10px 0;
+        }
+
+        #tooltip strong {
+            color: #81D4FA;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #tooltip ul {
+            margin: 5px 0;
+            padding-left: 15px;
+        }
+
+        #tooltip li {
+            margin: 3px 0;
+            line-height: 1.4;
+        }
+
+        #tooltip p {
+            line-height: 1.4;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .controls h3 {
+            margin: 0 0 10px 0;
+            color: #4FC3F7;
+            font-size: 14px;
+        }
+
+        .controls p {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+
+        .controls button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 5px 0;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .controls button:hover {
+            transform: scale(1.05);
+        }
+
+        #legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 11px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        #legend h3 {
+            margin: 0 0 10px 0;
+            color: #4FC3F7;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid white;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading 3D Visualization...</div>
+    
+    <div id="info">
+        <h1>🏗️ Construction Roles 3D Map</h1>
+        <p><strong>🖱️ Left Drag:</strong> Rotate view</p>
+        <p><strong>🖱️ Right Drag:</strong> Pan camera</p>
+        <p><strong>🎡 Scroll:</strong> Zoom in/out</p>
+        <p><strong>👆 Hover:</strong> View role details</p>
+        <p><strong>💫 Double-click:</strong> Reset view</p>
+    </div>
+
+    <div class="controls">
+        <h3>View Controls</h3>
+        <button onclick="resetCamera()">Reset Camera</button>
+        <button onclick="toggleRotation()">Auto-Rotate: ON</button>
+        <button onclick="togglePhysics()">Physics: ON</button>
+    </div>
+
+    <div id="legend">
+        <h3>Work Styles</h3>
+        <div id="legend-items"></div>
+    </div>
+
+    <div id="tooltip"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Data
+        const rolesData = {
+  "roles": [
+    {
+      "name": "Building Estimator",
+      "skills": ["Numerical analysis", "Attention to detail", "Problem-solving", "Technical knowledge", "Communication", "Organisation", "Teamwork", "Computer skills"],
+      "education": ["Certificate IV in Building (Construction Estimation)", "Diploma of Building and Construction"],
+      "experience_progression": ["Junior Estimator", "Building Estimator", "Senior Estimator", "Commercial Manager"],
+      "work_style": "Analytical-Formal",
+      "related_roles": ["Contract Administrator", "Quantity Surveyor", "Project Coordinator"]
+    },
+    {
+      "name": "Contract Administrator",
+      "skills": ["Organisation", "Attention to detail", "Knowledge of contracts and law", "Communication", "Negotiation", "Problem-solving"],
+      "education": ["Certificate IV in Building and Construction (Contract Administration)", "Diploma of Construction Management"],
+      "experience_progression": ["Assistant Contract Administrator", "Contract Administrator", "Senior Contract Administrator", "Contract Manager", "Project Manager"],
+      "work_style": "Analytical-Formal",
+      "related_roles": ["Building Estimator", "Quantity Surveyor", "Project Manager"]
+    },
+    {
+      "name": "Quantity Surveyor",
+      "skills": ["Cost planning", "Analytical thinking", "Attention to detail", "Problem-solving", "Financial management", "Negotiation", "Organisation", "IT and digital modelling"],
+      "education": ["Bachelor of Construction Management", "Graduate Diploma of Construction Management"],
+      "experience_progression": ["Graduate Quantity Surveyor", "Quantity Surveyor", "Senior Quantity Surveyor", "Commercial Manager"],
+      "work_style": "Analytical-Formal",
+      "related_roles": ["Building Estimator", "Contract Administrator", "Project Manager"]
+    },
+    {
+      "name": "Project Coordinator",
+      "skills": ["Organisation", "Scheduling", "Communication", "Problem-solving", "Time management", "Documentation", "Attention to detail", "Software proficiency"],
+      "education": ["Certificate IV or Diploma in Project Management or Construction Management"],
+      "experience_progression": ["Project Assistant", "Project Coordinator", "Project Manager"],
+      "work_style": "Organisational-Hybrid",
+      "related_roles": ["Project Manager", "Contract Administrator", "Building Estimator"]
+    },
+    {
+      "name": "Project Manager",
+      "skills": ["Leadership", "Decision-making", "Budget management", "Communication", "Negotiation", "Organisation", "Risk management"],
+      "education": ["Bachelor of Construction Management", "Civil Engineering", "Architecture", "Master of Project Management"],
+      "experience_progression": ["Project Coordinator", "Project Manager", "Senior Project Manager", "Project Director"],
+      "work_style": "Leadership-Formal",
+      "related_roles": ["Project Coordinator", "Quantity Surveyor", "Construction Manager"]
+    },
+    {
+      "name": "Construction Manager",
+      "skills": ["Leadership", "Planning", "Budgeting", "Problem-solving", "Communication", "Time management", "Health & Safety", "Teamwork"],
+      "education": ["Trade Qualification", "Diploma or Bachelor in Construction Management"],
+      "experience_progression": ["Site Supervisor", "Site Manager", "Construction Manager", "Operations Manager", "Director of Construction"],
+      "work_style": "Leadership-HandsOn",
+      "related_roles": ["Project Manager", "Project Engineer", "Health and Safety Officer"]
+    },
+    {
+      "name": "Project Engineer",
+      "skills": ["Engineering principles", "Technical problem-solving", "Coordination", "Documentation", "Communication", "Attention to detail"],
+      "education": ["Bachelor of Civil/Structural/Mechanical Engineering"],
+      "experience_progression": ["Graduate Engineer", "Project Engineer", "Senior Project Engineer", "Engineering Manager"],
+      "work_style": "Technical-Analytical",
+      "related_roles": ["Construction Manager", "Project Manager", "Quantity Surveyor"]
+    },
+    {
+      "name": "Health and Safety Officer",
+      "skills": ["Risk assessment", "Attention to detail", "Communication", "Organisation", "Compliance management", "Training", "Leadership"],
+      "education": ["Certificate IV in Work Health and Safety", "Diploma of WHS"],
+      "experience_progression": ["Assistant Safety Officer", "Health and Safety Officer", "Senior Safety Officer", "Safety Manager"],
+      "work_style": "Compliance-Formal",
+      "related_roles": ["Construction Manager", "Project Manager"]
+    },
+    {
+      "name": "Waterproofer",
+      "skills": ["Attention to detail", "Surface preparation", "Problem-solving", "Teamwork", "Physical fitness", "Tool handling", "Communication"],
+      "education": ["Certificate III in Construction Waterproofing (CPC31420)"],
+      "experience_progression": ["Apprentice Waterproofer", "Qualified Waterproofer", "Supervisor", "Consultant"],
+      "work_style": "HandsOn-Practical",
+      "related_roles": ["Tiler", "Plumber", "Site Supervisor"]
+    },
+    {
+      "name": "Tiler",
+      "skills": ["Precision", "Creativity", "Design sense", "Manual dexterity", "Mathematics", "Surface preparation", "Physical fitness"],
+      "education": ["Certificate III in Wall and Floor Tiling (CPC31320)"],
+      "experience_progression": ["Apprentice Tiler", "Qualified Tiler", "Specialist Tiler", "Site Supervisor", "Business Owner"],
+      "work_style": "HandsOn-Creative",
+      "related_roles": ["Waterproofer", "Plumber", "Estimator"]
+    },
+    {
+      "name": "Plumber",
+      "skills": ["Problem-solving", "Technical knowledge", "Attention to detail", "Physical fitness", "Safety awareness", "Customer service"],
+      "education": ["Certificate III in Plumbing (CPC32420)"],
+      "experience_progression": ["Apprentice Plumber", "Qualified Plumber", "Supervisor", "Contractor"],
+      "work_style": "HandsOn-Practical",
+      "related_roles": ["Waterproofer", "Electrician", "Project Coordinator"]
+    },
+    {
+      "name": "Electrician",
+      "skills": ["Technical knowledge", "Problem-solving", "Attention to detail", "Safety awareness", "Mathematics", "Communication"],
+      "education": ["Certificate III in Electrotechnology (Electrician)", "Apprenticeship 36–48 months"],
+      "experience_progression": ["Electrical Apprentice", "Qualified Electrician", "Senior Electrician", "Project Manager", "Electrical Contractor"],
+      "work_style": "HandsOn-Technical",
+      "related_roles": ["Plumber", "Project Engineer", "Estimator"]
+    },
+    {
+      "name": "Crane Operator",
+      "skills": ["Technical precision", "Safety awareness", "Coordination", "Communication", "Problem-solving", "Focus"],
+      "education": ["Certificate III in Rigging or Crane Operations", "High Risk Work Licence"],
+      "experience_progression": ["Trainee Operator", "Crane Operator", "Senior Operator", "Crane Supervisor"],
+      "work_style": "HandsOn-Structured",
+      "related_roles": ["Heavy Vehicle Operator", "Construction Manager"]
+    },
+    {
+      "name": "Heavy Vehicle Operator",
+      "skills": ["Vehicle operation", "Safety awareness", "Attention to detail", "Teamwork", "Problem-solving", "Physical stamina"],
+      "education": ["Heavy Rigid or Heavy Combination Licence", "On-the-job training"],
+      "experience_progression": ["Trainee Operator", "Heavy Vehicle Operator", "Senior Operator", "Supervisor"],
+      "work_style": "HandsOn-Structured",
+      "related_roles": ["Crane Operator", "Construction Manager"]
+    }
+  ]
+};
+
+        // Work style colors
+        const workStyleColors = {
+            "Analytical-Formal": 0x4169E1,
+            "Organisational-Hybrid": 0x20B2AA,
+            "Leadership-Formal": 0xDC143C,
+            "Leadership-HandsOn": 0xFF8C00,
+            "Technical-Analytical": 0x9370DB,
+            "Compliance-Formal": 0x2F4F4F,
+            "HandsOn-Practical": 0x8B4513,
+            "HandsOn-Creative": 0xFF69B4,
+            "HandsOn-Technical": 0xFFD700,
+            "HandsOn-Structured": 0x708090
+        };
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
+        scene.fog = new THREE.Fog(0x0a0a0a, 50, 200);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 20, 80);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // Hide loading message
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+        }, 1000);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 20, 10);
+        scene.add(directionalLight);
+
+        const pointLight1 = new THREE.PointLight(0x4FC3F7, 1, 100);
+        pointLight1.position.set(30, 30, 30);
+        scene.add(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0xFF69B4, 1, 100);
+        pointLight2.position.set(-30, -30, -30);
+        scene.add(pointLight2);
+
+        // OrbitControls (manual implementation)
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let autoRotate = true;
+        let physicsEnabled = true;
+
+        renderer.domElement.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        renderer.domElement.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+
+                if (e.button === 0 || e.buttons === 1) { // Left button
+                    camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), deltaX * 0.005);
+                    const axis = new THREE.Vector3(1, 0, 0);
+                    axis.applyQuaternion(camera.quaternion);
+                    camera.position.applyAxisAngle(axis, deltaY * 0.005);
+                }
+
+                camera.lookAt(scene.position);
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        renderer.domElement.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        renderer.domElement.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            camera.position.addScaledVector(direction, -e.deltaY * zoomSpeed);
+        });
+
+        renderer.domElement.addEventListener('dblclick', () => {
+            resetCamera();
+        });
+
+        // Process data
+        const nodes = [];
+        const nodeMap = new Map();
+        const links = [];
+
+        // Create nodes
+        rolesData.roles.forEach((role, index) => {
+            const connectionCount = role.related_roles.length;
+            const radius = 1 + connectionCount * 0.3;
+            
+            const geometry = new THREE.SphereGeometry(radius, 32, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: workStyleColors[role.work_style] || 0x999999,
+                emissive: workStyleColors[role.work_style] || 0x999999,
+                emissiveIntensity: 0.3,
+                shininess: 100
+            });
+            
+            const sphere = new THREE.Mesh(geometry, material);
+            
+            // Position nodes in a sphere initially
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const r = 40;
+            
+            sphere.position.x = r * Math.sin(phi) * Math.cos(theta);
+            sphere.position.y = r * Math.sin(phi) * Math.sin(theta);
+            sphere.position.z = r * Math.cos(phi);
+            
+            sphere.userData = {
+                ...role,
+                velocity: new THREE.Vector3(),
+                radius: radius,
+                originalColor: workStyleColors[role.work_style] || 0x999999
+            };
+            
+            scene.add(sphere);
+            nodes.push(sphere);
+            nodeMap.set(role.name, sphere);
+
+            // Add text label using canvas
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 512;
+            canvas.height = 128;
+            
+            context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            context.font = 'Bold 40px Arial';
+            context.fillStyle = 'white';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(role.name, canvas.width / 2, canvas.height / 2);
+            
+            const texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
+            
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(10, 2.5, 1);
+            sprite.position.copy(sphere.position);
+            sprite.position.y += radius + 2;
+            
+            scene.add(sprite);
+            sphere.userData.label = sprite;
+        });
+
+        // Create links
+        const lineMaterial = new THREE.LineBasicMaterial({ 
+            color: 0x4FC3F7, 
+            opacity: 0.4, 
+            transparent: true 
+        });
+
+        rolesData.roles.forEach(role => {
+            const sourceNode = nodeMap.get(role.name);
+            role.related_roles.forEach(relatedName => {
+                const targetNode = nodeMap.get(relatedName);
+                if (sourceNode && targetNode) {
+                    const geometry = new THREE.Geometry();
+                    geometry.vertices.push(sourceNode.position.clone());
+                    geometry.vertices.push(targetNode.position.clone());
+                    const line = new THREE.Line(geometry, lineMaterial);
+                    scene.add(line);
+                    links.push({ line, source: sourceNode, target: targetNode });
+                }
+            });
+        });
+
+        // Physics simulation
+        function updatePhysics() {
+            if (!physicsEnabled) return;
+            
+            const attractionStrength = 0.001;
+            const repulsionStrength = 5;
+            const damping = 0.9;
+            const centerStrength = 0.001;
+
+            nodes.forEach(node => {
+                const force = new THREE.Vector3();
+
+                // Repulsion from other nodes
+                nodes.forEach(other => {
+                    if (node !== other) {
+                        const diff = new THREE.Vector3().subVectors(node.position, other.position);
+                        const distance = diff.length();
+                        if (distance > 0 && distance < 30) {
+                            diff.normalize();
+                            force.add(diff.multiplyScalar(repulsionStrength / (distance * distance)));
+                        }
+                    }
+                });
+
+                // Attraction to center
+                const toCenter = new THREE.Vector3().subVectors(new THREE.Vector3(0, 0, 0), node.position);
+                force.add(toCenter.multiplyScalar(centerStrength));
+
+                // Apply force
+                node.userData.velocity.add(force);
+                node.userData.velocity.multiplyScalar(damping);
+                node.position.add(node.userData.velocity);
+
+                // Update label position
+                if (node.userData.label) {
+                    node.userData.label.position.copy(node.position);
+                    node.userData.label.position.y += node.userData.radius + 2;
+                }
+            });
+
+            // Update links based on connected nodes
+            links.forEach(({ source, target }) => {
+                const diff = new THREE.Vector3().subVectors(target.position, source.position);
+                const distance = diff.length();
+                const idealDistance = 15;
+                
+                if (distance > idealDistance) {
+                    diff.normalize();
+                    const correction = diff.multiplyScalar((distance - idealDistance) * attractionStrength);
+                    source.userData.velocity.add(correction);
+                    target.userData.velocity.sub(correction);
+                }
+            });
+
+            // Update line geometries
+            links.forEach(({ line, source, target }) => {
+                line.geometry.vertices[0].copy(source.position);
+                line.geometry.vertices[1].copy(target.position);
+                line.geometry.verticesNeedUpdate = true;
+            });
+        }
+
+        // Raycasting for interaction
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const tooltip = document.getElementById('tooltip');
+        let hoveredNode = null;
+
+        function onMouseMove(event) {
+            if (isDragging) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(nodes);
+
+            if (intersects.length > 0) {
+                const node = intersects[0].object;
+                if (hoveredNode !== node) {
+                    // Reset previous node
+                    if (hoveredNode) {
+                        hoveredNode.material.emissiveIntensity = 0.3;
+                        hoveredNode.scale.set(1, 1, 1);
+                    }
+
+                    hoveredNode = node;
+                    node.material.emissiveIntensity = 0.8;
+                    node.scale.set(1.2, 1.2, 1.2);
+
+                    // Show tooltip
+                    const data = node.userData;
+                    tooltip.innerHTML = `
+                        <h3>${data.name}</h3>
+                        <div class="section">
+                            <strong>Work Style:</strong>
+                            <p>${data.work_style}</p>
+                        </div>
+                        <div class="section">
+                            <strong>Key Skills:</strong>
+                            <ul>${data.skills.slice(0, 5).map(s => `<li>${s}</li>`).join('')}</ul>
+                        </div>
+                        <div class="section">
+                            <strong>Education:</strong>
+                            <ul>${data.education.map(e => `<li>${e}</li>`).join('')}</ul>
+                        </div>
+                        <div class="section">
+                            <strong>Career Progression:</strong>
+                            <p>${data.experience_progression.join(' → ')}</p>
+                        </div>
+                        <div class="section">
+                            <strong>Related Roles:</strong>
+                            <p>${data.related_roles.join(', ')}</p>
+                        </div>
+                    `;
+                    tooltip.style.left = event.clientX + 15 + 'px';
+                    tooltip.style.top = event.clientY + 15 + 'px';
+                    tooltip.classList.add('visible');
+                }
+            } else {
+                if (hoveredNode) {
+                    hoveredNode.material.emissiveIntensity = 0.3;
+                    hoveredNode.scale.set(1, 1, 1);
+                    hoveredNode = null;
+                }
+                tooltip.classList.remove('visible');
+            }
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+
+        // Create legend
+        const legendItems = document.getElementById('legend-items');
+        Object.entries(workStyleColors).forEach(([style, color]) => {
+            const item = document.createElement('div');
+            item.className = 'legend-item';
+            
+            const colorDiv = document.createElement('div');
+            colorDiv.className = 'legend-color';
+            colorDiv.style.backgroundColor = '#' + color.toString(16).padStart(6, '0');
+            
+            const label = document.createElement('span');
+            label.textContent = style;
+            
+            item.appendChild(colorDiv);
+            item.appendChild(label);
+            legendItems.appendChild(item);
+        });
+
+        // Control functions
+        function resetCamera() {
+            camera.position.set(0, 20, 80);
+            camera.lookAt(scene.position);
+        }
+
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+            event.target.textContent = `Auto-Rotate: ${autoRotate ? 'ON' : 'OFF'}`;
+        }
+
+        function togglePhysics() {
+            physicsEnabled = !physicsEnabled;
+            event.target.textContent = `Physics: ${physicsEnabled ? 'ON' : 'OFF'}`;
+        }
+
+        // Animation loop
+        let physicsCounter = 0;
+        let rotationAngle = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Run physics less frequently
+            if (physicsCounter++ % 2 === 0) {
+                updatePhysics();
+            }
+
+            // Auto-rotate camera
+            if (autoRotate && !isDragging) {
+                rotationAngle += 0.001;
+                camera.position.x = Math.sin(rotationAngle) * 80;
+                camera.position.z = Math.cos(rotationAngle) * 80;
+                camera.lookAt(scene.position);
+            }
+
+            // Rotate lights
+            const time = Date.now() * 0.0005;
+            pointLight1.position.x = Math.sin(time) * 40;
+            pointLight1.position.z = Math.cos(time) * 40;
+            pointLight2.position.x = Math.cos(time) * 40;
+            pointLight2.position.z = Math.sin(time) * 40;
+
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>

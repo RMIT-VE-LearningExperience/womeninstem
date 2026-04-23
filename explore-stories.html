@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Stories — Construct Your Career</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="nav.css?v=1.1.6">
+    <style>
+        :root {
+            --navy: #234a87;
+            --navy-strong: #1f4888;
+            --paper: #eef0f2;
+            --yellow: #efc738;
+            --ink: #1f4888;
+            --salmon-soft: #f1d0cb;
+            --salmon: #e67a63;
+            --chip-tech: #7ea67e;
+            --chip-lead: #e46f5b;
+            --chip-comm: #659bb0;
+            --chip-safe: #e8c66c;
+            --chip-physical: #e39f58;
+            --chip-analytical: #a978b5;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(1200px 500px at 50% 0%, rgba(90, 119, 170, 0.35), transparent 70%), var(--navy);
+            color: var(--ink);
+            padding: 104px 28px 64px;
+        }
+
+        .menu-btn {
+            position: fixed;
+            top: 26px;
+            right: 26px;
+            margin: 0;
+            z-index: 11;
+            width: 68px;
+            height: 68px;
+            border: none;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .menu-btn img {
+            width: 68px;
+            height: 68px;
+            display: block;
+        }
+
+        .page-corner-logo {
+            position: absolute;
+            top: 26px;
+            left: 26px;
+            z-index: 11;
+            width: auto;
+            height: 60px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .stories-shell {
+            max-width: 1320px;
+            margin: 0 auto;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 6px solid var(--navy-strong);
+            background: var(--paper);
+        }
+
+        .stories-topbar {
+            height: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: linear-gradient(to right,
+                var(--salmon-soft) 0,
+                var(--salmon-soft) calc(100% - 168px),
+                #ecb2a8 calc(100% - 168px),
+                #ecb2a8 calc(100% - 112px),
+                #e39a8b calc(100% - 112px),
+                #e39a8b calc(100% - 56px),
+                #de8b7a calc(100% - 56px),
+                #de8b7a 100%);
+        }
+
+        .video-top-icon {
+            width: 56px;
+            height: 56px;
+            color: var(--salmon);
+        }
+
+        .hero {
+            padding: 48px 22px 30px;
+            text-align: center;
+            background: #f3f4f5;
+        }
+
+        .hero h1 {
+            margin: 0;
+            text-transform: uppercase;
+            color: var(--ink);
+            font-size: clamp(40px, 6vw, 78px);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            font-weight: 900;
+            hyphens: auto;
+            overflow-wrap: break-word;
+        }
+
+        .hero-colors {
+            margin: 26px auto 30px;
+            display: flex;
+            width: min(100%, 420px);
+            gap: clamp(4px, 1vw, 6px);
+            justify-content: center;
+        }
+
+        .hero-colors span {
+            flex: 1 1 0;
+            max-width: 54px;
+            min-width: 0;
+            aspect-ratio: 1 / 1;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        .hero p {
+            margin: 0 auto;
+            max-width: 920px;
+            color: var(--ink);
+            font-size: clamp(24px, 2.4vw, 48px);
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        .hero p.sub {
+            margin-top: 20px;
+            font-weight: 500;
+            font-size: clamp(19px, 1.85vw, 34px);
+            line-height: 1.35;
+        }
+
+        .filters {
+            background: var(--yellow);
+            padding: 38px 28px 158px 28px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .filter-wrap {
+            position: relative;
+        }
+
+        .filter-input,
+        .filter-select {
+            width: 100%;
+            height: 52px;
+            border-radius: 26px;
+            border: none;
+            outline: none;
+            padding: 0 52px 0 20px;
+            font: 600 16px/1 'Inter', sans-serif;
+            color: #6f87b6;
+            background: #f3f4f5;
+            appearance: none;
+        }
+
+        .filter-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            pointer-events: none;
+            color: var(--ink);
+        }
+
+        .cards-area {
+            padding: 0 22px 38px;
+            background: transparent;
+            margin-top: -110px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 22px;
+            align-items: start;
+            margin-top: 0;
+        }
+
+        .story-card {
+            background: transparent;
+            color: var(--ink);
+            cursor: pointer;
+            transition: transform 0.25s ease, filter 0.25s ease;
+            transform-origin: center;
+        }
+
+        .story-card:hover {
+            transform: translateY(-8px) scale(1.015);
+            filter: brightness(1.02);
+        }
+
+        .story-card:focus-visible {
+            transform: translateY(-8px) scale(1.015);
+            outline: 3px solid #1f4888;
+            outline-offset: 3px;
+        }
+
+        .story-card-top {
+            border-radius: 14px 14px 14px 14px;
+            overflow: hidden;
+        }
+
+        .story-head {
+            min-height: 252px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: var(--chip-tech);
+        }
+
+        .avatar {
+            width: 160px;
+            height: 160px;
+            background: rgba(255, 255, 255, 0.87);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .avatar::before {
+            content: '';
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            left: 50%;
+            top: 24px;
+            transform: translateX(-50%);
+            background: #d0ced1;
+        }
+
+        .avatar::after {
+            content: '';
+            position: absolute;
+            width: 112px;
+            height: 64px;
+            border-radius: 56px 56px 10px 10px;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            background: #d0ced1;
+        }
+
+        .avatar-photo {
+            width: 160px;
+            height: 160px;
+            border-radius: 12px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .story-meta {
+            padding: 20px 18px 14px;
+            min-height: 190px;
+            text-align: center;
+            background: color-mix(in srgb, var(--card-color, var(--chip-tech)) 25%, white);
+        }
+
+        .story-name {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.12;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .story-role {
+            margin: 12px 0 8px;
+            font-size: 18px;
+            line-height: 1.24;
+            min-height: 50px;
+            font-weight: 500;
+        }
+
+        .story-skill-icon {
+            width: 40px;
+            height: 40px;
+            display: block;
+            margin: 0 auto;
+            filter: brightness(0) saturate(100%) invert(35%) sepia(17%) saturate(850%) hue-rotate(176deg) brightness(90%) contrast(90%);
+        }
+
+        .story-quote {
+            margin: 18px 8px;
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.48;
+            min-height: 100px;
+            color: var(--ink);
+        }
+
+        .story-read {
+            margin: 0 auto;
+            display: block;
+            border: none;
+            background: var(--yellow);
+            color: var(--ink);
+            font: 900 16px/1 'Inter', sans-serif;
+            border-radius: 16px;
+            padding: 12px 28px;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            font-size: 22px;
+            padding: 32px;
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .stories-footer {
+            padding: 32px 24px;
+            background: #193E75;
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            align-items: center;
+            color: #fff;
+            flex-wrap: wrap;
+            font-weight: 600;
+        }
+
+        .stories-footer-divider {
+            width: 2px;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.6);
+            flex: 0 0 auto;
+        }
+
+        .stories-footer img { height: 44px; width: auto; }
+
+        .story-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(12, 22, 44, 0.66);
+            backdrop-filter: blur(2px);
+            z-index: 2500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .story-popup-overlay.visible {
+            display: flex;
+        }
+
+        .story-popup-shell {
+            position: relative;
+            width: min(1410px, calc(100vw - 36px));
+            height: min(94vh, 960px);
+            border-radius: 22px;
+            overflow: hidden;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .story-popup-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            background: transparent;
+        }
+
+        body.story-popup-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 1024px) {
+            body { padding: 22px 14px; }
+            .menu-btn {
+                top: 14px;
+                right: 14px;
+                margin: 0;
+            }
+            .page-corner-logo {
+                top: 14px;
+                left: 14px;
+            }
+            .hero p { font-size: clamp(16px, 2.7vw, 28px); }
+            .hero p.sub { font-size: clamp(14px, 2.2vw, 23px); }
+            .filters { grid-template-columns: 1fr; }
+            .filter-input, .filter-select { font-size: 22px; height: 46px; }
+            .cards-area { margin-top: -78px; }
+            .story-name { font-size: 20px; }
+            .story-role { font-size: 22px; min-height: 56px; }
+            .story-quote { font-size: 20px; min-height: 120px; }
+            .story-read { font-size: 22px; }
+            .story-popup-overlay { padding: 8px; }
+            .story-popup-shell {
+                width: calc(100vw - 12px);
+                height: calc(100vh - 12px);
+                border-radius: 14px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stories-footer-divider { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-drawer" id="navDrawer">
+        <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
+        <a href="index.html" class="nav-link nav-link-home"><span class="nav-link-label">Home</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/home.svg" alt=""></span></a>
+        <a href="about.html" class="nav-link nav-link-about"><span class="nav-link-label">About</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/about.svg" alt=""></span></a>
+        <a href="career-explorer.html" class="nav-link nav-link-career"><span class="nav-link-label">Career Explorer</span><span class="nav-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.5 7a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm0 0V4m0 13v3m7-9h3m-3.5-5.5l2.2-2.2M4.8 18.2l2.2-2.2M3 11h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 14l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span></a>
+        <a href="explore-stories.html" class="nav-link nav-link-videos active"><span class="nav-link-label">Video Stories</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/videos.svg" alt=""></span></a>
+        <a href="mini-games.html" class="nav-link nav-link-games"><span class="nav-link-label">Mini Games</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/minigame.svg" alt=""></span></a>
+        <a href="https://www.menti.com/al3j6nyu9ebk" class="nav-link nav-link-survey" target="_blank" rel="noopener noreferrer"><span class="nav-link-label">Survey</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/survey.svg" alt=""></span></a>
+        <a href="credits.html" class="nav-link nav-link-credits"><span class="nav-link-label">Credits</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/credits.svg" alt=""></span></a>
+
+    </nav>
+
+    <div class="nav-scrim" id="navScrim"></div>
+
+    <a href="index.html" aria-label="Go to homepage">
+        <img class="page-corner-logo" src="images/logo.svg" alt="Construct Your Career logo">
+    </a>
+
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" title="Menu">
+        <img src="images/menu.svg" alt="Menu icon">
+    </button>
+
+    <main class="stories-shell">
+        <div class="stories-topbar">
+            <svg class="video-top-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="3" width="20" height="18" rx="2.8" stroke="currentColor" stroke-width="2"/>
+                <path d="M9 9.2L14.8 12L9 14.8V9.2Z" fill="currentColor"/>
+                <circle cx="8" cy="18" r="1.5" fill="currentColor"/>
+                <rect x="11" y="17" width="6" height="2" rx="1" fill="currentColor"/>
+            </svg>
+        </div>
+
+        <section class="hero">
+            <h1>Ready To Construct Your Career?</h1>
+            <div class="hero-colors" aria-hidden="true">
+                <span style="background:#659bb0"></span>
+                <span style="background:#e46f5b"></span>
+                <span style="background:#7ea67e"></span>
+                <span style="background:#a978b5"></span>
+                <span style="background:#e8c66c"></span>
+                <span style="background:#e39f58"></span>
+            </div>
+            <p>Explore the clips below to meet professionals and see what construction careers are all about.</p>
+            <p class="sub">No matter if you’re drawn to analytical thinking, technical skills, leadership and management, strong communication, hands-on physical work, or safety expertise, discover real insights from women in construction.</p>
+        </section>
+
+        <section class="filters">
+            <div class="filter-wrap">
+                <input id="storySearch" class="filter-input" type="text" placeholder="Search ..." autocomplete="off">
+                <img class="filter-icon" src="images/search.svg" alt="Search">
+            </div>
+            <div class="filter-wrap">
+                <select id="storyCategory" class="filter-select" aria-label="Filter by category">
+                    <option value="">Category: All</option>
+                </select>
+                <svg class="filter-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+        </section>
+
+        <section class="cards-area">
+            <div class="stories-grid" id="storiesGrid"></div>
+            <div class="empty-state" id="storiesEmpty" hidden>No video stories match your filter.</div>
+        </section>
+
+        <footer class="stories-footer">
+            <span>Made possible by</span>
+            <span class="stories-footer-divider" aria-hidden="true"></span>
+            <a href="https://www.rmit.edu.au" target="_blank" rel="noopener noreferrer"><img src="images/RMIT_University_Logo.svg" alt="RMIT University Women in STEM"></a>
+            <a href="https://bigbuild.vic.gov.au/" target="_blank" rel="noopener noreferrer"><img src="images/M80_Ring_Road.svg" alt="Big Build M80 Ring Road"></a>
+        </footer>
+    </main>
+
+    <div class="story-popup-overlay" id="storyPopupOverlay" hidden>
+        <div class="story-popup-shell" role="dialog" aria-modal="true" aria-label="Career details">
+            <iframe class="story-popup-frame" id="storyPopupFrame" title="Career details"></iframe>
+        </div>
+    </div>
+
+    <script src="nav.js?v=1.0.0"></script>
+    <script>
+        const skillCategories = {
+            'Technical': ['Technical knowledge', 'Technical knowledge of construction', 'Engineering principles', 'Technical problem-solving', 'Technical precision', 'Computer and digital modelling skills', 'IT and digital modelling', 'Mathematics', 'Numerical analysis', 'Cost planning', 'Software proficiency', 'Trade knowledge', 'Tool handling', 'Vehicle operation'],
+            'Leadership & Management': ['Leadership', 'On-site leadership', 'Decision-making', 'Budget management', 'Budgeting', 'Planning', 'Team coordination'],
+            'Communication & Organisation': ['Communication', 'Organisation', 'Scheduling', 'Documentation', 'Time management', 'Negotiation', 'Teamwork', 'Coordination'],
+            'Safety & Compliance': ['Safety awareness', 'Health & Safety', 'Risk assessment', 'Risk management', 'Compliance management', 'Attention to detail'],
+            'Physical & Trade': ['Manual dexterity', 'Precision', 'Physical fitness', 'Physical stamina', 'Surface preparation', 'Design sense', 'Creativity'],
+            'Professional & Analytical': ['Problem-solving', 'Analytical thinking', 'Financial management', 'Knowledge of contracts and law', 'Focus', 'Customer service', 'Training']
+        };
+
+        const skillIconMap = {
+            'Technical': 'images/skills/technical.svg',
+            'Leadership & Management': 'images/skills/management.svg',
+            'Communication & Organisation': 'images/skills/communication.svg',
+            'Safety & Compliance': 'images/skills/safety.svg',
+            'Physical & Trade': 'images/skills/physical.svg',
+            'Professional & Analytical': 'images/skills/analytical.svg'
+        };
+
+        const skillHexColorMap = {
+            'Technical': '#7EA67E',
+            'Leadership & Management': '#E46F5B',
+            'Communication & Organisation': '#659BB0',
+            'Safety & Compliance': '#E8C66C',
+            'Physical & Trade': '#E39F58',
+            'Professional & Analytical': '#A978B5'
+        };
+
+        const storySearch = document.getElementById('storySearch');
+        const storyCategory = document.getElementById('storyCategory');
+        const storiesGrid = document.getElementById('storiesGrid');
+        const storiesEmpty = document.getElementById('storiesEmpty');
+        const storyPopupOverlay = document.getElementById('storyPopupOverlay');
+        const storyPopupFrame = document.getElementById('storyPopupFrame');
+        let videoRoles = [];
+        let lastReadButton = null;
+
+        function openStoryPopup(roleName, triggerBtn) {
+            if (!roleName || !storyPopupOverlay || !storyPopupFrame) return;
+
+            lastReadButton = triggerBtn || null;
+            const params = new URLSearchParams({
+                openCareer: roleName,
+                embedPopup: '1'
+            });
+            storyPopupFrame.src = `career-explorer.html?${params.toString()}`;
+            storyPopupOverlay.hidden = false;
+            storyPopupOverlay.classList.add('visible');
+            document.body.classList.add('story-popup-open');
+        }
+
+        function closeStoryPopup() {
+            if (!storyPopupOverlay || !storyPopupFrame) return;
+            storyPopupOverlay.classList.remove('visible');
+            storyPopupOverlay.hidden = true;
+            document.body.classList.remove('story-popup-open');
+            storyPopupFrame.src = 'about:blank';
+
+            if (lastReadButton && typeof lastReadButton.focus === 'function') {
+                lastReadButton.focus();
+            }
+            lastReadButton = null;
+        }
+
+        function categorizeSkill(skill) {
+            for (const [category, list] of Object.entries(skillCategories)) {
+                if (list.includes(skill)) return category;
+            }
+            return 'Technical';
+        }
+
+        function getPrimaryCategory(role) {
+            const first = (role.core_skills && role.core_skills[0]) || '';
+            return categorizeSkill(first);
+        }
+
+        function excerpt(text) {
+            if (!text) return 'Click read more to watch the story and learn more about this role.';
+            const cleaned = text.trim();
+            if (cleaned.length <= 130) return `“${cleaned}”`;
+            return `“${cleaned.slice(0, 127)}...”`;
+        }
+
+        function buildCategoryOptions(roles) {
+            const categories = Array.from(new Set(roles.map(getPrimaryCategory))).sort();
+            categories.forEach((category) => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = `Category: ${category}`;
+                storyCategory.appendChild(option);
+            });
+        }
+
+        function cardTemplate(role) {
+            const category = getPrimaryCategory(role);
+            const cardColor = skillHexColorMap[category] || '#7EA67E';
+            const icon = skillIconMap[category] || skillIconMap.Technical;
+            const person = role.person_name || role.name;
+            const quote = excerpt(role.person_bio || role.overview || '');
+            const thumbHtml = role.person_thumbnail
+                ? `<img class="avatar-photo" src="${role.person_thumbnail}" alt="${person}">`
+                : `<div class="avatar" aria-hidden="true"></div>`;
+
+            return `
+                <article class="story-card" style="--card-color:${cardColor};" data-role="${role.name}" role="button" tabindex="0" aria-label="Open ${role.name} profile">
+                    <div class="story-card-top">
+                        <div class="story-head" style="background:${cardColor};">
+                            ${thumbHtml}
+                        </div>
+                        <div class="story-meta">
+                            <h3 class="story-name">${person}</h3>
+                            <p class="story-role">${role.name}</p>
+                            <img class="story-skill-icon" src="${icon}" alt="${category}">
+                        </div>
+                    </div>
+                    <p class="story-quote">${quote}</p>
+                    <button class="story-read" data-role="${role.name}">READ MORE</button>
+                </article>
+            `;
+        }
+
+        function renderStories() {
+            const term = storySearch.value.trim().toLowerCase();
+            const category = storyCategory.value;
+
+            const filtered = videoRoles.filter((role) => {
+                const roleCategory = getPrimaryCategory(role);
+                const matchesTerm = !term
+                    || role.name.toLowerCase().includes(term)
+                    || (role.person_name || '').toLowerCase().includes(term);
+                const matchesCategory = !category || roleCategory === category;
+                return matchesTerm && matchesCategory;
+            });
+
+            storiesGrid.innerHTML = filtered.map(cardTemplate).join('');
+            storiesEmpty.hidden = filtered.length > 0;
+
+            storiesGrid.querySelectorAll('.story-card').forEach((card) => {
+                const role = videoRoles.find((item) => item.name === card.dataset.role);
+                if (!role) return;
+                card.addEventListener('click', () => openStoryPopup(role.name, card));
+                card.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        openStoryPopup(role.name, card);
+                    }
+                });
+            });
+
+            storiesGrid.querySelectorAll('.story-read').forEach((btn) => {
+                btn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    const role = videoRoles.find((item) => item.name === btn.dataset.role);
+                    if (!role) return;
+                    openStoryPopup(role.name, btn);
+                });
+            });
+        }
+
+        storySearch.addEventListener('input', renderStories);
+        storyCategory.addEventListener('change', renderStories);
+
+        if (storyPopupOverlay) {
+            storyPopupOverlay.addEventListener('click', (event) => {
+                if (event.target === storyPopupOverlay) {
+                    closeStoryPopup();
+                }
+            });
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && storyPopupOverlay && !storyPopupOverlay.hidden) {
+                closeStoryPopup();
+            }
+        });
+
+        window.addEventListener('message', (event) => {
+            if (!storyPopupFrame || event.source !== storyPopupFrame.contentWindow) return;
+            if (!event.data || event.data.type !== 'closeCareerPopup') return;
+            closeStoryPopup();
+        });
+
+        async function initStories() {
+            try {
+                const response = await fetch('wis.json');
+                const data = await response.json();
+                const roles = Array.isArray(data.roles) ? data.roles : [];
+                videoRoles = roles.filter((role) => typeof role.video_url === 'string' && role.video_url.trim() !== '');
+                buildCategoryOptions(videoRoles);
+                renderStories();
+            } catch (error) {
+                storiesGrid.innerHTML = '';
+                storiesEmpty.hidden = false;
+                storiesEmpty.textContent = 'Unable to load stories right now.';
+                console.error(error);
+            }
+        }
+
+        initStories();
+    </script>
+</body>
+</html>

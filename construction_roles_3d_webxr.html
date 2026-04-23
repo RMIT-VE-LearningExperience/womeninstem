@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Roles Pathway Map - 3D WebXR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background: #ededed;
+        }
+
+        #viewToggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            background: #659bb0;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        #viewToggle:hover {
+            background: #4e7f93;
+            transform: translateY(-1px);
+        }
+
+        #flatView {
+            position: absolute;
+            inset: 0;
+            padding: 40px;
+            background: #ededed;
+            overflow: auto;
+            display: none;
+            z-index: 50;
+        }
+
+        .flat-toolbar {
+            max-width: 1100px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .flat-toolbar button {
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid #d7e0e3;
+            background: #f7f9fa;
+            font-size: 12px;
+            font-weight: bold;
+            color: #525252;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, transform 0.1s;
+        }
+
+        .flat-toolbar button:hover {
+            background: #e4edf1;
+            transform: translateY(-1px);
+        }
+
+        .flat-toolbar button.active {
+            background: #659bb0;
+            border-color: #659bb0;
+            color: #ffffff;
+        }
+
+        .flat-content {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .mind-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .mind-arrow {
+            font-size: 18px;
+            color: #659bb0;
+            margin: 0 2px;
+        }
+
+        .flat-role {
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .flat-role-title {
+        }
+
+        .flat-row {
+            display: flex;
+            justify-content: flex-start;
+            align-items: stretch;
+            gap: 20px;
+            flex-wrap: nowrap;
+            position: relative;
+            overflow-x: auto;
+            padding: 10px 0 0;
+            scroll-behavior: smooth;
+        }
+
+        .flat-carousel-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .flat-role-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #525252;
+        }
+
+        .flat-nav-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: #659bb0;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .flat-nav-btn:hover {
+            background: #4e7f93;
+            transform: translateY(-1px);
+        }
+
+        .flat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 12px 16px;
+            min-width: 180px;
+            max-width: 260px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #d7e0e3;
+            text-align: left;
+        }
+
+        .flat-card h4 {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #525252;
+        }
+
+        .flat-card p {
+            font-size: 12px;
+            color: #525252;
+            line-height: 1.4;
+        }
+
+        .flat-card.role-card {
+            border-color: #659bb0;
+        }
+
+        .flat-card.level-card {
+            border-color: #d0d6ae;
+        }
+
+        .flat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .role-popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            z-index: 11000;
+        }
+
+        .role-popup.visible {
+            display: flex;
+        }
+
+        .role-popup-content {
+            position: relative;
+            max-width: 1100px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: auto;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .role-popup-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #e46e5a;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(228, 110, 90, 0.35);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .role-popup-close:hover {
+            background: #d65f4a;
+            transform: translateY(-1px);
+        }
+
+        .role-popup-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #525252;
+            margin-bottom: 12px;
+        }
+
+        .role-popup-overview {
+            font-size: 14px;
+            color: #525252;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(237, 237, 237, 0.98);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            z-index: 12000;
+        }
+
+        .intro-panel {
+            max-width: 900px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 32px 40px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .intro-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #525252;
+            margin-bottom: 10px;
+        }
+
+        .intro-subtitle {
+            font-size: 14px;
+            color: #525252;
+            margin-bottom: 24px;
+        }
+
+        .intro-questions {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .intro-question h2 {
+            font-size: 16px;
+            color: #525252;
+            margin-bottom: 10px;
+        }
+
+        .intro-answer-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .intro-answer {
+            border: 1px solid #d7e0e3;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 13px;
+            background: #f7f9fa;
+            color: #525252;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, transform 0.1s;
+        }
+
+        .intro-answer:hover {
+            background: #e4edf1;
+            transform: translateY(-1px);
+        }
+
+        .intro-answer.selected {
+            background: #659bb0;
+            border-color: #659bb0;
+            color: #ffffff;
+        }
+
+        .intro-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .intro-submit {
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: none;
+            background: #659bb0;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .intro-submit:hover {
+            background: #4e7f93;
+            transform: translateY(-1px);
+        }
+
+        .intro-skip {
+            border: none;
+            background: transparent;
+            color: #659bb0;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .intro-error {
+            font-size: 12px;
+            color: #d65f4a;
+        }
+
+        #retakeQuestionsBtn {
+            margin-top: 12px;
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            background: #659bb0;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        #retakeQuestionsBtn:hover {
+            background: #4e7f93;
+            transform: translateY(-1px);
+        }
+
+        #legend {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            color: #525252;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 12px;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            min-width: 250px;
+        }
+
+        #legend h3 {
+            margin: 0 0 15px 0;
+            color: #525252;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .legend-item:hover {
+            background: #d7e0e3;
+        }
+
+        .legend-item.active {
+            background: #d0d6ae;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .legend-label {
+            font-size: 13px;
+            color: #525252;
+            line-height: 1.3;
+        }
+
+        #tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.98);
+            color: #525252;
+            padding: 20px;
+            border-radius: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            max-width: 350px;
+            font-size: 13px;
+            z-index: 1000;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        #tooltip.visible {
+            opacity: 1;
+        }
+
+        #tooltip h3 {
+            margin: 0 0 12px 0;
+            color: #525252;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 2px solid #d0d6ae;
+            padding-bottom: 8px;
+        }
+
+        #tooltip .section {
+            margin: 12px 0;
+        }
+
+        #tooltip strong {
+            color: #659bb0;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        #tooltip ul {
+            margin: 6px 0;
+            padding-left: 18px;
+        }
+
+        #tooltip li {
+            margin: 4px 0;
+            line-height: 1.5;
+        }
+
+        #tooltip p {
+            line-height: 1.5;
+            margin: 4px 0;
+        }
+
+        #flowDiagram {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(237, 237, 237, 0.98);
+            z-index: 10000;
+            display: none;
+            overflow: auto;
+            padding: 40px;
+        }
+
+        #flowDiagram.visible {
+            display: block;
+        }
+
+        #flowDiagram .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: #e46e5a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(228, 110, 90, 0.3);
+        }
+
+        #flowDiagram .close-btn:hover {
+            background: #d65f4a;
+            transform: scale(1.05);
+        }
+
+        #flowDiagram .flow-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        #flowDiagram h2 {
+            color: #525252;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .flow-node {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 3px solid;
+            min-width: 200px;
+            transition: all 0.3s;
+        }
+
+        .flow-node:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .flow-node.center {
+            border-width: 4px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            background: #d0d6ae;
+        }
+
+        .flow-node h4 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #525252;
+        }
+
+        .flow-node p {
+            font-size: 12px;
+            color: #525252;
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+        
+        .flow-node ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .flow-node li {
+            font-size: 12px;
+            color: #525252;
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .flow-section {
+            width: 100%;
+        }
+
+        .flow-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .flow-label {
+            font-size: 14px;
+            color: #659bb0;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .arrow {
+            font-size: 24px;
+            color: #659bb0;
+            margin: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="introOverlay" class="intro-overlay">
+        <div class="intro-panel">
+            <h1 class="intro-title">Find your construction work style</h1>
+            <p class="intro-subtitle">Answer three quick questions to highlight the roles and pathways that are most likely to suit you.</p>
+
+            <div class="intro-questions">
+                <div class="intro-question">
+                    <h2>1. What kind of work appeals to you most?</h2>
+                    <div class="intro-answer-row">
+                        <button class="intro-answer" data-question="q1" data-value="handsOn">Hands-on &amp; practical</button>
+                        <button class="intro-answer" data-question="q1" data-value="analytical">Problem solving &amp; analysis</button>
+                        <button class="intro-answer" data-question="q1" data-value="leadership">Leading people &amp; projects</button>
+                        <button class="intro-answer" data-question="q1" data-value="organising">Organising, planning &amp; compliance</button>
+                    </div>
+                </div>
+
+                <div class="intro-question">
+                    <h2>2. Where do you see yourself working most of the time?</h2>
+                    <div class="intro-answer-row">
+                        <button class="intro-answer" data-question="q2" data-value="onsite">Mostly on-site / in the field</button>
+                        <button class="intro-answer" data-question="q2" data-value="mixed">A mix of on-site and office</button>
+                        <button class="intro-answer" data-question="q2" data-value="office">Mostly office-based</button>
+                    </div>
+                </div>
+
+                <div class="intro-question">
+                    <h2>3. What kind of workday sounds best to you?</h2>
+                    <div class="intro-answer-row">
+                        <button class="intro-answer" data-question="q3" data-value="structured">Structured &amp; predictable</button>
+                        <button class="intro-answer" data-question="q3" data-value="varied">Fast-paced &amp; varied</button>
+                        <button class="intro-answer" data-question="q3" data-value="creative">Creative &amp; flexible</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="intro-actions">
+                <button id="introSubmit" class="intro-submit">Show my matches</button>
+                <div id="introError" class="intro-error"></div>
+                <button id="introSkip" class="intro-skip">Skip for now</button>
+            </div>
+        </div>
+    </div>
+    <button id="viewToggle">Flat View</button>
+    <div id="flatView"></div>
+    <div id="rolePopup" class="role-popup">
+        <div class="role-popup-content">
+            <button type="button" class="role-popup-close">Close ✕</button>
+            <div id="rolePopupBody"></div>
+        </div>
+    </div>
+    <div id="legend">
+        <h3>Work Styles</h3>
+        <div id="legend-items"></div>
+        <hr style="border: none; border-top: 1px solid #d7e0e3; margin: 15px 0;">
+        <h3 style="font-size: 13px; margin-bottom: 10px;">Connection Types</h3>
+        <div style="font-size: 11px; color: #525252; line-height: 1.6;">
+            <div style="margin: 5px 0;"><span style="color: #659bb0;">●</span> <strong>Blue lines:</strong> Career progression</div>
+            <div style="margin: 5px 0;"><span style="color: #c9a179;">●</span> <strong>Clay lines:</strong> Related roles</div>
+        </div>
+        <button id="retakeQuestionsBtn">Change my answers</button>
+    </div>
+
+    <div id="tooltip"></div>
+    
+    <div id="flowDiagram">
+        <button class="close-btn" onclick="closeFlowDiagram()">Close ✕</button>
+        <div class="flow-content" id="flowContent"></div>
+    </div>
+
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { VRButton } from 'three/addons/webxr/VRButton.js';
+        import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
+
+        // Fetch data from external JSON
+        let rolesData;
+        
+        fetch('https://rmit-ve-learningexperience.github.io/dmd/wis_demo/wis.json')
+            .then(response => response.json())
+            .then(data => {
+                rolesData = data;
+                initVisualization();
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+                alert('Failed to load construction roles data. Please check your internet connection.');
+            });
+        
+        function initVisualization() {
+            const workStyleColors = {
+                "Analytical-Formal": 0x4169E1,
+                "Organisational-Hybrid": 0x20B2AA,
+                "Leadership-Formal": 0xDC143C,
+                "Leadership-HandsOn": 0xFF8C00,
+                "Technical-Analytical": 0x9370DB,
+                "Compliance-Formal": 0x2F4F4F,
+                "HandsOn-Practical": 0x8B4513,
+                "HandsOn-Creative": 0xFF69B4,
+                "HandsOn-Technical": 0xFFD700,
+                "HandsOn-Structured": 0x708090
+            };
+
+            const legendEl = document.getElementById('legend');
+            const flatViewEl = document.getElementById('flatView');
+            const toggleBtn = document.getElementById('viewToggle');
+            const introOverlay = document.getElementById('introOverlay');
+            const introSubmit = document.getElementById('introSubmit');
+            const introSkip = document.getElementById('introSkip');
+            const introError = document.getElementById('introError');
+            const introAnswers = introOverlay.querySelectorAll('.intro-answer');
+            const retakeQuestionsBtn = document.getElementById('retakeQuestionsBtn');
+            let isFlatView = false;
+            let flatViewMode = 'grid'; // 'grid' for role cards, 'mind' for connection view
+            const rolePopup = document.getElementById('rolePopup');
+            const rolePopupBody = document.getElementById('rolePopupBody');
+            const rolePopupClose = document.querySelector('.role-popup-close');
+
+            const introSelections = { q1: null, q2: null, q3: null };
+
+            introAnswers.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const q = btn.dataset.question;
+                    const value = btn.dataset.value;
+                    // Clear selection for this question
+                    introOverlay.querySelectorAll(`.intro-answer[data-question="${q}"]`).forEach(b => {
+                        b.classList.remove('selected');
+                    });
+                    btn.classList.add('selected');
+                    introSelections[q] = value;
+                });
+            });
+
+            function suggestWorkStyle(answers) {
+                const scores = {};
+                Object.keys(workStyleColors).forEach(key => { scores[key] = 0; });
+
+                function addScore(key, amount) {
+                    if (workStyleColors[key] != null) {
+                        scores[key] += amount;
+                    }
+                }
+
+                // Q1: type of work
+                if (answers.q1 === 'handsOn') {
+                    addScore('HandsOn-Practical', 2);
+                    addScore('HandsOn-Technical', 2);
+                    addScore('HandsOn-Creative', 1);
+                    addScore('HandsOn-Structured', 1);
+                } else if (answers.q1 === 'analytical') {
+                    addScore('Analytical-Formal', 2);
+                    addScore('Technical-Analytical', 2);
+                    addScore('Compliance-Formal', 1);
+                } else if (answers.q1 === 'leadership') {
+                    addScore('Leadership-Formal', 2);
+                    addScore('Leadership-HandsOn', 2);
+                } else if (answers.q1 === 'organising') {
+                    addScore('Organisational-Hybrid', 2);
+                    addScore('Compliance-Formal', 2);
+                }
+
+                // Q2: where you work
+                if (answers.q2 === 'onsite') {
+                    addScore('HandsOn-Practical', 2);
+                    addScore('HandsOn-Technical', 2);
+                    addScore('Leadership-HandsOn', 1);
+                    addScore('Technical-Analytical', 1);
+                } else if (answers.q2 === 'mixed') {
+                    addScore('Organisational-Hybrid', 2);
+                    addScore('Leadership-HandsOn', 2);
+                    addScore('HandsOn-Technical', 1);
+                } else if (answers.q2 === 'office') {
+                    addScore('Analytical-Formal', 2);
+                    addScore('Compliance-Formal', 2);
+                    addScore('Leadership-Formal', 1);
+                }
+
+                // Q3: type of day
+                if (answers.q3 === 'structured') {
+                    addScore('HandsOn-Structured', 2);
+                    addScore('Compliance-Formal', 2);
+                    addScore('Organisational-Hybrid', 1);
+                    addScore('Analytical-Formal', 1);
+                } else if (answers.q3 === 'varied') {
+                    addScore('Leadership-HandsOn', 2);
+                    addScore('Leadership-Formal', 1);
+                    addScore('HandsOn-Technical', 2);
+                    addScore('Technical-Analytical', 1);
+                } else if (answers.q3 === 'creative') {
+                    addScore('HandsOn-Creative', 2);
+                    addScore('HandsOn-Practical', 1);
+                }
+
+                // Pick the highest scoring work style; fallback if needed
+                let bestStyle = 'HandsOn-Practical';
+                let bestScore = -Infinity;
+                Object.entries(scores).forEach(([key, value]) => {
+                    if (value > bestScore) {
+                        bestScore = value;
+                        bestStyle = key;
+                    }
+                });
+                return bestStyle;
+            }
+
+            introSubmit.addEventListener('click', () => {
+                if (!introSelections.q1 || !introSelections.q2 || !introSelections.q3) {
+                    introError.textContent = 'Please answer all three questions to see your matches.';
+                    return;
+                }
+                introError.textContent = '';
+                const style = suggestWorkStyle(introSelections);
+
+                // Apply the work style filter by simulating a click on the corresponding legend item
+                const legendItem = document.querySelector(`.legend-item[data-work-style="${style}"]`);
+                if (legendItem) {
+                    legendItem.click();
+                }
+
+                introOverlay.style.display = 'none';
+            });
+
+            introSkip.addEventListener('click', () => {
+                introError.textContent = '';
+                introOverlay.style.display = 'none';
+            });
+
+            retakeQuestionsBtn.addEventListener('click', () => {
+                introOverlay.style.display = 'flex';
+            });
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xededed);
+        scene.fog = new THREE.Fog(0xededed, 50, 200);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 20, 80);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.xr.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(10, 20, 10);
+        scene.add(directionalLight);
+
+        const pointLight1 = new THREE.PointLight(0x659bb0, 0.5, 100);
+        pointLight1.position.set(30, 30, 30);
+        scene.add(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0xc9a179, 0.5, 100);
+        pointLight2.position.set(-30, -30, -30);
+        scene.add(pointLight2);
+
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 20;
+        controls.maxDistance = 150;
+
+        // Process data - Create nodes for all levels and related roles
+        const nodes = [];
+        const nodeMap = new Map();
+        const links = [];
+        const allNodesData = [];
+        const nodeConnectionsMap = new Map(); // Track which nodes connect to which
+        
+        // First pass: Create node data for all levels
+        rolesData.roles.forEach(role => {
+            role.levels.forEach((level, levelIndex) => {
+                const nodeData = {
+                    id: level.title,
+                    name: level.title,
+                    parentRole: role.name,
+                    overview: level.summary,
+                    typical_experience: level.typical_experience,
+                    core_skills: role.core_skills,
+                    core_education: role.core_education,
+                    work_style: role.work_style,
+                    level_index: levelIndex,
+                    progresses_to: level.progresses_to || [],
+                    related_roles: level.related_roles || [],
+                    is_level: true
+                };
+                allNodesData.push(nodeData);
+                
+                // Track connections for this node
+                const connections = [...level.progresses_to, ...level.related_roles];
+                nodeConnectionsMap.set(level.title, connections);
+            });
+            
+            // Also add connections from the parent role level
+            if (role.related_roles) {
+                role.related_roles.forEach(relatedName => {
+                    // Find if this related role exists as a level title
+                    const existingNode = allNodesData.find(n => n.id === relatedName);
+                    if (!existingNode) {
+                        // Create a generic node for this related role
+                        const relatedRoleData = rolesData.roles.find(r => r.name === relatedName);
+                        if (relatedRoleData) {
+                            // Add the first level of this related role if not already added
+                            if (relatedRoleData.levels && relatedRoleData.levels.length > 0) {
+                                const firstLevel = relatedRoleData.levels[0];
+                                if (!allNodesData.find(n => n.id === firstLevel.title)) {
+                                    allNodesData.push({
+                                        id: firstLevel.title,
+                                        name: firstLevel.title,
+                                        parentRole: relatedRoleData.name,
+                                        overview: firstLevel.summary,
+                                        typical_experience: firstLevel.typical_experience,
+                                        core_skills: relatedRoleData.core_skills,
+                                        core_education: relatedRoleData.core_education,
+                                        work_style: relatedRoleData.work_style,
+                                        level_index: 0,
+                                        progresses_to: firstLevel.progresses_to || [],
+                                        related_roles: firstLevel.related_roles || [],
+                                        is_level: true
+                                    });
+                                }
+                            }
+                        } else {
+                            // Create a placeholder node for unknown related roles
+                            allNodesData.push({
+                                id: relatedName,
+                                name: relatedName,
+                                parentRole: "Unknown",
+                                overview: "Related role",
+                                typical_experience: "N/A",
+                                core_skills: [],
+                                core_education: [],
+                                work_style: "Unknown",
+                                level_index: 0,
+                                progresses_to: [],
+                                related_roles: [],
+                                is_level: false,
+                                is_placeholder: true
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Calculate connections for node sizing
+        const connectionCount = {};
+        allNodesData.forEach(nodeData => {
+            connectionCount[nodeData.id] = 0;
+        });
+        
+        // Count connections
+        allNodesData.forEach(nodeData => {
+            nodeData.progresses_to.forEach(target => {
+                connectionCount[nodeData.id] = (connectionCount[nodeData.id] || 0) + 1;
+                connectionCount[target] = (connectionCount[target] || 0) + 1;
+            });
+            nodeData.related_roles.forEach(target => {
+                connectionCount[nodeData.id] = (connectionCount[nodeData.id] || 0) + 1;
+                connectionCount[target] = (connectionCount[target] || 0) + 1;
+            });
+        });
+
+        // Create nodes
+        allNodesData.forEach((nodeData, index) => {
+            const connections = connectionCount[nodeData.id] || 1;
+            const radius = 0.8 + connections * 0.2;
+            
+            const color = workStyleColors[nodeData.work_style] || 0x999999;
+            
+            const geometry = new THREE.SphereGeometry(radius, 32, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                emissive: color,
+                emissiveIntensity: nodeData.is_placeholder ? 0.2 : 0.3,
+                shininess: 100,
+                transparent: nodeData.is_placeholder,
+                opacity: nodeData.is_placeholder ? 0.6 : 1
+            });
+            
+            const sphere = new THREE.Mesh(geometry, material);
+            
+            // Position nodes in a sphere initially
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const r = 50;
+            
+            sphere.position.x = r * Math.sin(phi) * Math.cos(theta);
+            sphere.position.y = r * Math.sin(phi) * Math.sin(theta);
+            sphere.position.z = r * Math.cos(phi);
+            
+            sphere.userData = {
+                ...nodeData,
+                velocity: new THREE.Vector3(),
+                radius: radius,
+                originalColor: color
+            };
+            
+            scene.add(sphere);
+            nodes.push(sphere);
+            nodeMap.set(nodeData.id, sphere);
+
+            // Add text label
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 512;
+            canvas.height = 128;
+            
+            context.fillStyle = 'rgba(237, 237, 237, 0.9)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            
+            context.font = 'Bold 32px Arial';
+            context.fillStyle = '#000000';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(nodeData.name, canvas.width / 2, canvas.height / 2);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(12, 3, 1);
+            sprite.position.copy(sphere.position);
+            sprite.position.y += radius + 2;
+            
+            scene.add(sprite);
+            sphere.userData.label = sprite;
+        });
+
+        // Create links based on career progression and related roles
+        const lineMaterialProgression = new THREE.LineBasicMaterial({ 
+            color: 0x5BA3D0,  // Brighter blue
+            opacity: 0.85,     // Much more visible
+            transparent: true,
+            linewidth: 3       // Note: this doesn't work on most platforms but we set it anyway
+        });
+        
+        const lineMaterialRelated = new THREE.LineBasicMaterial({ 
+            color: 0xD4A574,   // Brighter clay
+            opacity: 0.6,      // More visible
+            transparent: true,
+            linewidth: 2
+        });
+
+        // First, create links for sequential career progression within each parent role
+        rolesData.roles.forEach(role => {
+            for (let i = 0; i < role.levels.length - 1; i++) {
+                const currentLevel = role.levels[i];
+                const nextLevel = role.levels[i + 1];
+                
+                const sourceNode = nodeMap.get(currentLevel.title);
+                const targetNode = nodeMap.get(nextLevel.title);
+                
+                if (sourceNode && targetNode) {
+                    const geometry = new THREE.BufferGeometry().setFromPoints([
+                        sourceNode.position,
+                        targetNode.position
+                    ]);
+                    const line = new THREE.Line(geometry, lineMaterialProgression);
+                    scene.add(line);
+                    links.push({ line, source: sourceNode, target: targetNode, type: 'progression' });
+                }
+            }
+        });
+
+        // Then, create additional progression and related role links
+        allNodesData.forEach(nodeData => {
+            const sourceNode = nodeMap.get(nodeData.id);
+            if (!sourceNode) return;
+            
+            // Create progression links (career advancement) - these are transitions to different roles
+            nodeData.progresses_to.forEach(targetId => {
+                const targetNode = nodeMap.get(targetId);
+                if (targetNode) {
+                    // Check if this link already exists to avoid duplicates
+                    const linkExists = links.some(link => 
+                        (link.source === sourceNode && link.target === targetNode) ||
+                        (link.source === targetNode && link.target === sourceNode)
+                    );
+                    
+                    if (!linkExists) {
+                        const geometry = new THREE.BufferGeometry().setFromPoints([
+                            sourceNode.position,
+                            targetNode.position
+                        ]);
+                        const line = new THREE.Line(geometry, lineMaterialProgression);
+                        scene.add(line);
+                        links.push({ line, source: sourceNode, target: targetNode, type: 'progression' });
+                    }
+                }
+            });
+            
+            // Create related role links
+            nodeData.related_roles.forEach(targetId => {
+                const targetNode = nodeMap.get(targetId);
+                if (targetNode) {
+                    // Check if this link already exists
+                    const linkExists = links.some(link => 
+                        (link.source === sourceNode && link.target === targetNode) ||
+                        (link.source === targetNode && link.target === sourceNode)
+                    );
+                    
+                    if (!linkExists) {
+                        const geometry = new THREE.BufferGeometry().setFromPoints([
+                            sourceNode.position,
+                            targetNode.position
+                        ]);
+                        const line = new THREE.Line(geometry, lineMaterialRelated);
+                        scene.add(line);
+                        links.push({ line, source: sourceNode, target: targetNode, type: 'related' });
+                    }
+                }
+            });
+        });
+
+        // Physics simulation (simplified force-directed)
+        function updatePhysics() {
+            const attractionStrength = 0.001;
+            const repulsionStrength = 5;
+            const damping = 0.9;
+            const centerStrength = 0.001;
+
+            nodes.forEach(node => {
+                const force = new THREE.Vector3();
+
+                // Repulsion from other nodes
+                nodes.forEach(other => {
+                    if (node !== other) {
+                        const diff = new THREE.Vector3().subVectors(node.position, other.position);
+                        const distance = diff.length();
+                        if (distance > 0 && distance < 30) {
+                            diff.normalize();
+                            force.add(diff.multiplyScalar(repulsionStrength / (distance * distance)));
+                        }
+                    }
+                });
+
+                // Attraction to center
+                const toCenter = new THREE.Vector3().subVectors(new THREE.Vector3(0, 0, 0), node.position);
+                force.add(toCenter.multiplyScalar(centerStrength));
+
+                // Apply force
+                node.userData.velocity.add(force);
+                node.userData.velocity.multiplyScalar(damping);
+                node.position.add(node.userData.velocity);
+
+                // Update label position
+                if (node.userData.label) {
+                    node.userData.label.position.copy(node.position);
+                    node.userData.label.position.y += node.userData.radius + 2;
+                }
+            });
+
+            // Update links based on connected nodes' attraction
+            links.forEach(({ source, target }) => {
+                const diff = new THREE.Vector3().subVectors(target.position, source.position);
+                const distance = diff.length();
+                const idealDistance = 15;
+                
+                if (distance > idealDistance) {
+                    diff.normalize();
+                    const correction = diff.multiplyScalar((distance - idealDistance) * attractionStrength);
+                    source.userData.velocity.add(correction);
+                    target.userData.velocity.sub(correction);
+                }
+            });
+
+            // Update line geometries
+            links.forEach(({ line, source, target }) => {
+                const positions = line.geometry.attributes.position.array;
+                positions[0] = source.position.x;
+                positions[1] = source.position.y;
+                positions[2] = source.position.z;
+                positions[3] = target.position.x;
+                positions[4] = target.position.y;
+                positions[5] = target.position.z;
+                line.geometry.attributes.position.needsUpdate = true;
+            });
+        }
+
+        // Raycasting for interaction
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const tooltip = document.getElementById('tooltip');
+        let hoveredNode = null;
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(nodes);
+
+            if (intersects.length > 0) {
+                const node = intersects[0].object;
+                if (hoveredNode !== node) {
+                    // Reset previous node
+                    if (hoveredNode) {
+                        hoveredNode.material.emissiveIntensity = 0.3;
+                        hoveredNode.scale.set(1, 1, 1);
+                    }
+
+                    hoveredNode = node;
+                    node.material.emissiveIntensity = 0.8;
+                    node.scale.set(1.2, 1.2, 1.2);
+
+                    // Show tooltip
+                    const data = node.userData;
+                    
+                    tooltip.innerHTML = `
+                        <h3>${data.name}</h3>
+                        <div class="section">
+                            <strong>Parent Role:</strong>
+                            <p>${data.parentRole}</p>
+                        </div>
+                        <div class="section">
+                            <strong>Overview:</strong>
+                            <p>${data.overview || 'N/A'}</p>
+                        </div>
+                        <div class="section">
+                            <strong>Typical Experience:</strong>
+                            <p>${data.typical_experience || 'N/A'}</p>
+                        </div>
+                        <div class="section">
+                            <strong>Work Style:</strong>
+                            <p>${data.work_style}</p>
+                        </div>
+                        ${data.progresses_to && data.progresses_to.length > 0 ? `
+                        <div class="section">
+                            <strong>Progresses To:</strong>
+                            <p>${data.progresses_to.join(', ')}</p>
+                        </div>
+                        ` : ''}
+                        ${data.core_skills && data.core_skills.length > 0 ? `
+                        <div class="section">
+                            <strong>Key Skills:</strong>
+                            <ul>${data.core_skills.slice(0, 4).map(s => `<li>${s}</li>`).join('')}</ul>
+                        </div>
+                        ` : ''}
+                    `;
+                    tooltip.style.left = event.clientX + 15 + 'px';
+                    tooltip.style.top = event.clientY + 15 + 'px';
+                    tooltip.classList.add('visible');
+                }
+            } else {
+                if (hoveredNode) {
+                    hoveredNode.material.emissiveIntensity = 0.3;
+                    hoveredNode.scale.set(1, 1, 1);
+                    hoveredNode = null;
+                }
+                tooltip.classList.remove('visible');
+            }
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+
+        // Click handler for nodes
+        function onNodeClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(nodes);
+
+            if (intersects.length > 0) {
+                const node = intersects[0].object;
+                showFlowDiagram(node.userData);
+            }
+        }
+
+        window.addEventListener('click', onNodeClick);
+
+        // VR Controllers
+        const controllerModelFactory = new XRControllerModelFactory();
+
+        const controller1 = renderer.xr.getController(0);
+        controller1.addEventListener('selectstart', onSelectStart);
+        controller1.addEventListener('selectend', onSelectEnd);
+        scene.add(controller1);
+
+        const controller2 = renderer.xr.getController(1);
+        controller2.addEventListener('selectstart', onSelectStart);
+        controller2.addEventListener('selectend', onSelectEnd);
+        scene.add(controller2);
+
+        const controllerGrip1 = renderer.xr.getControllerGrip(0);
+        controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
+        scene.add(controllerGrip1);
+
+        const controllerGrip2 = renderer.xr.getControllerGrip(1);
+        controllerGrip2.add(controllerModelFactory.createControllerModel(controllerGrip2));
+        scene.add(controllerGrip2);
+
+        // Add pointer lines to controllers
+        const geometry = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, -1)
+        ]);
+        const line = new THREE.Line(geometry);
+        line.scale.z = 5;
+
+        controller1.add(line.clone());
+        controller2.add(line.clone());
+
+        function onSelectStart(event) {
+            const controller = event.target;
+            const tempMatrix = new THREE.Matrix4();
+            tempMatrix.identity().extractRotation(controller.matrixWorld);
+            
+            raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+            raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+            
+            const intersects = raycaster.intersectObjects(nodes);
+            if (intersects.length > 0) {
+                const node = intersects[0].object;
+                node.material.emissiveIntensity = 1.0;
+                node.scale.set(1.5, 1.5, 1.5);
+                console.log('Selected:', node.userData.name);
+            }
+        }
+
+        function onSelectEnd(event) {
+            if (hoveredNode) {
+                hoveredNode.material.emissiveIntensity = 0.3;
+                hoveredNode.scale.set(1, 1, 1);
+            }
+        }
+
+        // Create legend
+        const legendItems = document.getElementById('legend-items');
+        let activeFilter = null;
+        
+        Object.entries(workStyleColors).forEach(([style, color]) => {
+            const item = document.createElement('div');
+            item.className = 'legend-item';
+            item.dataset.workStyle = style;
+            
+            const colorDiv = document.createElement('div');
+            colorDiv.className = 'legend-color';
+            colorDiv.style.backgroundColor = '#' + color.toString(16).padStart(6, '0');
+            
+            const label = document.createElement('span');
+            label.className = 'legend-label';
+            label.textContent = style;
+            
+            item.appendChild(colorDiv);
+            item.appendChild(label);
+            legendItems.appendChild(item);
+            
+            // Add click handler for filtering
+            item.addEventListener('click', () => {
+                // Toggle active state
+                if (activeFilter === style) {
+                    activeFilter = null;
+                    item.classList.remove('active');
+                    // Reset all nodes to original colors and make visible
+                    nodes.forEach(node => {
+                        node.material.color.setHex(node.userData.originalColor);
+                        node.material.emissive.setHex(node.userData.originalColor);
+                        node.material.opacity = 1;
+                        node.material.transparent = false;
+                        node.material.emissiveIntensity = 0.3;
+                        node.scale.set(1, 1, 1);
+                        node.visible = true;
+                        node.material.needsUpdate = true;
+                        if (node.userData.label) {
+                            node.userData.label.material.transparent = true;
+                            node.userData.label.material.opacity = 1;
+                            node.userData.label.visible = true;
+                        }
+                    });
+                    // Reset all links to original opacity and thickness
+                    links.forEach(link => {
+                        link.line.visible = true;
+                        link.line.scale.set(1, 1, 1);
+                        if (link.type === 'progression') {
+                            link.line.material.opacity = 0.85;
+                            link.line.material.color.setHex(0x5BA3D0);
+                        } else {
+                            link.line.material.opacity = 0.6;
+                            link.line.material.color.setHex(0xD4A574);
+                        }
+                    });
+                } else {
+                    // Clear previous active
+                    document.querySelectorAll('.legend-item').forEach(i => i.classList.remove('active'));
+                    activeFilter = style;
+                    item.classList.add('active');
+                    
+                    // Highlight matching nodes, grey out others
+                    nodes.forEach(node => {
+                        if (node.userData.work_style === style) {
+                            // Highlight - restore original color
+                            node.material.color.setHex(node.userData.originalColor);
+                            node.material.emissive.setHex(node.userData.originalColor);
+                            node.material.opacity = 1;
+                            node.material.transparent = false;
+                            node.material.emissiveIntensity = 0.8;
+                            node.scale.set(1.3, 1.3, 1.3);
+                            node.visible = true;
+                            node.material.needsUpdate = true;
+                            if (node.userData.label) {
+                                node.userData.label.material.transparent = true;
+                                node.userData.label.material.opacity = 1;
+                                node.userData.label.visible = true;
+                            }
+                        } else {
+                            // Dim non-matching nodes instead of hiding them
+                            node.material.color.setHex(0xaaaaaa);
+                            node.material.emissive.setHex(0x555555);
+                            node.material.opacity = 0.15;
+                            node.material.transparent = true;
+                            node.material.emissiveIntensity = 0.05;
+                            node.scale.set(0.9, 0.9, 0.9);
+                            node.visible = true;
+                            node.material.needsUpdate = true;
+
+                            if (node.userData.label) {
+                                node.userData.label.material.transparent = true;
+                                node.userData.label.material.opacity = 0.25;
+                                node.userData.label.visible = true;
+                            }
+                        }
+                    });
+                    
+                    // Update link opacity and thickness based on connected nodes
+                    links.forEach(link => {
+                        const sourceHighlighted = link.source.userData.work_style === style;
+                        const targetHighlighted = link.target.userData.work_style === style;
+                        
+                        // ONLY show lines where BOTH nodes match the filtered work style
+                        if (sourceHighlighted && targetHighlighted) {
+                            link.line.visible = true;
+                            if (link.type === 'progression') {
+                                link.line.material.opacity = 1.0;  // Maximum visibility
+                                link.line.material.color.setHex(0x4A90C9);  // Vibrant blue
+                                // Make line thicker by scaling
+                                link.line.scale.set(1, 1, 3);
+                            } else {
+                                link.line.material.opacity = 0.85;  // Very visible
+                                link.line.material.color.setHex(0xC9A060);  // Vibrant clay
+                                link.line.scale.set(1, 1, 2.5);
+                            }
+                        } else {
+                            // Hide ALL lines that connect to non-matching nodes or between different work styles
+                            link.line.visible = false;
+                        }
+                    });
+                }
+            });
+        });
+
+        // Build a flat (2D) view:
+        // - "grid" mode: main roles as cards in a grid; click to open popup with progression
+        // - "mind" mode: all roles listed, each showing a connected progression row (mind-map style)
+        function buildFlatView() {
+            flatViewEl.innerHTML = '';
+
+            // Toolbar with mode toggle
+            const toolbar = document.createElement('div');
+            toolbar.className = 'flat-toolbar';
+
+            const gridBtn = document.createElement('button');
+            gridBtn.textContent = 'Role cards';
+            if (flatViewMode === 'grid') gridBtn.classList.add('active');
+
+            const mindBtn = document.createElement('button');
+            mindBtn.textContent = 'Mind map view';
+            if (flatViewMode === 'mind') mindBtn.classList.add('active');
+
+            toolbar.appendChild(gridBtn);
+            toolbar.appendChild(mindBtn);
+            flatViewEl.appendChild(toolbar);
+
+            const content = document.createElement('div');
+            content.className = 'flat-content';
+            flatViewEl.appendChild(content);
+
+            const roles = rolesData.roles || [];
+
+            function renderGrid() {
+                content.innerHTML = '';
+                const grid = document.createElement('div');
+                grid.className = 'flat-grid';
+                content.appendChild(grid);
+
+                roles.forEach(role => {
+                    const card = document.createElement('div');
+                    card.className = 'flat-card role-card';
+
+                    const overview = role.overview || '';
+                    const trimmed = overview.substring(0, 160);
+                    const needsEllipsis = overview.length > 160;
+
+                    card.innerHTML = `
+                        <h4>${role.name}</h4>
+                        <p>${trimmed}${needsEllipsis ? '…' : ''}</p>
+                    `;
+
+                    card.addEventListener('click', () => {
+                        openRolePopup(role);
+                    });
+
+                    grid.appendChild(card);
+                });
+            }
+
+            function renderMindMap() {
+                content.innerHTML = '';
+                roles.forEach(role => {
+                    const roleContainer = document.createElement('div');
+                    roleContainer.className = 'flat-role';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'flat-role-title';
+                    title.textContent = role.name;
+                    roleContainer.appendChild(title);
+
+                    const row = document.createElement('div');
+                    row.className = 'mind-row';
+
+                    (role.levels || []).forEach((level, index) => {
+                        if (index > 0) {
+                            const arrow = document.createElement('span');
+                            arrow.className = 'mind-arrow';
+                            arrow.textContent = '➜';
+                            row.appendChild(arrow);
+                        }
+
+                        const card = document.createElement('div');
+                        card.className = 'flat-card level-card';
+                        const summary = level.summary || '';
+                        const trimmed = summary.substring(0, 120);
+                        const needsEllipsis = summary.length > 120;
+                        card.innerHTML = `
+                            <h4>${level.title}</h4>
+                            <p>${trimmed}${needsEllipsis ? '…' : ''}</p>
+                        `;
+                        row.appendChild(card);
+                    });
+
+                    roleContainer.appendChild(row);
+                    content.appendChild(roleContainer);
+                });
+            }
+
+            // Initial render based on current mode
+            if (flatViewMode === 'mind') {
+                renderMindMap();
+            } else {
+                renderGrid();
+            }
+
+            // Hook up toolbar buttons
+            gridBtn.addEventListener('click', () => {
+                if (flatViewMode !== 'grid') {
+                    flatViewMode = 'grid';
+                    buildFlatView();
+                }
+            });
+
+            mindBtn.addEventListener('click', () => {
+                if (flatViewMode !== 'mind') {
+                    flatViewMode = 'mind';
+                    buildFlatView();
+                }
+            });
+        }
+
+        function openRolePopup(role) {
+            const wsColor = workStyleColors[role.work_style] || 0x659bb0;
+            const borderColor = '#' + wsColor.toString(16).padStart(6, '0');
+
+            const levelsHtml = (role.levels || []).map(level => {
+                const summary = level.summary || '';
+                const trimmed = summary.substring(0, 160);
+                const needsEllipsis = summary.length > 160;
+                return `
+                    <div class="flat-card level-card" style="border-color: ${borderColor};">
+                        <h4>${level.title}</h4>
+                        <p>${trimmed}${needsEllipsis ? '…' : ''}</p>
+                        ${level.typical_experience ? `<p style="font-size:11px;color:#659bb0;margin-top:8px;">${level.typical_experience}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            rolePopupBody.innerHTML = `
+                <h2 class="role-popup-title">${role.name}</h2>
+                ${role.overview ? `<p class="role-popup-overview">${role.overview}</p>` : ''}
+                <div class="flow-label" style="margin-top: 10px;">Career Progression</div>
+                <div class="flat-row" style="margin-top: 10px;">
+                    ${levelsHtml}
+                </div>
+            `;
+
+            rolePopup.classList.add('visible');
+        }
+
+        rolePopupClose.addEventListener('click', () => {
+            rolePopup.classList.remove('visible');
+        });
+
+        // Initialise flat view markup once
+        buildFlatView();
+
+        // Toggle between 3D view and flat tree view
+        toggleBtn.addEventListener('click', () => {
+            isFlatView = !isFlatView;
+
+            if (isFlatView) {
+                // Show flat view, hide 3D scene UI
+                renderer.domElement.style.display = 'none';
+                legendEl.style.display = 'none';
+                tooltip.classList.remove('visible');
+                flatViewEl.style.display = 'block';
+                toggleBtn.textContent = '3D View';
+            } else {
+                // Show 3D view again
+                renderer.domElement.style.display = 'block';
+                legendEl.style.display = 'block';
+                flatViewEl.style.display = 'none';
+                toggleBtn.textContent = 'Flat View';
+            }
+        });
+
+        // Flow diagram functions
+        function showFlowDiagram(levelData) {
+            const flowContent = document.getElementById('flowContent');
+            const flowDiagram = document.getElementById('flowDiagram');
+            const color = '#' + workStyleColors[levelData.work_style].toString(16).padStart(6, '0');
+            
+            // Find the parent role to get full career path
+            const parentRole = rolesData.roles.find(r => r.name === levelData.parentRole);
+            
+            if (!parentRole) {
+                flowContent.innerHTML = `
+                    <h2>${levelData.name}</h2>
+                    <div class="flow-container">
+                        <div style="background: white; padding: 20px; border-radius: 12px;">
+                            <p>${levelData.overview}</p>
+                        </div>
+                    </div>
+                `;
+                flowDiagram.classList.add('visible');
+                return;
+            }
+            
+            // Build career progression from parent role levels
+            const careerLevelsHTML = parentRole.levels.map((level, index) => {
+                const isCurrent = level.title === levelData.name;
+                return `
+                    <div>
+                        ${index > 0 ? '<div class="arrow">↓</div>' : ''}
+                        <div class="flow-node ${isCurrent ? 'center' : ''}" style="border-color: ${color}">
+                            <h4>${level.title}</h4>
+                            ${isCurrent ? '<p style="color: #7ea67e; font-weight: bold;">← You are here</p>' : ''}
+                            <p>${level.summary}</p>
+                            <p style="font-size: 11px; color: #659bb0; margin-top: 8px;">${level.typical_experience}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Get related roles from current level
+            const relatedRolesHTML = levelData.related_roles && levelData.related_roles.length > 0 ? 
+                levelData.related_roles.slice(0, 6).map(relatedName => {
+                    // Try to find the node data
+                    const relatedNode = allNodesData.find(n => n.id === relatedName || n.name === relatedName);
+                    if (relatedNode) {
+                        const relatedColor = '#' + workStyleColors[relatedNode.work_style].toString(16).padStart(6, '0');
+                        return `
+                            <div class="flow-node" style="border-color: ${relatedColor}">
+                                <h4>${relatedName}</h4>
+                                <p><strong>Work Style:</strong> ${relatedNode.work_style}</p>
+                                ${relatedNode.overview ? `<p>${relatedNode.overview.substring(0, 100)}...</p>` : ''}
+                            </div>
+                        `;
+                    }
+                    return `
+                        <div class="flow-node" style="border-color: #8b8b8b">
+                            <h4>${relatedName}</h4>
+                        </div>
+                    `;
+                }).join('') : '';
+            
+            // Get progression paths from current level
+            const progressionHTML = levelData.progresses_to && levelData.progresses_to.length > 0 ?
+                levelData.progresses_to.map(nextTitle => {
+                    const nextNode = allNodesData.find(n => n.id === nextTitle);
+                    if (nextNode) {
+                        const nextColor = '#' + workStyleColors[nextNode.work_style].toString(16).padStart(6, '0');
+                        return `
+                            <div class="flow-node" style="border-color: ${nextColor}">
+                                <h4>${nextTitle}</h4>
+                                <p>${nextNode.overview}</p>
+                            </div>
+                        `;
+                    }
+                    return '';
+                }).join('') : '';
+            
+            flowContent.innerHTML = `
+                <h2>${parentRole.name} - Career Pathway</h2>
+                <p style="text-align: center; color: #659bb0; font-size: 14px; margin-bottom: 20px;">Currently viewing: <strong>${levelData.name}</strong></p>
+                
+                <div class="flow-container">
+                    <div class="flow-section">
+                        <div class="flow-label">About ${parentRole.name}</div>
+                        <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <p style="color: #525252; line-height: 1.6;">${parentRole.overview}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-section">
+                        <div class="flow-label">Complete Career Progression Path</div>
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            ${careerLevelsHTML}
+                        </div>
+                    </div>
+                    
+                    ${progressionHTML ? `
+                    <div class="flow-section" style="margin-top: 40px;">
+                        <div class="flow-label">Next Steps from ${levelData.name}</div>
+                        <div class="flow-row">
+                            ${progressionHTML}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${relatedRolesHTML ? `
+                    <div class="flow-section" style="margin-top: 40px;">
+                        <div class="flow-label">Related Roles at This Level</div>
+                        <div class="flow-row">
+                            ${relatedRolesHTML}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="flow-section" style="margin-top: 40px;">
+                        <div class="flow-label">Core Requirements for ${parentRole.name}</div>
+                        <div class="flow-row">
+                            <div class="flow-node" style="border-color: #659bb0">
+                                <h4>Core Skills</h4>
+                                <ul style="text-align: left;">
+                                    ${parentRole.core_skills.map(skill => `<li>${skill}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="flow-node" style="border-color: #c9a179">
+                                <h4>Core Education</h4>
+                                <ul style="text-align: left;">
+                                    ${parentRole.core_education.map(edu => `<li>${edu}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div class="flow-node" style="border-color: #7ea67e">
+                                <h4>Work Style</h4>
+                                <p style="font-size: 16px; font-weight: bold; color: #525252; margin: 10px 0;">${parentRole.work_style}</p>
+                                <p style="font-size: 12px;">This determines your daily work environment and approach.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            flowDiagram.classList.add('visible');
+        }
+        
+        function closeFlowDiagram() {
+            document.getElementById('flowDiagram').classList.remove('visible');
+        }
+        
+        window.closeFlowDiagram = closeFlowDiagram;
+
+        // Animation loop
+        let physicsCounter = 0;
+        function animate() {
+            renderer.setAnimationLoop(() => {
+                // Run physics less frequently for performance
+                if (physicsCounter++ % 2 === 0) {
+                    updatePhysics();
+                }
+
+                controls.update();
+
+                // Standard rendering (no depth-of-field blur)
+                renderer.render(scene, camera);
+
+                // Rotate lights for dynamic effect
+                const time = Date.now() * 0.0005;
+                pointLight1.position.x = Math.sin(time) * 40;
+                pointLight1.position.z = Math.cos(time) * 40;
+                pointLight2.position.x = Math.cos(time) * 40;
+                pointLight2.position.z = Math.sin(time) * 40;
+            });
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start animation
+        animate();
+        } // End of initVisualization
+    </script>
+</body>
+</html>

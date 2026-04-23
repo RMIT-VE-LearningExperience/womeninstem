@@ -1,0 +1,2738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Planner Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+
+
+        .game-board {
+            display: flex;
+            padding: 30px;
+            padding-top: 20px;
+            gap: 30px;
+        }
+
+        .calendar-section {
+            flex: 1;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .day-header {
+            background: #f0f0f0;
+            padding: 15px 10px;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .time-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e8e8e8;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #555;
+            padding: 10px;
+        }
+
+        .time-slot {
+            background: #f9f9f9;
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .time-slot:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .time-slot:hover .slot-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .time-slot.occupied:hover .slot-tooltip {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .slot-tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            line-height: 1.4;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 50;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .slot-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+
+        .slot-tooltip-weather {
+            font-size: 1.2em;
+            margin-bottom: 4px;
+        }
+
+        .slot-tooltip-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .slot-tooltip-desc {
+            color: #ccc;
+            font-size: 0.9em;
+        }
+
+        .time-slot.drag-over {
+            border-color: #667eea;
+            background: #e8edff;
+            border-style: solid;
+            transform: scale(1.02);
+        }
+
+        .time-slot.occupied {
+            border-style: solid;
+            cursor: default;
+        }
+
+        .time-slot.crane-placed {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-color: #ff9800;
+        }
+
+        .time-slot.concrete-placed {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #2196f3;
+        }
+
+        .time-slot.carpenter-placed {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-color: #4caf50;
+        }
+
+        .time-slot.setting {
+            background: repeating-linear-gradient(
+                45deg,
+                #e3f2fd,
+                #e3f2fd 10px,
+                #bbdefb 10px,
+                #bbdefb 20px
+            );
+            border-color: #2196f3;
+        }
+
+        .weather-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .placed-worker {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .placed-label {
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .placed-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: grab;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .placed-content:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .placed-content:active {
+            cursor: grabbing;
+        }
+
+        .placed-content.dragging {
+            opacity: 0.5;
+        }
+
+        .staff-panel {
+            width: 240px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            flex-shrink: 0;
+        }
+
+        .staff-panel.drag-over {
+            border-color: #e74c3c;
+            background: #fdeaea;
+        }
+
+        .staff-panel-hint {
+            font-size: 0.75em;
+            color: #888;
+            text-align: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+        }
+
+        .help-btn {
+            display: block;
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+
+        .help-btn:hover {
+            background: #5a6fd6;
+        }
+
+        .staff-header {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .worker-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: grab;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            user-select: none;
+            -webkit-user-drag: element;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .worker-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .worker-card:active {
+            cursor: grabbing;
+        }
+
+        .worker-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .worker-card.completed {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #e8e8e8;
+        }
+
+        .worker-card.completed .completed-badge {
+            display: flex;
+        }
+
+        .completed-badge {
+            display: none;
+            position: absolute;
+            right: 10px;
+            background: #4caf50;
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .worker-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            flex-shrink: 0;
+        }
+
+        .crane-avatar {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+        }
+
+        .concrete-avatar {
+            background: linear-gradient(135deg, #2196f3, #1976d2);
+        }
+
+        .carpenter-avatar {
+            background: linear-gradient(135deg, #4caf50, #388e3c);
+        }
+
+        .worker-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 0.9em;
+            flex: 1;
+        }
+
+        .info-icon {
+            width: 24px;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            color: #666;
+            cursor: help;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .info-icon:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .info-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .worker-tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            right: 0;
+            background: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            width: 250px;
+            font-size: 0.85em;
+            line-height: 1.5;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .worker-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 8px;
+            border: 8px solid transparent;
+            border-top-color: #333;
+        }
+
+        .info-wrapper:hover .worker-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .tooltip-description {
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        .tooltip-blockers {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tooltip-blockers span {
+            color: #ff8a80;
+        }
+
+        .tooltip-ok {
+            color: #69f0ae;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 0 0 10px 10px;
+            transition: width 0.3s ease;
+        }
+
+        .crane-progress { background: linear-gradient(90deg, #ff9800, #f57c00); }
+        .concrete-progress { background: linear-gradient(90deg, #2196f3, #1976d2); }
+        .carpenter-progress { background: linear-gradient(90deg, #4caf50, #388e3c); }
+
+        /* Feedback Overlay */
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .feedback-overlay.show {
+            display: flex;
+        }
+
+        .feedback-popup {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .feedback-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+        }
+
+        .feedback-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feedback-message {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .feedback-close {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .feedback-close:hover {
+            transform: scale(1.05);
+        }
+
+        /* Success Animation */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(76, 175, 80, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            flex-direction: column;
+            color: white;
+        }
+
+        .success-overlay.show {
+            display: flex;
+        }
+
+        .success-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 0.5s ease infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-20px); }
+        }
+
+        .success-title {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .reset-btn {
+            margin-top: 30px;
+            background: white;
+            color: #4caf50;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Intro Popup */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+        }
+
+        .intro-overlay.hidden {
+            display: none;
+        }
+
+        .intro-popup {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: popIn 0.3s ease;
+        }
+
+        .carousel-container {
+            position: relative;
+            min-height: 200px;
+        }
+
+        .carousel-slide {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .carousel-slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .slide-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .slide-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .slide-description {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .carousel-dot.active {
+            background: #667eea;
+            transform: scale(1.2);
+        }
+
+        .carousel-dot.completed {
+            background: #4caf50;
+        }
+
+        .carousel-nav {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: #d0d0d0;
+            transform: scale(1.02);
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .nav-btn.primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 1200px) {
+            .game-board {
+                flex-direction: column;
+            }
+
+            .staff-panel {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .staff-header {
+                width: 100%;
+            }
+
+            .help-btn {
+                width: auto;
+                flex: 1;
+            }
+
+            .staff-panel-hint {
+                flex: 1;
+                margin-bottom: 0;
+            }
+
+            .worker-card {
+                flex: 1;
+                min-width: 180px;
+                margin-bottom: 0;
+            }
+
+            .worker-tooltip {
+                bottom: auto;
+                top: calc(100% + 10px);
+                right: 0;
+            }
+
+            .worker-tooltip::after {
+                top: auto;
+                bottom: 100%;
+                border-top-color: transparent;
+                border-bottom-color: #333;
+            }
+        }
+
+        /* Feedback Button */
+        .feedback-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feedback-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .feedback-badge {
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        /* Comment Overlay */
+        .comment-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1003;
+            padding: 20px;
+        }
+
+        .comment-overlay.show {
+            display: flex;
+        }
+
+        .comment-popup {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: popIn 0.3s ease;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .comment-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .close-comment {
+            background: #e0e0e0;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3em;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .close-comment:hover {
+            background: #d0d0d0;
+            transform: rotate(90deg);
+        }
+
+        .comment-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .comment-tab {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .comment-tab:hover {
+            color: #667eea;
+        }
+
+        .comment-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .comment-section {
+            display: none;
+        }
+
+        .comment-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-hint {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comment-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .comment-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .comment-type-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .comment-type-badge.bug {
+            background: #ff4757;
+        }
+
+        .comment-type-badge.suggestion {
+            background: #ffa502;
+        }
+
+        .comment-type-badge.general {
+            background: #667eea;
+        }
+
+        .comment-date {
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .comment-text {
+            color: #555;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .no-comments {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .no-comments-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .export-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+
+        .export-btn:hover {
+            background: #45a049;
+            transform: scale(1.02);
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-board">
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div></div>
+                    <div class="day-header">Day 1</div>
+                    <div class="day-header">Day 2</div>
+                    <div class="day-header">Day 3</div>
+                    <div class="day-header">Day 4</div>
+                    <div class="day-header">Day 5</div>
+                </div>
+
+                <div class="calendar-grid">
+                    <!-- Morning Row -->
+                    <div class="time-label">AM</div>
+                    <div class="time-slot" data-day="1" data-slot="0">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="2" data-slot="0">
+                        <div class="weather-icon">💨</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">💨</div>
+                            <div class="slot-tooltip-name">High Winds</div>
+                            <div class="slot-tooltip-desc">Strong gusts expected</div>
+                            
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="3" data-slot="0">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="4" data-slot="0">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="5" data-slot="0">
+                        <div class="weather-icon">🌧️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">🌧️</div>
+                            <div class="slot-tooltip-name">Rain</div>
+                            <div class="slot-tooltip-desc">Wet conditions throughout</div>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Midday Row -->
+                    <div class="time-label">Midday</div>
+                    <div class="time-slot" data-day="1" data-slot="1">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="2" data-slot="1">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="3" data-slot="1">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="4" data-slot="1">
+                        <div class="weather-icon">⚡</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">⚡</div>
+                            <div class="slot-tooltip-name">Thunderstorm</div>
+                            <div class="slot-tooltip-desc">Lightning and heavy rain</div>
+                            
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="5" data-slot="1">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+
+                    <!-- Afternoon Row -->
+                    <div class="time-label">PM</div>
+                    <div class="time-slot" data-day="1" data-slot="2">
+                        <div class="weather-icon">🌧️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">🌧️</div>
+                            <div class="slot-tooltip-name">Rain</div>
+                            <div class="slot-tooltip-desc">Wet conditions throughout</div>
+                            
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="2" data-slot="2">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="3" data-slot="2">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="4" data-slot="2">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="5" data-slot="2">
+                        <div class="weather-icon">☀️</div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather">☀️</div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="staff-panel">
+                <div class="staff-header">👷 STAFF</div>
+                <button class="help-btn" onclick="showRules()">📋 View Rules</button>
+                <div class="staff-panel-hint">💡 Drag workers here to remove from calendar</div>
+
+                <div class="worker-card" draggable="true" data-worker="crane">
+                    <div class="worker-avatar crane-avatar">🏗️</div>
+                    <div class="worker-name">CRANE OPERATOR</div>
+                    <div class="info-wrapper">
+                        <div class="info-icon">ℹ️</div>
+                        <div class="worker-tooltip">
+                            <div class="tooltip-title">Crane Operator</div>
+                            <div class="tooltip-description">I operate cranes to lift and position heavy materials. I need clear skies to work safely!</div>
+                            <div class="tooltip-blockers">
+                                <span>❌ Can't work in:</span> 💨 🌧️ ⚡
+                            </div>
+                        </div>
+                    </div>
+                    <div class="completed-badge">✓ Done</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill crane-progress" id="crane-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="worker-card" draggable="true" data-worker="concrete">
+                    <div class="worker-avatar concrete-avatar">🧱</div>
+                    <div class="worker-name">CONCRETER</div>
+                    <div class="info-wrapper">
+                        <div class="info-icon">ℹ️</div>
+                        <div class="worker-tooltip">
+                            <div class="tooltip-title">Concreter</div>
+                            <div class="tooltip-description">I pour and finish concrete foundations. I need a full day to pour, plus another day for it to set!</div>
+                            <div class="tooltip-blockers">
+                                <span>❌ Can't work in:</span> 💨 🌧️
+                            </div>
+                        </div>
+                    </div>
+                    <div class="completed-badge">✓ Done</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill concrete-progress" id="concrete-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="worker-card" draggable="true" data-worker="carpenter">
+                    <div class="worker-avatar carpenter-avatar">🪚</div>
+                    <div class="worker-name">CARPENTER</div>
+                    <div class="info-wrapper">
+                        <div class="info-icon">ℹ️</div>
+                        <div class="worker-tooltip">
+                            <div class="tooltip-title">Carpenter</div>
+                            <div class="tooltip-description">I build wooden structures and frameworks. I can work in any weather once the foundation is ready!</div>
+                            <div class="tooltip-ok">✓ Can work in any weather</div>
+                        </div>
+                    </div>
+                    <div class="completed-badge">✓ Done</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill carpenter-progress" id="carpenter-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intro Popup (Simple Welcome) -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="intro-popup">
+            <div class="slide-icon">🏗️</div>
+            <div class="slide-title">Welcome, Construction Manager!</div>
+            <div class="slide-description" style="margin-bottom: 30px;">
+                You're in charge of scheduling tradies for a construction project.<br><br>
+                Your goal: Schedule the <strong>Crane Operator</strong>, <strong>Concreter</strong>, and <strong>Carpenter</strong> to complete the job on time while working around the weather.
+            </div>
+            <button class="nav-btn primary" onclick="startGame()" style="width: 100%;">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Rules Popup (Detailed Carousel) -->
+    <div class="intro-overlay hidden" id="rulesOverlay">
+        <div class="intro-popup">
+            <div class="carousel-container">
+                <!-- Slide 0: Welcome -->
+                <div class="carousel-slide active" data-slide="0">
+                    <div class="slide-icon">🏗️</div>
+                    <div class="slide-title">Construction Planner</div>
+                    <div class="slide-description">Welcome! You're the Construction Manager. Schedule your tradies wisely to complete the project on time.</div>
+                </div>
+
+                <!-- Slide 1: Time Slots -->
+                <div class="carousel-slide" data-slide="1">
+                    <div class="slide-icon">📋</div>
+                    <div class="slide-title">Time Slots</div>
+                    <div class="slide-description">Each trade needs <strong>3 time slots</strong> to complete their work. Drag workers from the staff panel to the calendar.</div>
+                </div>
+
+                <!-- Slide 2: Work Order -->
+                <div class="carousel-slide" data-slide="2">
+                    <div class="slide-icon">🔄</div>
+                    <div class="slide-title">Work Order</div>
+                    <div class="slide-description">Trades must work in order:<br><strong>Crane Operator → Concreter → Carpenter</strong><br>Each trade must finish before the next can start.</div>
+                </div>
+
+                <!-- Slide 3: Concreter Rules -->
+                <div class="carousel-slide" data-slide="3">
+                    <div class="slide-icon">🧱</div>
+                    <div class="slide-title">Concreter Special Rules</div>
+                    <div class="slide-description">The Concreter must work a <strong>full day</strong> (all 3 slots: AM, Midday, PM). The concrete then needs the <strong>next day to set</strong> before the Carpenter can start.</div>
+                </div>
+
+                <!-- Slide 4: Weather -->
+                <div class="carousel-slide" data-slide="4">
+                    <div class="slide-icon">🌤️</div>
+                    <div class="slide-title">Weather Conditions</div>
+                    <div class="slide-description">Check the weather! <strong>Crane</strong> can't work in 💨🌧️⚡<br><strong>Concreter</strong> can't work in 💨🌧️<br><strong>Carpenter</strong> works in any weather.</div>
+                </div>
+            </div>
+
+            <div class="carousel-dots">
+                <div class="carousel-dot active" data-dot="0"></div>
+                <div class="carousel-dot" data-dot="1"></div>
+                <div class="carousel-dot" data-dot="2"></div>
+                <div class="carousel-dot" data-dot="3"></div>
+                <div class="carousel-dot" data-dot="4"></div>
+            </div>
+
+            <div class="carousel-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()" disabled>Back</button>
+                <button class="nav-btn primary" id="nextBtn" onclick="nextSlide()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Popup -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-popup">
+            <div class="feedback-avatar" id="feedbackAvatar">🏗️</div>
+            <div class="feedback-title" id="feedbackTitle">Can't Work Here!</div>
+            <div class="feedback-message" id="feedbackMessage">Message goes here</div>
+            <button class="feedback-close" onclick="closeFeedback()">Got it!</button>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Project Complete!</div>
+        <div class="success-message">Great job scheduling all the tradies!</div>
+        <button class="reset-btn" onclick="resetGame()">Play Again</button>
+    </div>
+
+    <!-- Feedback Button -->
+    <button class="feedback-btn" onclick="openCommentSection()">
+        💬 Give Feedback
+        <span class="feedback-badge" id="feedbackCount">0</span>
+    </button>
+
+    <!-- Comment Overlay -->
+    <div class="comment-overlay" id="commentOverlay">
+        <div class="comment-popup">
+            <div class="comment-header">
+                <div class="comment-title">Feedback & Comments</div>
+                <button class="close-comment" onclick="closeCommentSection()">×</button>
+            </div>
+
+            <div class="comment-tabs">
+                <button class="comment-tab active" onclick="switchTab('submit')">Submit Feedback</button>
+                <button class="comment-tab" onclick="switchTab('view')">View All Feedback</button>
+            </div>
+
+            <!-- Submit Feedback Section -->
+            <div class="comment-section active" id="submitSection">
+                <div id="successMsg" style="display: none;" class="success-message">
+                    Thank you for your feedback! Your input helps improve the game.
+                </div>
+
+                <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                    <div class="form-group">
+                        <label class="form-label">Your Name (Optional)</label>
+                        <input type="text" class="form-input" id="userName" placeholder="Enter your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email (Optional)</label>
+                        <input type="email" class="form-input" id="userEmail" placeholder="your.email@example.com">
+                        <div class="form-hint">We'll only use this to follow up if needed</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Feedback Type *</label>
+                        <select class="form-select" id="feedbackType" required>
+                            <option value="">Select type...</option>
+                            <option value="bug">🐛 Bug Report - Something isn't working</option>
+                            <option value="suggestion">💡 Suggestion - Idea for improvement</option>
+                            <option value="general">💬 General Feedback - Other comments</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your Feedback *</label>
+                        <textarea class="form-textarea" id="feedbackText" required
+                            placeholder="Tell us what's working, what's not working, or share your suggestions..."></textarea>
+                        <div class="form-hint">Be as detailed as possible to help us improve</div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Submit Feedback</button>
+                </form>
+            </div>
+
+            <!-- View Feedback Section -->
+            <div class="comment-section" id="viewSection">
+                <button class="export-btn" onclick="exportFeedback()">📥 Export All Feedback (JSON)</button>
+                <div id="commentsList" class="comments-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxux22xvJ-aSosjsKRq3ULLFpNhAJ18uA",
+            authDomain: "feedback-form-6714d.firebaseapp.com",
+            projectId: "feedback-form-6714d",
+            storageBucket: "feedback-form-6714d.firebasestorage.app",
+            messagingSenderId: "590459135038",
+            appId: "1:590459135038:web:4b4ab8d6ef2b85ab335d6f",
+            measurementId: "G-ZHQ9K3DGR0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Make Firebase functions available globally
+        window.firebaseDB = db;
+        window.firebaseCollection = collection;
+        window.firebaseAddDoc = addDoc;
+        window.firebaseGetDocs = getDocs;
+        window.firebaseQuery = query;
+        window.firebaseOrderBy = orderBy;
+
+        console.log('Firebase initialized successfully!');
+    </script>
+
+    <script>
+        // Game state
+        const gameState = {
+            schedule: {},
+            craneSlotsUsed: 0,
+            concreteSlotsUsed: 0,
+            carpenterSlotsUsed: 0,
+            concreteDay: null,
+            settingDay: null
+        };
+
+        // Worker data
+        const workers = {
+            crane: {
+                name: 'Crane Operator',
+                avatar: '🏗️',
+                color: '#ff9800',
+                blockedWeather: ['💨', '🌧️', '⚡'],
+                slotsNeeded: 3
+            },
+            concrete: {
+                name: 'Concreter',
+                avatar: '🧱',
+                color: '#2196f3',
+                blockedWeather: ['💨', '🌧️'],
+                slotsNeeded: 3,
+                needsFullDay: true
+            },
+            carpenter: {
+                name: 'Carpenter',
+                avatar: '🪚',
+                color: '#4caf50',
+                blockedWeather: [],
+                slotsNeeded: 3
+            }
+        };
+
+        // Weather data for each slot
+        const weatherData = {
+            '1-0': '☀️', '1-1': '☀️', '1-2': '🌧️',
+            '2-0': '💨', '2-1': '☀️', '2-2': '☀️',
+            '3-0': '☀️', '3-1': '☀️', '3-2': '☀️',
+            '4-0': '☀️', '4-1': '⚡', '4-2': '☀️',
+            '5-0': '🌧️', '5-1': '☀️', '5-2': '☀️'
+        };
+
+        let draggedWorker = null;
+        let dragSourceSlot = null; // Track where we're dragging from
+
+        // Initialize drag and drop
+        function initDragAndDrop() {
+            const workerCards = document.querySelectorAll('.worker-card');
+            const timeSlots = document.querySelectorAll('.time-slot');
+
+            // Worker card drag events
+            workerCards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Time slot drop events
+            timeSlots.forEach(slot => {
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('dragenter', handleDragEnter);
+                slot.addEventListener('dragleave', handleDragLeave);
+                slot.addEventListener('drop', handleDrop);
+            });
+
+            // Allow dropping back to staff panel to remove
+            const staffPanel = document.querySelector('.staff-panel');
+            staffPanel.addEventListener('dragover', handleDragOver);
+            staffPanel.addEventListener('dragenter', handleStaffPanelDragEnter);
+            staffPanel.addEventListener('dragleave', handleStaffPanelDragLeave);
+            staffPanel.addEventListener('drop', handleStaffPanelDrop);
+        }
+
+        function handleStaffPanelDragEnter(e) {
+            e.preventDefault();
+            if (dragSourceSlot) {
+                e.currentTarget.classList.add('drag-over');
+            }
+        }
+
+        function handleStaffPanelDragLeave(e) {
+            e.preventDefault();
+            const staffPanel = e.currentTarget;
+            const rect = staffPanel.getBoundingClientRect();
+            if (e.clientX < rect.left || e.clientX >= rect.right || 
+                e.clientY < rect.top || e.clientY >= rect.bottom) {
+                staffPanel.classList.remove('drag-over');
+            }
+        }
+
+        function handleDragStart(e) {
+            const card = e.target.closest('.worker-card');
+            const placedContent = e.target.closest('.placed-content');
+            
+            // Dragging from staff panel
+            if (card && !placedContent) {
+                if (card.classList.contains('completed')) {
+                    e.preventDefault();
+                    return;
+                }
+
+                draggedWorker = card.dataset.worker;
+                dragSourceSlot = null;
+                card.classList.add('dragging');
+            }
+            // Dragging from a placed slot
+            else if (placedContent) {
+                const slot = placedContent.closest('.time-slot');
+                draggedWorker = placedContent.dataset.worker;
+                dragSourceSlot = slot;
+                placedContent.classList.add('dragging');
+            }
+            
+            if (!draggedWorker) return;
+            
+            // Set drag data
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedWorker);
+        }
+
+        function handleDragEnd(e) {
+            const card = e.target.closest('.worker-card');
+            const placedContent = e.target.closest('.placed-content');
+            
+            if (card) {
+                card.classList.remove('dragging');
+            }
+            if (placedContent) {
+                placedContent.classList.remove('dragging');
+            }
+            
+            draggedWorker = null;
+            dragSourceSlot = null;
+            
+            // Remove drag-over class from all slots
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('drag-over');
+            });
+            
+            // Remove drag-over from staff panel
+            document.querySelector('.staff-panel').classList.remove('drag-over');
+        }
+
+        function handleStaffPanelDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const staffPanel = document.querySelector('.staff-panel');
+            staffPanel.classList.remove('drag-over');
+            
+            // Only process if dragging from a slot
+            if (!dragSourceSlot) return;
+            
+            const workerType = e.dataTransfer.getData('text/plain') || draggedWorker;
+            if (!workerType) return;
+            
+            removeWorkerFromSlot(workerType, dragSourceSlot);
+        }
+
+        function removeWorkerFromSlot(workerType, slot) {
+            const day = parseInt(slot.dataset.day);
+            const slotNum = parseInt(slot.dataset.slot);
+            const slotKey = `${day}-${slotNum}`;
+            
+            // Special handling for concrete (removes all 3 slots + setting day)
+            if (workerType === 'concrete') {
+                // Remove all concrete slots
+                for (let s = 0; s < 3; s++) {
+                    const key = `${gameState.concreteDay}-${s}`;
+                    delete gameState.schedule[key];
+                    
+                    const targetSlot = document.querySelector(`.time-slot[data-day="${gameState.concreteDay}"][data-slot="${s}"]`);
+                    resetSlotAppearance(targetSlot);
+                }
+                
+                // Remove setting day markers
+                for (let s = 0; s < 3; s++) {
+                    const key = `${gameState.settingDay}-${s}`;
+                    delete gameState.schedule[key];
+                    
+                    const settingSlot = document.querySelector(`.time-slot[data-day="${gameState.settingDay}"][data-slot="${s}"]`);
+                    resetSlotAppearance(settingSlot);
+                }
+                
+                gameState.concreteSlotsUsed = 0;
+                gameState.concreteDay = null;
+                gameState.settingDay = null;
+                updateProgress('concrete', 0);
+                
+                // Re-enable the worker card
+                const card = document.querySelector('.worker-card[data-worker="concrete"]');
+                card.classList.remove('completed');
+                card.setAttribute('draggable', 'true');
+                
+                return;
+            }
+            
+            // For crane and carpenter - can freely remove
+            // Normal removal for crane and carpenter
+            delete gameState.schedule[slotKey];
+            resetSlotAppearance(slot);
+            
+            if (workerType === 'crane') {
+                gameState.craneSlotsUsed--;
+                updateProgress('crane', (gameState.craneSlotsUsed / 3) * 100);
+                
+                // Re-enable card if not complete
+                if (gameState.craneSlotsUsed < 3) {
+                    const card = document.querySelector('.worker-card[data-worker="crane"]');
+                    card.classList.remove('completed');
+                    card.setAttribute('draggable', 'true');
+                }
+            } else if (workerType === 'carpenter') {
+                gameState.carpenterSlotsUsed--;
+                updateProgress('carpenter', (gameState.carpenterSlotsUsed / 3) * 100);
+                
+                if (gameState.carpenterSlotsUsed < 3) {
+                    const card = document.querySelector('.worker-card[data-worker="carpenter"]');
+                    card.classList.remove('completed');
+                    card.setAttribute('draggable', 'true');
+                }
+            }
+        }
+
+        // Weather tooltip info
+        const weatherInfo = {
+            '☀️': { name: 'Clear Skies', desc: 'Perfect working conditions' },
+            '💨': { name: 'High Winds', desc: 'Strong gusts expected' },
+            '🌧️': { name: 'Rain', desc: 'Wet conditions throughout' },
+            '⚡': { name: 'Thunderstorm', desc: 'Lightning and heavy rain' }
+        };
+
+        function resetSlotAppearance(slot) {
+            const day = slot.dataset.day;
+            const slotNum = slot.dataset.slot;
+            const weather = weatherData[`${day}-${slotNum}`];
+            const info = weatherInfo[weather];
+            
+            slot.className = 'time-slot';
+            slot.innerHTML = `
+                <div class="weather-icon">${weather}</div>
+                <div class="slot-tooltip">
+                    <div class="slot-tooltip-weather">${weather}</div>
+                    <div class="slot-tooltip-name">${info.name}</div>
+                    <div class="slot-tooltip-desc">${info.desc}</div>
+                </div>
+            `;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const slot = e.target.closest('.time-slot');
+            if (slot && !slot.classList.contains('occupied')) {
+                slot.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const slot = e.target.closest('.time-slot');
+            if (slot) {
+                // Only remove if we're actually leaving the slot
+                const rect = slot.getBoundingClientRect();
+                if (e.clientX < rect.left || e.clientX >= rect.right || 
+                    e.clientY < rect.top || e.clientY >= rect.bottom) {
+                    slot.classList.remove('drag-over');
+                }
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const slot = e.target.closest('.time-slot');
+            if (!slot) return;
+            
+            slot.classList.remove('drag-over');
+            
+            const workerType = e.dataTransfer.getData('text/plain') || draggedWorker;
+            if (!workerType) return;
+
+            const day = parseInt(slot.dataset.day);
+            const slotNum = parseInt(slot.dataset.slot);
+            
+            // If dropping on the same slot we started from, do nothing
+            if (dragSourceSlot === slot) return;
+            
+            // If we're moving from another slot, handle it as a move
+            if (dragSourceSlot) {
+                // Store source info before removal
+                const sourceDay = parseInt(dragSourceSlot.dataset.day);
+                const sourceSlotNum = parseInt(dragSourceSlot.dataset.slot);
+
+                // For concrete, we can't move individual slots
+                if (workerType === 'concrete') {
+                    showFeedback('concrete', "Concrete work is a full-day job! Drag me back to the staff panel to reschedule the entire day.");
+                    return;
+                }
+
+                // Try to place in new slot first (validates the move)
+                const canPlace = validatePlacement(workerType, day, slotNum, slot, true, dragSourceSlot);
+                if (!canPlace) return;
+
+                // Remove from source
+                const sourceKey = `${sourceDay}-${sourceSlotNum}`;
+                delete gameState.schedule[sourceKey];
+                resetSlotAppearance(dragSourceSlot);
+
+                // Place in new slot (don't increment counter since we're moving)
+                const slotKey = `${day}-${slotNum}`;
+                gameState.schedule[slotKey] = workerType;
+                placeWorkerInSlot(slot, workerType);
+            } else {
+                // Normal placement from staff panel
+                attemptPlacement(workerType, day, slotNum, slot);
+            }
+        }
+
+        // Validation without side effects (for move operations)
+        function validatePlacement(workerType, day, slotNum, slotElement, isMove = false, sourceSlot = null) {
+            const worker = workers[workerType];
+            const slotKey = `${day}-${slotNum}`;
+            const weather = weatherData[slotKey];
+
+            // Check if slot is occupied
+            if (gameState.schedule[slotKey]) {
+                showFeedback(workerType, "This slot is already taken! Choose an empty slot.");
+                return false;
+            }
+
+            // Check weather
+            if (worker.blockedWeather.includes(weather)) {
+                const weatherNames = {
+                    '💨': 'high winds',
+                    '🌧️': 'rain',
+                    '⚡': 'storms'
+                };
+                showFeedback(workerType, `I can't work in ${weatherNames[weather]}! It's too dangerous. Please find me a slot with better weather.`, "🌤️ Weather blockers: Crane can't work in 💨🌧️⚡ | Concreter can't work in 💨🌧️");
+                return false;
+            }
+
+            // Check timeline rules for crane: must be before concrete day
+            if (workerType === 'crane' && gameState.concreteDay !== null) {
+                if (day >= gameState.concreteDay) {
+                    showFeedback(workerType, `I need to work before Day ${gameState.concreteDay} when the Concreter starts!`, "🔄 Work Order: Crane Operator → Concreter → Carpenter");
+                    return false;
+                }
+            }
+
+            // Check timeline rules for carpenter: must be after setting day
+            if (workerType === 'carpenter' && gameState.settingDay !== null) {
+                if (day <= gameState.settingDay) {
+                    showFeedback(workerType, `I can't work on Day ${day} - I need to work after Day ${gameState.settingDay} when the concrete finishes setting!`, "🧱 Concreter needs a full day to pour + the next day for concrete to set.");
+                    return false;
+                }
+            }
+
+            // For crane moves: Check if this move leaves room for concrete and carpenter
+            // Only check if concrete is NOT already placed
+            if (workerType === 'crane' && isMove && gameState.concreteDay === null && sourceSlot) {
+                // Create simulated schedule: remove from source, add to target
+                const sourceKey = `${sourceSlot.dataset.day}-${sourceSlot.dataset.slot}`;
+                const simulatedSchedule = {};
+
+                // Copy current schedule except the source slot
+                for (const [key, value] of Object.entries(gameState.schedule)) {
+                    if (key !== sourceKey) {
+                        simulatedSchedule[key] = value;
+                    }
+                }
+
+                // Add target slot to simulation
+                simulatedSchedule[slotKey] = 'crane';
+
+                // Check if there's still a valid day for concrete
+                const validConcreteDays = findValidConcreteDays(simulatedSchedule);
+                if (validConcreteDays.length === 0) {
+                    showFeedback(workerType, "If I move here, there won't be a full day left with good weather for the Concreter! Choose a different slot.", "🔄 Remember: Concreter needs a full day (AM, Midday, PM) with good weather, plus the next day for setting.");
+                    return false;
+                }
+
+                // Check if there are enough slots for carpenter after earliest concrete day
+                const earliestConcreteDay = Math.min(...validConcreteDays);
+                const carpenterSlotsAvailable = countCarpenterSlotsAfterDay(earliestConcreteDay + 1, simulatedSchedule);
+                if (carpenterSlotsAvailable < 3) {
+                    showFeedback(workerType, "If I move here, there won't be enough slots left for the Carpenter after the concrete sets! Choose a different slot.", "🔄 Work Order: Crane → Concreter (full day + setting) → Carpenter (needs 3 slots)");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function attemptPlacement(workerType, day, slotNum, slotElement) {
+            const worker = workers[workerType];
+            const slotKey = `${day}-${slotNum}`;
+            const weather = weatherData[slotKey];
+
+            // Check if slot is occupied
+            if (gameState.schedule[slotKey]) {
+                showFeedback(workerType, "This slot is already taken! Choose an empty slot.");
+                return;
+            }
+
+            // Check work order - but based on TIMELINE, not drag order
+            // Concreter: need 3 valid crane slots available BEFORE this day
+            if (workerType === 'concrete') {
+                const craneSlotsBeforeDay = countAvailableCraneSlotsBeforeDay(day);
+                const placedCraneSlotsBeforeDay = countPlacedCraneSlotsBeforeDay(day);
+                
+                if (placedCraneSlotsBeforeDay + craneSlotsBeforeDay < 3) {
+                    showFeedback(workerType, `There aren't enough slots before Day ${day} for the Crane Operator to finish their work first!`, "🔄 Work Order: Crane Operator → Concreter → Carpenter");
+                    return;
+                }
+            }
+
+            // Carpenter: if concrete is placed, must be after setting day
+            // If concrete not placed, must leave room for concrete + setting before this slot
+            if (workerType === 'carpenter') {
+                if (gameState.concreteDay !== null) {
+                    // Concrete is placed - carpenter must work after setting day
+                    if (day <= gameState.settingDay) {
+                        showFeedback(workerType, `I can't work on Day ${day} - the concrete is still setting! I need to work on Day ${gameState.settingDay + 1} or later.`, "🧱 Concreter needs a full day to pour + the next day for concrete to set.");
+                        return;
+                    }
+                } else {
+                    // Concrete not placed yet - check if there's room for concrete + setting before this slot
+                    // Need: at least one valid concrete day where (concrete day + 1 setting day) < carpenter day
+                    // And enough crane slots before that concrete day
+                    const validConcreteDaysBeforeCarpenter = findValidConcreteDaysBeforeDay(day);
+                    if (validConcreteDaysBeforeCarpenter.length === 0) {
+                        showFeedback(workerType, `If I work on Day ${day}, there won't be room for the Concreter to pour and let the concrete set before I start!`, "🔄 Work Order: Crane → Concreter (full day + setting) → Carpenter");
+                        return;
+                    }
+                }
+            }
+
+            // Check if worker already completed
+            if (workerType === 'crane' && gameState.craneSlotsUsed >= 3) {
+                showFeedback(workerType, "I've already completed my 3 shifts! Time for the next trade.");
+                return;
+            }
+
+            if (workerType === 'concrete' && gameState.concreteSlotsUsed >= 3) {
+                showFeedback(workerType, "I've already poured all the concrete! Now we wait for it to set.");
+                return;
+            }
+
+            if (workerType === 'carpenter' && gameState.carpenterSlotsUsed >= 3) {
+                showFeedback(workerType, "I've finished all my work! The project is complete.");
+                return;
+            }
+
+            // Check weather for crane and concrete
+            if (worker.blockedWeather.includes(weather)) {
+                const weatherNames = {
+                    '💨': 'high winds',
+                    '🌧️': 'rain',
+                    '⚡': 'storms'
+                };
+                showFeedback(workerType, `I can't work in ${weatherNames[weather]}! It's too dangerous. Please find me a slot with better weather.`, "🌤️ Weather blockers: Crane can't work in 💨🌧️⚡ | Concreter can't work in 💨🌧️");
+                return;
+            }
+
+            // Special concrete rules
+            if (workerType === 'concrete') {
+                // Check if this is the first concrete slot
+                if (gameState.concreteSlotsUsed === 0) {
+                    // Must be morning slot (slot 0) to fit a full day
+                    if (slotNum !== 0) {
+                        showFeedback(workerType, "I need to start in the morning! Concrete work takes a full day - I need all 3 slots (AM, Midday, PM) on the same day.", "🧱 Concreter needs a full day to pour + the next day for concrete to set.");
+                        return;
+                    }
+                    
+                    // Check if all 3 slots on this day are available
+                    for (let s = 0; s < 3; s++) {
+                        const key = `${day}-${s}`;
+                        if (gameState.schedule[key]) {
+                            const slotNames = ['morning', 'midday', 'afternoon'];
+                            showFeedback(workerType, `I can't work on Day ${day} - the ${slotNames[s]} slot is already taken! I need all 3 slots free for a full day of work.`, "🧱 Concreter needs a full day to pour + the next day for concrete to set.");
+                            return;
+                        }
+                    }
+                    
+                    // Check if all 3 slots on this day have good weather
+                    const dayWeather = [
+                        weatherData[`${day}-0`],
+                        weatherData[`${day}-1`],
+                        weatherData[`${day}-2`]
+                    ];
+                    
+                    for (let i = 0; i < dayWeather.length; i++) {
+                        if (worker.blockedWeather.includes(dayWeather[i])) {
+                            const weatherNames = { '💨': 'high winds', '🌧️': 'rain' };
+                            const slotNames = ['morning', 'midday', 'afternoon'];
+                            showFeedback(workerType, `I can't work on Day ${day} - there's ${weatherNames[dayWeather[i]]} in the ${slotNames[i]}! I need a full day with good weather.`, "🌤️ Weather blockers: Crane can't work in 💨🌧️⚡ | Concreter can't work in 💨🌧️");
+                            return;
+                        }
+                    }
+
+                    // Check if the next day is available for setting
+                    if (day >= 5) {
+                        showFeedback(workerType, "I need Day 5 at the latest for pouring, but there's no Day 6 for the concrete to set! Choose an earlier day.", "🧱 Concreter needs a full day to pour + the next day for concrete to set.");
+                        return;
+                    }
+
+                    // Check if all 3 slots on the setting day are available
+                    for (let s = 0; s < 3; s++) {
+                        const key = `${day + 1}-${s}`;
+                        if (gameState.schedule[key]) {
+                            const slotNames = ['morning', 'midday', 'afternoon'];
+                            showFeedback(workerType, `I can't pour on Day ${day} - the concrete needs Day ${day + 1} to set, but the ${slotNames[s]} slot is already taken!`, "🧱 Concreter needs a full day to pour + the next day for concrete to set.");
+                            return;
+                        }
+                    }
+
+                    // Check if there are enough slots for carpenter after setting day
+                    // BUT: If carpenter is already placed, this requirement is satisfied
+                    if (gameState.carpenterSlotsUsed < 3) {
+                        const carpenterSlotsAvailable = countCarpenterSlotsAfterDay(day + 1);
+                        if (carpenterSlotsAvailable < 3) {
+                            showFeedback(workerType, `If I pour concrete on Day ${day}, there won't be enough slots left for the Carpenter after it sets on Day ${day + 1}! Choose an earlier day.`, "🔄 Work Order: Crane → Concreter (full day + setting) → Carpenter (needs 3 slots)");
+                            return;
+                        }
+                    }
+
+                    // Place all 3 slots at once
+                    gameState.concreteDay = day;
+                    gameState.settingDay = day + 1;
+
+                    for (let s = 0; s < 3; s++) {
+                        const key = `${day}-${s}`;
+                        gameState.schedule[key] = 'concrete';
+                        
+                        const targetSlot = document.querySelector(`.time-slot[data-day="${day}"][data-slot="${s}"]`);
+                        placeWorkerInSlot(targetSlot, 'concrete');
+                    }
+
+                    // Mark next day as setting
+                    for (let s = 0; s < 3; s++) {
+                        const key = `${day + 1}-${s}`;
+                        gameState.schedule[key] = 'setting';
+                        
+                        const settingSlot = document.querySelector(`.time-slot[data-day="${day + 1}"][data-slot="${s}"]`);
+                        markAsSettingSlot(settingSlot);
+                    }
+
+                    gameState.concreteSlotsUsed = 3;
+                    updateProgress('concrete', 100);
+                    checkCompletion();
+                    return;
+                }
+            }
+
+            // For crane: Check if this placement leaves room for concrete and carpenter
+            // Only check if concrete is NOT already placed
+            if (workerType === 'crane' && gameState.concreteDay === null && gameState.craneSlotsUsed < 2) {
+                // Simulate this slot being taken
+                const simulatedSchedule = { [slotKey]: 'crane' };
+                
+                // Check if there's still a valid day for concrete
+                const validConcreteDays = findValidConcreteDays(simulatedSchedule);
+                if (validConcreteDays.length === 0) {
+                    showFeedback(workerType, "If I work here, there won't be a full day left with good weather for the Concreter! Choose a different slot.", "🔄 Remember: Concreter needs a full day (AM, Midday, PM) with good weather, plus the next day for setting.");
+                    return;
+                }
+                
+                // Check if there are enough slots for carpenter after earliest concrete day
+                const earliestConcreteDay = Math.min(...validConcreteDays);
+                const carpenterSlotsAvailable = countCarpenterSlotsAfterDay(earliestConcreteDay + 1, simulatedSchedule);
+                if (carpenterSlotsAvailable < 3) {
+                    showFeedback(workerType, "If I work here, there won't be enough slots left for the Carpenter after the concrete sets! Choose a different slot.", "🔄 Work Order: Crane → Concreter (full day + setting) → Carpenter (needs 3 slots)");
+                    return;
+                }
+            }
+
+            // For crane: if concrete IS placed, just check we're placing before concrete day
+            if (workerType === 'crane' && gameState.concreteDay !== null) {
+                if (day >= gameState.concreteDay) {
+                    showFeedback(workerType, `I need to finish my work before Day ${gameState.concreteDay} when the Concreter starts!`, "🔄 Work Order: Crane Operator → Concreter → Carpenter");
+                    return;
+                }
+            }
+
+            // Normal placement for crane and carpenter
+            gameState.schedule[slotKey] = workerType;
+            placeWorkerInSlot(slotElement, workerType);
+
+            if (workerType === 'crane') {
+                gameState.craneSlotsUsed++;
+                updateProgress('crane', (gameState.craneSlotsUsed / 3) * 100);
+            } else if (workerType === 'carpenter') {
+                gameState.carpenterSlotsUsed++;
+                updateProgress('carpenter', (gameState.carpenterSlotsUsed / 3) * 100);
+            }
+
+            checkCompletion();
+        }
+
+        function placeWorkerInSlot(slot, workerType) {
+            const worker = workers[workerType];
+            slot.classList.add('occupied', `${workerType}-placed`);
+            slot.innerHTML = `
+                <div class="placed-content" draggable="true" data-worker="${workerType}">
+                    <div class="placed-worker">${worker.avatar}</div>
+                    <div class="placed-label">${worker.name}</div>
+                </div>
+            `;
+            
+            // Add drag events to the placed content
+            const placedContent = slot.querySelector('.placed-content');
+            placedContent.addEventListener('dragstart', handleDragStart);
+            placedContent.addEventListener('dragend', handleDragEnd);
+        }
+
+        function markAsSettingSlot(slot) {
+            slot.classList.add('occupied', 'setting');
+            slot.innerHTML = `
+                <div class="placed-worker">⏳</div>
+                <div class="placed-label">Concrete Setting</div>
+            `;
+        }
+
+        function updateProgress(workerType, percent) {
+            const progressBar = document.getElementById(`${workerType}-progress`);
+            progressBar.style.width = `${percent}%`;
+
+            if (percent >= 100) {
+                const card = document.querySelector(`.worker-card[data-worker="${workerType}"]`);
+                card.classList.add('completed');
+                card.setAttribute('draggable', 'false');
+            }
+        }
+
+        let currentSlide = 0;
+        const totalSlides = 5;
+        let gameStarted = false;
+
+        function startGame() {
+            gameStarted = true;
+            document.getElementById('introOverlay').classList.add('hidden');
+        }
+
+        function showRules() {
+            // Reset to first slide when opening rules
+            currentSlide = 0;
+            updateCarousel();
+            document.getElementById('rulesOverlay').classList.remove('hidden');
+        }
+
+        function closeRules() {
+            document.getElementById('rulesOverlay').classList.add('hidden');
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateCarousel();
+            } else {
+                closeRules();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateCarousel();
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            // Update slides
+            const slides = document.querySelectorAll('.carousel-slide');
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+
+            // Update dots
+            const dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (index < currentSlide) {
+                    dot.classList.add('completed');
+                }
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                }
+            });
+
+            // Update buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentSlide === 0;
+
+            if (currentSlide === totalSlides - 1) {
+                nextBtn.textContent = 'Close';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+        }
+
+        // Add click handlers to dots
+        document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+
+        // Helper: Find valid days for concrete (full day good weather + next day available)
+        function findValidConcreteDays(excludeSlots = {}) {
+            const validDays = [];
+            const concreteBlockers = workers.concrete.blockedWeather;
+            
+            for (let d = 1; d <= 4; d++) { // Can't do day 5, need setting day
+                let dayValid = true;
+                
+                // Check all 3 slots have good weather
+                for (let s = 0; s < 3; s++) {
+                    const weather = weatherData[`${d}-${s}`];
+                    const slotKey = `${d}-${s}`;
+                    if (concreteBlockers.includes(weather) || gameState.schedule[slotKey] || excludeSlots[slotKey]) {
+                        dayValid = false;
+                        break;
+                    }
+                }
+                
+                // Check next day is available for setting
+                if (dayValid) {
+                    for (let s = 0; s < 3; s++) {
+                        const slotKey = `${d + 1}-${s}`;
+                        if (gameState.schedule[slotKey] || excludeSlots[slotKey]) {
+                            dayValid = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if (dayValid) validDays.push(d);
+            }
+            return validDays;
+        }
+
+        // Helper: Count available slots for crane before a given day (empty + good weather)
+        function countAvailableCraneSlotsBeforeDay(beforeDay) {
+            let count = 0;
+            const craneBlockers = workers.crane.blockedWeather;
+            
+            for (let d = 1; d < beforeDay; d++) {
+                for (let s = 0; s < 3; s++) {
+                    const slotKey = `${d}-${s}`;
+                    const weather = weatherData[slotKey];
+                    // Count if slot is empty and weather is good for crane
+                    if (!gameState.schedule[slotKey] && !craneBlockers.includes(weather)) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        // Helper: Count already-placed crane slots before a given day
+        function countPlacedCraneSlotsBeforeDay(beforeDay) {
+            let count = 0;
+            for (let d = 1; d < beforeDay; d++) {
+                for (let s = 0; s < 3; s++) {
+                    const slotKey = `${d}-${s}`;
+                    if (gameState.schedule[slotKey] === 'crane') {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        // Helper: Find valid concrete days that finish (including setting) before a given day
+        function findValidConcreteDaysBeforeDay(beforeDay) {
+            const validDays = [];
+            const concreteBlockers = workers.concrete.blockedWeather;
+            
+            // Concrete day D needs setting day D+1, so carpenter can start D+2
+            // So concrete day must be <= beforeDay - 2
+            const maxConcreteDay = beforeDay - 2;
+            
+            for (let d = 1; d <= Math.min(maxConcreteDay, 4); d++) {
+                let dayValid = true;
+                
+                // Check all 3 slots have good weather and are available
+                for (let s = 0; s < 3; s++) {
+                    const weather = weatherData[`${d}-${s}`];
+                    const slotKey = `${d}-${s}`;
+                    if (concreteBlockers.includes(weather) || gameState.schedule[slotKey]) {
+                        dayValid = false;
+                        break;
+                    }
+                }
+                
+                // Check next day is available for setting
+                if (dayValid) {
+                    for (let s = 0; s < 3; s++) {
+                        const slotKey = `${d + 1}-${s}`;
+                        if (gameState.schedule[slotKey]) {
+                            dayValid = false;
+                            break;
+                        }
+                    }
+                }
+                
+                // Check there are enough crane slots before this concrete day
+                if (dayValid) {
+                    const craneSlotsAvailable = countAvailableCraneSlotsBeforeDay(d) + countPlacedCraneSlotsBeforeDay(d);
+                    if (craneSlotsAvailable < 3) {
+                        dayValid = false;
+                    }
+                }
+                
+                if (dayValid) validDays.push(d);
+            }
+            return validDays;
+        }
+
+        // Helper: Count available carpenter slots after a given day
+        function countCarpenterSlotsAfterDay(afterDay, excludeSlots = {}) {
+            let count = 0;
+            for (let d = afterDay + 1; d <= 5; d++) {
+                for (let s = 0; s < 3; s++) {
+                    const slotKey = `${d}-${s}`;
+                    if (!gameState.schedule[slotKey] && !excludeSlots[slotKey]) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        function showFeedback(workerType, message, subtitle = null) {
+            const worker = workers[workerType];
+            document.getElementById('feedbackAvatar').textContent = worker.avatar;
+            document.getElementById('feedbackAvatar').style.background = `linear-gradient(135deg, ${worker.color}, ${worker.color}dd)`;
+            document.getElementById('feedbackTitle').textContent = `${worker.name} says:`;
+            document.getElementById('feedbackMessage').innerHTML = subtitle 
+                ? `${message}<br><br><small style="color:#888;">${subtitle}</small>` 
+                : message;
+            document.getElementById('feedbackOverlay').classList.add('show');
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedbackOverlay').classList.remove('show');
+        }
+
+        function checkCompletion() {
+            if (gameState.craneSlotsUsed >= 3 && 
+                gameState.concreteSlotsUsed >= 3 && 
+                gameState.carpenterSlotsUsed >= 3) {
+                
+                // Verify timeline: all crane slots before concrete, all carpenter after setting
+                let allCraneBeforeConcrete = true;
+                let allCarpenterAfterSetting = true;
+                
+                // Check crane slots are all before concrete day
+                for (let d = 1; d <= 5; d++) {
+                    for (let s = 0; s < 3; s++) {
+                        const key = `${d}-${s}`;
+                        if (gameState.schedule[key] === 'crane' && d >= gameState.concreteDay) {
+                            allCraneBeforeConcrete = false;
+                        }
+                        if (gameState.schedule[key] === 'carpenter' && d <= gameState.settingDay) {
+                            allCarpenterAfterSetting = false;
+                        }
+                    }
+                }
+                
+                if (allCraneBeforeConcrete && allCarpenterAfterSetting) {
+                    setTimeout(() => {
+                        document.getElementById('successOverlay').classList.add('show');
+                    }, 500);
+                }
+            }
+        }
+
+        function resetGame() {
+            // Reset state
+            gameState.schedule = {};
+            gameState.craneSlotsUsed = 0;
+            gameState.concreteSlotsUsed = 0;
+            gameState.carpenterSlotsUsed = 0;
+            gameState.concreteDay = null;
+            gameState.settingDay = null;
+
+            // Reset UI
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                resetSlotAppearance(slot);
+            });
+
+            document.querySelectorAll('.worker-card').forEach(card => {
+                card.classList.remove('completed');
+                card.setAttribute('draggable', 'true');
+            });
+
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                bar.style.width = '0%';
+            });
+
+            document.getElementById('successOverlay').classList.remove('show');
+        }
+
+        // Close feedback when clicking outside
+        document.getElementById('feedbackOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'feedbackOverlay') {
+                closeFeedback();
+            }
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initDragAndDrop);
+        
+        // Also initialize immediately in case DOM is already loaded
+        if (document.readyState !== 'loading') {
+            initDragAndDrop();
+        }
+
+        console.log('Construction Planner Game initialized!');
+
+        // ========== COMMENT/FEEDBACK SYSTEM ==========
+
+        // LocalStorage key for storing feedback
+        const FEEDBACK_STORAGE_KEY = 'constructionPlannerFeedback';
+
+        // Load feedback count on page load
+        async function updateFeedbackCount() {
+            let count = 0;
+
+            try {
+                // Try to get count from Firebase
+                if (window.firebaseDB) {
+                    const querySnapshot = await window.firebaseGetDocs(
+                        window.firebaseCollection(window.firebaseDB, 'feedback')
+                    );
+                    count = querySnapshot.size;
+                } else {
+                    // Fallback to localStorage
+                    const feedback = getFeedbackFromStorage();
+                    count = feedback.length;
+                }
+            } catch (error) {
+                console.error('Error getting feedback count:', error);
+                // Fallback to localStorage
+                const feedback = getFeedbackFromStorage();
+                count = feedback.length;
+            }
+
+            document.getElementById('feedbackCount').textContent = count;
+        }
+
+        // Get all feedback from localStorage
+        function getFeedbackFromStorage() {
+            const stored = localStorage.getItem(FEEDBACK_STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        // Save feedback to localStorage
+        function saveFeedbackToStorage(feedback) {
+            localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(feedback));
+        }
+
+        // Open comment section
+        function openCommentSection() {
+            document.getElementById('commentOverlay').classList.add('show');
+            switchTab('submit'); // Always start on submit tab
+            loadAndDisplayFeedback(); // Load feedback when opening
+        }
+
+        // Close comment section
+        function closeCommentSection() {
+            document.getElementById('commentOverlay').classList.remove('show');
+            // Hide success message
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        // Close when clicking outside
+        document.getElementById('commentOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'commentOverlay') {
+                closeCommentSection();
+            }
+        });
+
+        // Switch between tabs
+        function switchTab(tab) {
+            // Update tab buttons
+            const tabs = document.querySelectorAll('.comment-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+
+            // Update sections
+            const sections = document.querySelectorAll('.comment-section');
+            sections.forEach(s => s.classList.remove('active'));
+
+            if (tab === 'submit') {
+                tabs[0].classList.add('active');
+                document.getElementById('submitSection').classList.add('active');
+            } else if (tab === 'view') {
+                tabs[1].classList.add('active');
+                document.getElementById('viewSection').classList.add('active');
+                loadAndDisplayFeedback();
+            }
+        }
+
+        // Submit feedback
+        async function submitFeedback(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('userName').value.trim() || 'Anonymous';
+            const email = document.getElementById('userEmail').value.trim() || '';
+            const type = document.getElementById('feedbackType').value;
+            const text = document.getElementById('feedbackText').value.trim();
+
+            if (!type || !text) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Disable submit button while submitting
+            const submitBtn = event.target.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // Create feedback object
+            const feedback = {
+                name: name,
+                email: email,
+                type: type,
+                text: text,
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleString(),
+                userAgent: navigator.userAgent
+            };
+
+            try {
+                // Save to Firebase Firestore
+                if (window.firebaseDB) {
+                    await window.firebaseAddDoc(
+                        window.firebaseCollection(window.firebaseDB, 'feedback'),
+                        feedback
+                    );
+                    console.log('Feedback saved to Firebase!');
+                }
+
+                // Also save to localStorage as backup
+                const allFeedback = getFeedbackFromStorage();
+                allFeedback.push({
+                    id: Date.now(),
+                    ...feedback
+                });
+                saveFeedbackToStorage(allFeedback);
+
+                // Show success message
+                document.getElementById('successMsg').style.display = 'block';
+
+                // Reset form
+                document.getElementById('feedbackForm').reset();
+
+                // Update feedback count
+                await updateFeedbackCount();
+
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    document.getElementById('successMsg').style.display = 'none';
+                }, 3000);
+
+                console.log('Feedback submitted:', feedback);
+
+            } catch (error) {
+                console.error('Error submitting feedback:', error);
+                alert('There was an error submitting your feedback. It has been saved locally.');
+
+                // Save to localStorage as fallback
+                const allFeedback = getFeedbackFromStorage();
+                allFeedback.push({
+                    id: Date.now(),
+                    ...feedback
+                });
+                saveFeedbackToStorage(allFeedback);
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Feedback';
+            }
+        }
+
+        // Load and display all feedback
+        async function loadAndDisplayFeedback() {
+            const commentsList = document.getElementById('commentsList');
+
+            // Show loading state
+            commentsList.innerHTML = `
+                <div class="no-comments">
+                    <div class="no-comments-icon">⏳</div>
+                    <div>Loading feedback...</div>
+                </div>
+            `;
+
+            let feedback = [];
+
+            try {
+                // Try to load from Firebase first
+                if (window.firebaseDB) {
+                    const q = window.firebaseQuery(
+                        window.firebaseCollection(window.firebaseDB, 'feedback'),
+                        window.firebaseOrderBy('timestamp', 'desc')
+                    );
+                    const querySnapshot = await window.firebaseGetDocs(q);
+
+                    feedback = querySnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+
+                    console.log(`Loaded ${feedback.length} feedback items from Firebase`);
+                } else {
+                    // Fallback to localStorage
+                    feedback = getFeedbackFromStorage();
+                    feedback.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                }
+            } catch (error) {
+                console.error('Error loading feedback from Firebase:', error);
+                // Fallback to localStorage
+                feedback = getFeedbackFromStorage();
+                feedback.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+
+            if (feedback.length === 0) {
+                commentsList.innerHTML = `
+                    <div class="no-comments">
+                        <div class="no-comments-icon">📭</div>
+                        <div>No feedback submitted yet. Be the first to share your thoughts!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Display feedback
+            commentsList.innerHTML = feedback.map(item => `
+                <div class="comment-item">
+                    <div class="comment-meta">
+                        <span class="comment-type-badge ${item.type}">${getTypeLabel(item.type)}</span>
+                        <span class="comment-date">${item.date}</span>
+                    </div>
+                    <div class="comment-author">${item.name}${item.email ? ` (${item.email})` : ''}</div>
+                    <div class="comment-text">${escapeHtml(item.text)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Get type label
+        function getTypeLabel(type) {
+            const labels = {
+                'bug': '🐛 Bug Report',
+                'suggestion': '💡 Suggestion',
+                'general': '💬 General'
+            };
+            return labels[type] || type;
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Export feedback as JSON
+        async function exportFeedback() {
+            let feedback = [];
+
+            try {
+                // Try to export from Firebase
+                if (window.firebaseDB) {
+                    const q = window.firebaseQuery(
+                        window.firebaseCollection(window.firebaseDB, 'feedback'),
+                        window.firebaseOrderBy('timestamp', 'desc')
+                    );
+                    const querySnapshot = await window.firebaseGetDocs(q);
+
+                    feedback = querySnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                } else {
+                    feedback = getFeedbackFromStorage();
+                }
+            } catch (error) {
+                console.error('Error exporting from Firebase:', error);
+                feedback = getFeedbackFromStorage();
+            }
+
+            if (feedback.length === 0) {
+                alert('No feedback to export yet!');
+                return;
+            }
+
+            // Create export object with metadata
+            const exportData = {
+                metadata: {
+                    game: "Construction Planner Game",
+                    exportedAt: new Date().toISOString(),
+                    totalFeedback: feedback.length
+                },
+                feedback: feedback
+            };
+
+            // Create JSON blob
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+            // Create download link
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `construction-planner-feedback-${new Date().toISOString().split('T')[0]}.json`;
+
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            console.log(`Exported ${feedback.length} feedback items`);
+        }
+
+        // Initialize feedback count on page load
+        updateFeedbackCount();
+
+        // ========== END COMMENT/FEEDBACK SYSTEM ==========
+
+        console.log('Construction Planner Game initialized!');
+    </script>
+</body>
+</html>

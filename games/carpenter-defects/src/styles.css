@@ -1,0 +1,550 @@
+/**
+ * Styles for Carpenter Defects Game
+ * Mobile-first responsive design
+ */
+
+/* ===================================
+   RESET & BASE STYLES
+   =================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #333;
+    overflow-x: hidden;
+}
+
+.menu-btn {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 450;
+    width: 58px;
+    height: 58px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.menu-btn span {
+    width: 24px;
+    height: 3px;
+    border-radius: 999px;
+    background: #1f4888;
+}
+
+/* ===================================
+   HEADER
+   =================================== */
+
+.game-header {
+    background-color: #fff;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.game-title {
+    font-size: 1.5rem;
+    color: #667eea;
+    font-weight: 700;
+}
+
+.game-info {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.round-display,
+.score-display {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.home-btn {
+    background-color: #667eea;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.home-btn:hover {
+    background-color: #5568d3;
+}
+
+/* ===================================
+   PROGRESS BAR
+   =================================== */
+
+.progress-container {
+    background-color: #fff;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-outer {
+    width: 100%;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* ===================================
+   MAIN GAME AREA
+   =================================== */
+
+.game-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Frame Display */
+.frame-section {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-height: 300px;
+}
+
+.frame-container {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Briefing Section */
+.briefing-section {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.briefing-section h3 {
+    color: #667eea;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.briefing-section p {
+    color: #555;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Controls Section */
+.controls-section {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.fix-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.fix-option-btn {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+    color: #333;
+}
+
+.fix-option-btn:hover:not(:disabled) {
+    background-color: #e9ecef;
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.fix-option-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.fix-option-btn:disabled {
+    cursor: not-allowed;
+}
+
+.fix-option-btn.correct {
+    background-color: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+
+.fix-option-btn.incorrect {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+/* Feedback */
+.feedback {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-weight: 500;
+    display: none;
+    animation: slideIn 0.3s ease;
+}
+
+.feedback.correct {
+    background-color: #d4edda;
+    color: #155724;
+    border: 2px solid #28a745;
+}
+
+.feedback.incorrect {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 2px solid #dc3545;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hint Section */
+.hint-section {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.hint-btn {
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.hint-btn:hover {
+    background-color: #e0a800;
+}
+
+.hint-display {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+    color: #856404;
+    padding: 1rem;
+    border-radius: 8px;
+    display: none;
+    transition: opacity 0.5s;
+}
+
+/* Attempts Display */
+.attempts-display {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 1rem;
+    color: #666;
+}
+
+/* ===================================
+   OVERLAYS
+   =================================== */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.overlay-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.overlay-content h2 {
+    color: #667eea;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.overlay-content p {
+    color: #555;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+/* Start Screen */
+#start-screen .overlay-content {
+    max-width: 600px;
+}
+
+.start-instructions {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.start-instructions h3 {
+    color: #667eea;
+    margin-bottom: 1rem;
+}
+
+.start-instructions ul {
+    list-style-position: inside;
+    color: #555;
+    line-height: 1.8;
+}
+
+/* Round Complete */
+.round-score {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #28a745;
+    margin: 1rem 0;
+}
+
+.total-score {
+    font-size: 1.3rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* Game Complete */
+.grade {
+    font-size: 4rem;
+    font-weight: 700;
+    margin: 1rem 0;
+}
+
+.grade-message {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.final-score {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 2rem;
+}
+
+/* Buttons */
+.btn {
+    background-color: #667eea;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 0.5rem;
+}
+
+.btn:hover {
+    background-color: #5568d3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* ===================================
+   LOADING
+   =================================== */
+
+#loading {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: white;
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+
+/* Tablet and larger */
+@media (min-width: 768px) {
+    .game-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .frame-section {
+        flex: 1 1 60%;
+        min-height: 500px;
+    }
+
+    .briefing-section {
+        flex: 1 1 35%;
+    }
+
+    .controls-section {
+        flex: 1 1 100%;
+    }
+
+    .fix-options {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .fix-option-btn {
+        flex: 1;
+        max-width: 300px;
+    }
+
+    .game-title {
+        font-size: 2rem;
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .game-container {
+        gap: 1.5rem;
+        padding: 2rem;
+    }
+
+    .frame-section {
+        min-height: 600px;
+    }
+
+    .overlay-content {
+        max-width: 600px;
+    }
+
+    #start-screen .overlay-content {
+        max-width: 700px;
+    }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+    .game-title {
+        font-size: 1.2rem;
+    }
+
+    .game-info {
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .overlay-content {
+        padding: 1.5rem;
+    }
+
+    .overlay-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+}

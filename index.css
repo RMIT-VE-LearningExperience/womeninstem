@@ -1,0 +1,382 @@
+/* ===================================
+   CONSTRUCT YOUR CAREER - Main Landing
+   =================================== */
+
+/* RESET & BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.home-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 6;
+    padding: 14px 20px;
+    background: #193E75;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    align-items: center;
+    color: #ffffff;
+    flex-wrap: wrap;
+    font-weight: 600;
+}
+
+.home-footer-divider {
+    width: 2px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.6);
+    flex: 0 0 auto;
+}
+
+.home-footer img {
+    height: 36px;
+    width: auto;
+}
+
+/* ===================================
+   HERO SECTION - Full Viewport
+   =================================== */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Background image layer (blurred) */
+.hero-bg {
+    position: absolute;
+    inset: -20px;  /* Extend beyond edges to prevent blur white edges */
+    background-image: url('images/constructionsite_background.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(6px);
+    z-index: 1;
+}
+
+/* Dark gradient overlay: left-to-right */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.35) 40%,
+        rgba(0, 0, 0, 0.15) 70%,
+        rgba(0, 0, 0, 0.05) 100%
+    );
+    z-index: 2;
+}
+
+/* ===================================
+   HAMBURGER MENU
+   =================================== */
+.menu-btn {
+    position: absolute;
+    top: 26px;
+    right: 26px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 50%;
+    width: 68px;
+    height: 68px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.menu-btn span {
+    display: block;
+    width: 28px;
+    height: 4px;
+    background: #1a365d;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* ===================================
+   HERO CONTENT
+   =================================== */
+.hero-content {
+    position: relative;
+    z-index: 5;
+    padding-left: 8%;
+    max-width: 920px;
+}
+
+/* Title — line spans control per-line border radius. */
+.hero-title {
+    font-size: clamp(48px, 7vw, 90px);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 767px) {
+    .hero-title {
+        font-size: clamp(28px, 9vw, 44px);
+        line-height: 1.2;
+    }
+
+    .hero-line {
+        padding: 4px 14px 6px;
+    }
+}
+
+.hero-line {
+    display: inline-block;
+    background: #1a3a6b;
+    padding: 6px 20px 10px;
+}
+
+.hero-line-top {
+    border-radius: 20px 20px 0 0;
+}
+
+.hero-line-middle {
+    border-radius: 0;
+}
+
+.hero-line-bottom {
+    border-radius: 0 20px 20px 20px;
+}
+
+/* Subtitle */
+.hero-subtitle {
+    font-size: clamp(14px, 1.8vw, 20px);
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.7;
+    margin-bottom: 36px;
+    max-width: 480px;
+}
+
+/* ===================================
+   BUTTONS
+   =================================== */
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 18px 40px;
+    font-size: clamp(13px, 1.3vw, 16px);
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* Career Explorer - white button */
+.btn-career {
+    background: #ffffff;
+    color: #1a365d;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-career:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Mini Games - yellow/gold button */
+.btn-games {
+    background: #e8b830;
+    color: #1a365d;
+    box-shadow: 0 4px 16px rgba(232, 184, 48, 0.3);
+}
+
+.btn-games:hover {
+    background: #d4a828;
+    box-shadow: 0 8px 24px rgba(232, 184, 48, 0.4);
+}
+
+/* Yellow button (Career Explorer) */
+.btn-yellow {
+    background: #e8b830;
+    color: #1a365d;
+    box-shadow: 0 4px 16px rgba(232, 184, 48, 0.3);
+}
+
+.btn-yellow:hover {
+    background: #d4a828;
+    box-shadow: 0 8px 24px rgba(232, 184, 48, 0.4);
+}
+
+/* About button - white */
+.btn-about {
+    background: #ffffff;
+    color: #1a365d;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-about:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* ===================================
+   ANIMATIONS
+   =================================== */
+.hero-content {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-bg {
+    animation: scaleIn 1.2s ease forwards;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(1.1);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .hero-content {
+        padding-left: 6%;
+        padding-right: 6%;
+    }
+
+    .menu-btn {
+        top: 14px;
+        right: 14px;
+        width: 68px;
+        height: 68px;
+    }
+
+    .hero-subtitle br {
+        display: none;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .hero {
+        align-items: flex-end;
+        padding-bottom: 120px;
+    }
+
+    .hero-content {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .hero-title {
+        padding: 4px 0px 6px;
+        border-radius: 4px;
+        margin-bottom: 12px;
+    }
+
+    .hero-subtitle {
+        margin-bottom: 20px;
+    }
+
+    .hero-buttons {
+        flex-direction: column-reverse;
+        gap: 12px;
+        margin-bottom: 92px;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+        padding: 14px 32px;
+    }
+
+    .menu-btn {
+        top: 12px;
+        right: 12px;
+        width: 68px;
+        height: 68px;
+    }
+
+    .hero-subtitle br {
+        display: none;
+    }
+
+    .home-footer {
+        gap: 12px;
+        padding: 12px 14px;
+    }
+
+    .home-footer-divider {
+        display: none;
+    }
+
+    .home-footer img {
+        height: 30px;
+        transform: translateY(-4px);
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

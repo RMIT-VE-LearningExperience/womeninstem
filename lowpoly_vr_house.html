@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Permissions-Policy" content="xr-spatial-tracking=*, camera=*, microphone=*, geolocation=*">
+    <title>Low-Poly VR House Scene v2</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        function setupVRControllers() {
+            // Controller 1
+            const controller1 = renderer.xr.getController(0);
+            controller1.addEventListener('selectstart', onSelectStart);
+            controller1.addEventListener('selectend', onSelectEnd);
+            dolly.add(controller1);
+            vrControllers.push(controller1);
+            
+            // Controller 2
+            const controller2 = renderer.xr.getController(1);
+            controller2.addEventListener('selectstart', onSelectStart);
+            controller2.addEventListener('selectend', onSelectEnd);
+            dolly.add(controller2);
+            vrControllers.push(controller2);
+            
+            // Controller grips
+            const controllerGrip1 = renderer.xr.getControllerGrip(0);
+            dolly.add(controllerGrip1);
+            
+            const controllerGrip2 = renderer.xr.getControllerGrip(1);
+            dolly.add(controllerGrip2);
+            
+            // Add simple controller visualization
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(0, 0, -1)
+            ]);
+            
+            const line = new THREE.Line(geometry);
+            line.name = 'line';
+            line.scale.z = 5;
+            
+            controller1.add(line.clone());
+            controller2.add(line.clone());
+        }
+        
+        function onSelectStart(event) {
+            console.log('VR Controller select start');
+        }
+        
+        function onSelectEnd(event) {
+            console.log('VR Controller select end');
+        }
+        
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            color: white;
+        }
+        
+        #vrButton {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+        
+        #vrButton:hover {
+            background: #45a049;
+        }
+        
+        #vrButton:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        
+        #instructions {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 300px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        #mobileControls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: none;
+            z-index: 100;
+        }
+        
+        #joystick {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        #joystickKnob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s;
+        }
+        
+        @media (max-width: 768px) {
+            #mobileControls {
+                display: block;
+            }
+            #instructions {
+                font-size: 12px;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="ui">
+            <button id="vrButton">Enter VR</button>
+            <div id="instructions">
+                <strong>Controls:</strong><br>
+                Desktop: WASD/Arrow keys to move, Mouse to look around<br>
+                Mobile: Touch and drag to look, Use joystick to move<br>
+                VR: Use controllers or gaze to navigate
+            </div>
+        </div>
+        
+        <div id="mobileControls">
+            <div id="joystick">
+                <div id="joystickKnob"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let velocity = new THREE.Vector3();
+        let direction = new THREE.Vector3();
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        let isVRMode = false;
+        let dolly, cameraGroup;
+        let vrControllers = [];
+        
+        // Mobile controls
+        let joystickActive = false;
+        let joystickVector = new THREE.Vector2();
+        
+        // Initialize the scene
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB); // Sky blue
+            
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            // Create camera group for VR
+            cameraGroup = new THREE.Group();
+            cameraGroup.add(camera);
+            scene.add(cameraGroup);
+            
+            // Create dolly for movement
+            dolly = new THREE.Group();
+            dolly.add(cameraGroup);
+            scene.add(dolly);
+            dolly.position.set(0, 1.7, 5); // Eye level height
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.xr.enabled = true;
+            renderer.xr.setReferenceSpaceType('local-floor');
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Create the scene
+            createEnvironment();
+            createHouse();
+            createDecorations();
+            setupLighting();
+            setupControls();
+            setupVRControllers();
+            setupVR();
+            
+            console.log('Scene initialization complete - no VR checks performed');
+            
+            // Start render loop
+            renderer.setAnimationLoop(animate);
+        }
+        
+        function createEnvironment() {
+            // Ground plane
+            const groundGeometry = new THREE.PlaneGeometry(50, 50);
+            const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x4CAF50 });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // Trees
+            createTrees();
+            
+            // Stone pathway
+            createPathway();
+        }
+        
+        function createTrees() {
+            const positions = [
+                [-15, 0, -10], [15, 0, -8], [-12, 0, 8], [18, 0, 5],
+                [-20, 0, 0], [20, 0, -15], [-8, 0, 15], [12, 0, 12]
+            ];
+            
+            positions.forEach(pos => {
+                const tree = createTree();
+                tree.position.set(pos[0], pos[1], pos[2]);
+                scene.add(tree);
+            });
+        }
+        
+        function createTree() {
+            const tree = new THREE.Group();
+            
+            // Trunk
+            const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.4, 3, 8);
+            const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+            trunk.position.y = 1.5;
+            trunk.castShadow = true;
+            tree.add(trunk);
+            
+            // Leaves
+            const leavesGeometry = new THREE.ConeGeometry(2, 4, 8);
+            const leavesMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 });
+            const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+            leaves.position.y = 4.5;
+            leaves.castShadow = true;
+            tree.add(leaves);
+            
+            return tree;
+        }
+        
+        function createPathway() {
+            const pathGeometry = new THREE.PlaneGeometry(2, 12);
+            const pathMaterial = new THREE.MeshLambertMaterial({ color: 0x696969 });
+            const path = new THREE.Mesh(pathGeometry, pathMaterial);
+            path.rotation.x = -Math.PI / 2;
+            path.position.set(0, 0.01, 0);
+            scene.add(path);
+            
+            // Stone tiles
+            for (let i = 0; i < 6; i++) {
+                const stoneGeometry = new THREE.BoxGeometry(1.5, 0.1, 1.5);
+                const stoneMaterial = new THREE.MeshLambertMaterial({ color: 0x808080 });
+                const stone = new THREE.Mesh(stoneGeometry, stoneMaterial);
+                stone.position.set(
+                    Math.random() * 0.4 - 0.2,
+                    0.05,
+                    -5 + i * 2
+                );
+                stone.castShadow = true;
+                scene.add(stone);
+            }
+        }
+        
+        function createHouse() {
+            const house = new THREE.Group();
+            
+            // Main structure
+            const wallGeometry = new THREE.BoxGeometry(8, 3, 6);
+            const wallMaterial = new THREE.MeshLambertMaterial({ color: 0xF5F5DC });
+            const walls = new THREE.Mesh(wallGeometry, wallMaterial);
+            walls.position.y = 1.5;
+            walls.castShadow = true;
+            house.add(walls);
+            
+            // Roof
+            const roofGeometry = new THREE.ConeGeometry(6, 2, 4);
+            const roofMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+            roof.position.y = 4;
+            roof.rotation.y = Math.PI / 4;
+            roof.castShadow = true;
+            house.add(roof);
+            
+            // Door
+            const doorGeometry = new THREE.BoxGeometry(1.2, 2.5, 0.1);
+            const doorMaterial = new THREE.MeshLambertMaterial({ color: 0x654321 });
+            const door = new THREE.Mesh(doorGeometry, doorMaterial);
+            door.position.set(0, 1.25, 3.05);
+            house.add(door);
+            
+            // Windows
+            const windowGeometry = new THREE.BoxGeometry(1.5, 1.5, 0.1);
+            const windowMaterial = new THREE.MeshLambertMaterial({ color: 0x87CEEB });
+            
+            const window1 = new THREE.Mesh(windowGeometry, windowMaterial);
+            window1.position.set(-2.5, 2, 3.05);
+            house.add(window1);
+            
+            const window2 = new THREE.Mesh(windowGeometry, windowMaterial);
+            window2.position.set(2.5, 2, 3.05);
+            house.add(window2);
+            
+            // Side windows
+            const window3 = new THREE.Mesh(windowGeometry, windowMaterial);
+            window3.position.set(4.05, 2, 0);
+            house.add(window3);
+            
+            const window4 = new THREE.Mesh(windowGeometry, windowMaterial);
+            window4.position.set(-4.05, 2, 0);
+            house.add(window4);
+            
+            house.position.set(0, 0, -8);
+            scene.add(house);
+            
+            // Fence around the house
+            createFence();
+        }
+        
+        function createFence() {
+            const fencePositions = [
+                // Front fence
+                [-6, 0, -2], [-4, 0, -2], [-2, 0, -2], [2, 0, -2], [4, 0, -2], [6, 0, -2],
+                // Side fences
+                [-8, 0, -4], [-8, 0, -6], [-8, 0, -8], [-8, 0, -10], [-8, 0, -12],
+                [8, 0, -4], [8, 0, -6], [8, 0, -8], [8, 0, -10], [8, 0, -12],
+                // Back fence
+                [-6, 0, -14], [-4, 0, -14], [-2, 0, -14], [0, 0, -14], [2, 0, -14], [4, 0, -14], [6, 0, -14]
+            ];
+            
+            fencePositions.forEach(pos => {
+                const fencePost = createFencePost();
+                fencePost.position.set(pos[0], pos[1], pos[2]);
+                scene.add(fencePost);
+            });
+        }
+        
+        function createFencePost() {
+            const post = new THREE.Group();
+            
+            const postGeometry = new THREE.BoxGeometry(0.2, 1.5, 0.2);
+            const postMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const postMesh = new THREE.Mesh(postGeometry, postMaterial);
+            postMesh.position.y = 0.75;
+            postMesh.castShadow = true;
+            post.add(postMesh);
+            
+            // Horizontal slats
+            for (let i = 0; i < 3; i++) {
+                const slatGeometry = new THREE.BoxGeometry(1.8, 0.1, 0.1);
+                const slatMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+                const slat = new THREE.Mesh(slatGeometry, slatMaterial);
+                slat.position.y = 0.4 + i * 0.3;
+                slat.castShadow = true;
+                post.add(slat);
+            }
+            
+            return post;
+        }
+        
+        function createDecorations() {
+            // Mailbox
+            const mailbox = new THREE.Group();
+            
+            const postGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1.2, 8);
+            const postMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 });
+            const post = new THREE.Mesh(postGeometry, postMaterial);
+            post.position.y = 0.6;
+            post.castShadow = true;
+            mailbox.add(post);
+            
+            const boxGeometry = new THREE.BoxGeometry(0.6, 0.3, 0.4);
+            const boxMaterial = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
+            const box = new THREE.Mesh(boxGeometry, boxMaterial);
+            box.position.y = 1.2;
+            box.castShadow = true;
+            mailbox.add(box);
+            
+            mailbox.position.set(3, 0, -1);
+            scene.add(mailbox);
+            
+            // Bench
+            const bench = new THREE.Group();
+            
+            const seatGeometry = new THREE.BoxGeometry(2, 0.1, 0.5);
+            const seatMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const seat = new THREE.Mesh(seatGeometry, seatMaterial);
+            seat.position.y = 0.5;
+            seat.castShadow = true;
+            bench.add(seat);
+            
+            // Bench legs
+            for (let i = 0; i < 4; i++) {
+                const legGeometry = new THREE.BoxGeometry(0.1, 0.5, 0.1);
+                const legMaterial = new THREE.MeshLambertMaterial({ color: 0x654321 });
+                const leg = new THREE.Mesh(legGeometry, legMaterial);
+                leg.position.set(
+                    i < 2 ? -0.9 : 0.9,
+                    0.25,
+                    i % 2 === 0 ? -0.2 : 0.2
+                );
+                leg.castShadow = true;
+                bench.add(leg);
+            }
+            
+            bench.position.set(-5, 0, -1);
+            scene.add(bench);
+        }
+        
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            // Directional light (sun)
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 50;
+            directionalLight.shadow.camera.left = -25;
+            directionalLight.shadow.camera.right = 25;
+            directionalLight.shadow.camera.top = 25;
+            directionalLight.shadow.camera.bottom = -25;
+            scene.add(directionalLight);
+        }
+        
+        function setupControls() {
+            // Desktop controls
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mousedown', onMouseDown);
+            document.addEventListener('mouseup', onMouseUp);
+            
+            // Mobile controls
+            setupMobileControls();
+        }
+        
+        function setupMobileControls() {
+            const joystick = document.getElementById('joystick');
+            const joystickKnob = document.getElementById('joystickKnob');
+            
+            let isDragging = false;
+            let startPos = { x: 0, y: 0 };
+            
+            function getEventPos(e) {
+                return e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
+            }
+            
+            joystick.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isDragging = true;
+                const pos = getEventPos(e);
+                startPos = pos;
+                joystickActive = true;
+            });
+            
+            joystick.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                isDragging = true;
+                startPos = getEventPos(e);
+                joystickActive = true;
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const pos = getEventPos(e);
+                const deltaX = pos.x - startPos.x;
+                const deltaY = pos.y - startPos.y;
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const maxDistance = 35;
+                
+                if (distance <= maxDistance) {
+                    joystickKnob.style.transform = `translate(${deltaX - 15}px, ${deltaY - 15}px)`;
+                    joystickVector.set(deltaX / maxDistance, -deltaY / maxDistance);
+                } else {
+                    const angle = Math.atan2(deltaY, deltaX);
+                    const x = Math.cos(angle) * maxDistance;
+                    const y = Math.sin(angle) * maxDistance;
+                    joystickKnob.style.transform = `translate(${x - 15}px, ${y - 15}px)`;
+                    joystickVector.set(Math.cos(angle), -Math.sin(angle));
+                }
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const pos = getEventPos(e);
+                const deltaX = pos.x - startPos.x;
+                const deltaY = pos.y - startPos.y;
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const maxDistance = 35;
+                
+                if (distance <= maxDistance) {
+                    joystickKnob.style.transform = `translate(${deltaX - 15}px, ${deltaY - 15}px)`;
+                    joystickVector.set(deltaX / maxDistance, -deltaY / maxDistance);
+                } else {
+                    const angle = Math.atan2(deltaY, deltaX);
+                    const x = Math.cos(angle) * maxDistance;
+                    const y = Math.sin(angle) * maxDistance;
+                    joystickKnob.style.transform = `translate(${x - 15}px, ${y - 15}px)`;
+                    joystickVector.set(Math.cos(angle), -Math.sin(angle));
+                }
+            });
+            
+            function stopJoystick() {
+                isDragging = false;
+                joystickActive = false;
+                joystickKnob.style.transform = 'translate(-15px, -15px)';
+                joystickVector.set(0, 0);
+            }
+            
+            document.addEventListener('touchend', stopJoystick);
+            document.addEventListener('mouseup', stopJoystick);
+            
+            // Touch look controls
+            let isLooking = false;
+            let lastTouchX = 0, lastTouchY = 0;
+            
+            renderer.domElement.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    isLooking = true;
+                    lastTouchX = e.touches[0].clientX;
+                    lastTouchY = e.touches[0].clientY;
+                }
+            });
+            
+            renderer.domElement.addEventListener('touchmove', (e) => {
+                if (isLooking && e.touches.length === 1) {
+                    e.preventDefault();
+                    const deltaX = e.touches[0].clientX - lastTouchX;
+                    const deltaY = e.touches[0].clientY - lastTouchY;
+                    
+                    dolly.rotation.y -= deltaX * 0.01;
+                    camera.rotation.x -= deltaY * 0.01;
+                    camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
+                    
+                    lastTouchX = e.touches[0].clientX;
+                    lastTouchY = e.touches[0].clientY;
+                }
+            });
+            
+            renderer.domElement.addEventListener('touchend', () => {
+                isLooking = false;
+            });
+        }
+        
+        function setupVRControllers() {
+            // Controller 1
+            const controller1 = renderer.xr.getController(0);
+            controller1.addEventListener('selectstart', onSelectStart);
+            controller1.addEventListener('selectend', onSelectEnd);
+            dolly.add(controller1);
+            vrControllers.push(controller1);
+            
+            // Controller 2
+            const controller2 = renderer.xr.getController(1);
+            controller2.addEventListener('selectstart', onSelectStart);
+            controller2.addEventListener('selectend', onSelectEnd);
+            dolly.add(controller2);
+            vrControllers.push(controller2);
+            
+            // Controller grips
+            const controllerGrip1 = renderer.xr.getControllerGrip(0);
+            dolly.add(controllerGrip1);
+            
+            const controllerGrip2 = renderer.xr.getControllerGrip(1);
+            dolly.add(controllerGrip2);
+            
+            // Add simple controller visualization
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(0, 0, -1)
+            ]);
+            
+            const line = new THREE.Line(geometry);
+            line.name = 'line';
+            line.scale.z = 5;
+            
+            controller1.add(line.clone());
+            controller2.add(line.clone());
+        }
+        
+        function onSelectStart(event) {
+            console.log('VR Controller select start');
+        }
+        
+        function onSelectEnd(event) {
+            console.log('VR Controller select end');
+        }
+        
+        function setupVR() {
+            const vrButton = document.getElementById('vrButton');
+            
+            // Check for WebXR support
+            if (!navigator.xr) {
+                vrButton.textContent = 'WebXR Not Available';
+                vrButton.disabled = true;
+                console.log('WebXR not supported in this browser');
+                return;
+            }
+            
+            // Skip the isSessionSupported check due to permissions policy issues
+            // Instead, try to request VR directly when the button is clicked
+            console.log('WebXR available, enabling VR button');
+            
+            vrButton.addEventListener('click', async () => {
+                try {
+                    if (isVRMode) {
+                        // Exit VR
+                        const session = renderer.xr.getSession();
+                        if (session) {
+                            await session.end();
+                        }
+                    } else {
+                        // Enter VR - try to request session directly
+                        vrButton.textContent = 'Starting VR...';
+                        vrButton.disabled = true;
+                        
+                        console.log('Requesting VR session...');
+                        
+                        const session = await navigator.xr.requestSession('immersive-vr', {
+                            requiredFeatures: ['local-floor'],
+                            optionalFeatures: ['bounded-floor', 'hand-tracking']
+                        });
+                        
+                        console.log('VR session created:', session);
+                        
+                        await renderer.xr.setSession(session);
+                        
+                        isVRMode = true;
+                        vrButton.textContent = 'Exit VR';
+                        vrButton.disabled = false;
+                        
+                        // Hide UI in VR
+                        document.getElementById('ui').style.display = 'none';
+                        document.getElementById('mobileControls').style.display = 'none';
+                        
+                        session.addEventListener('end', () => {
+                            console.log('VR session ended');
+                            isVRMode = false;
+                            vrButton.textContent = 'Enter VR';
+                            vrButton.disabled = false;
+                            
+                            // Show UI when exiting VR
+                            document.getElementById('ui').style.display = 'block';
+                            if (window.innerWidth <= 768) {
+                                document.getElementById('mobileControls').style.display = 'block';
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('VR Error:', error);
+                    vrButton.disabled = false;
+                    isVRMode = false;
+                    
+                    if (error.name === 'SecurityError') {
+                        vrButton.textContent = 'VR Blocked';
+                        
+                        // Update instructions with specific guidance
+                        const instructions = document.getElementById('instructions');
+                        instructions.innerHTML = `
+                            <strong style="color: #ff6b6b;">VR Access Blocked</strong><br>
+                            To enable VR:<br>
+                            1. Use <strong>Meta Quest Browser</strong><br>
+                            2. Go to browser Settings → Site Settings<br>
+                            3. Enable "Virtual Reality" for this site<br>
+                            4. Refresh this page<br>
+                            5. Try Enter VR again<br><br>
+                            <em>Or try accessing this page through a different URL/domain.</em>
+                        `;
+                    } else if (error.name === 'NotSupportedError') {
+                        vrButton.textContent = 'VR Not Supported';
+                        
+                        const instructions = document.getElementById('instructions');
+                        instructions.innerHTML = `
+                            <strong style="color: #ff6b6b;">VR Not Supported</strong><br>
+                            Your device/browser doesn't support VR.<br>
+                            Please use a VR-capable device like Meta Quest with the Meta Quest Browser.
+                        `;
+                    } else {
+                        vrButton.textContent = 'VR Error - Try Again';
+                        alert('VR Error: ' + error.message);
+                    }
+                }
+            });
+        }
+        
+        function onKeyDown(event) {
+            switch (event.code) {
+                case 'ArrowUp':
+                case 'KeyW':
+                    moveForward = true;
+                    break;
+                case 'ArrowLeft':
+                case 'KeyA':
+                    moveLeft = true;
+                    break;
+                case 'ArrowDown':
+                case 'KeyS':
+                    moveBackward = true;
+                    break;
+                case 'ArrowRight':
+                case 'KeyD':
+                    moveRight = true;
+                    break;
+            }
+        }
+        
+        function onKeyUp(event) {
+            switch (event.code) {
+                case 'ArrowUp':
+                case 'KeyW':
+                    moveForward = false;
+                    break;
+                case 'ArrowLeft':
+                case 'KeyA':
+                    moveLeft = false;
+                    break;
+                case 'ArrowDown':
+                case 'KeyS':
+                    moveBackward = false;
+                    break;
+                case 'ArrowRight':
+                case 'KeyD':
+                    moveRight = false;
+                    break;
+            }
+        }
+        
+        let isMouseDown = false;
+        let lastMouseX = 0, lastMouseY = 0;
+        
+        function onMouseDown(event) {
+            isMouseDown = true;
+            lastMouseX = event.clientX;
+            lastMouseY = event.clientY;
+        }
+        
+        function onMouseUp(event) {
+            isMouseDown = false;
+        }
+        
+        function onMouseMove(event) {
+            if (isMouseDown && !isVRMode) {
+                const deltaX = event.clientX - lastMouseX;
+                const deltaY = event.clientY - lastMouseY;
+                
+                dolly.rotation.y -= deltaX * 0.01;
+                camera.rotation.x -= deltaY * 0.01;
+                camera.rotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, camera.rotation.x));
+                
+                lastMouseX = event.clientX;
+                lastMouseY = event.clientY;
+            }
+        }
+        
+        function updateMovement(delta) {
+            // Skip desktop movement in VR mode
+            if (isVRMode) {
+                return;
+            }
+            
+            velocity.x -= velocity.x * 10.0 * delta;
+            velocity.z -= velocity.z * 10.0 * delta;
+            
+            direction.z = Number(moveForward) - Number(moveBackward);
+            direction.x = Number(moveRight) - Number(moveLeft);
+            direction.normalize();
+            
+            // Mobile joystick movement
+            if (joystickActive) {
+                direction.x = joystickVector.x;
+                direction.z = joystickVector.y;
+            }
+            
+            if (moveForward || moveBackward || joystickActive) velocity.z -= direction.z * 15.0 * delta;
+            if (moveLeft || moveRight || joystickActive) velocity.x -= direction.x * 15.0 * delta;
+            
+            // Apply movement relative to camera direction
+            const forward = new THREE.Vector3();
+            dolly.getWorldDirection(forward);
+            forward.y = 0;
+            forward.normalize();
+            
+            const right = new THREE.Vector3();
+            right.crossVectors(forward, new THREE.Vector3(0, 1, 0));
+            
+            const moveVector = new THREE.Vector3();
+            moveVector.addScaledVector(forward, -velocity.z * delta);
+            moveVector.addScaledVector(right, -velocity.x * delta);
+            
+            dolly.position.add(moveVector);
+        }
+        
+        function animate() {
+            const delta = 0.016; // Assume 60fps
+            
+            if (!isVRMode) {
+                updateMovement(delta);
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        window.addEventListener('resize', onWindowResize);
+        
+        // Initialize the scene when the page loads
+        init();
+    </script>
+</body>
+</html>

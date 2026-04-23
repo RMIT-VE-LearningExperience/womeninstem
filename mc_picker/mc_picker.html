@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MC Picker — Women in STEM</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f4f4f8;
+      --surface: #ffffff;
+      --surface-raised: #ebebf2;
+      --border: rgba(0,0,0,0.08);
+      --border-accent: rgba(0,0,0,0.13);
+      --text-primary: #1a1a2e;
+      --text-secondary: #5a5a72;
+      --text-tertiary: #9898b0;
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px 60px;
+    }
+
+    .app { width: 100%; max-width: 460px; }
+
+    /* ── Header ── */
+    .header { text-align: center; margin-bottom: 28px; }
+    .header-eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px;
+    }
+    .header h1 {
+      font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #6c5ce7 0%, #3b82f6 60%, #10b981 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* ── View switcher ── */
+    .view-switcher {
+      display: flex; gap: 5px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 5px; margin-bottom: 20px;
+    }
+    .vsw-btn {
+      flex: 1; padding: 9px 8px; font-size: 13px; font-weight: 500;
+      border: none; border-radius: 10px; background: transparent;
+      color: var(--text-secondary); cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .vsw-btn:hover { background: var(--surface-raised); color: var(--text-primary); }
+    .vsw-btn.active {
+      background: var(--bg); color: var(--text-primary); font-weight: 600;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    /* ── Pool info ── */
+    .pool-info {
+      font-size: 12px; color: var(--text-secondary); text-align: center;
+      margin-bottom: 20px; line-height: 1.6; min-height: 18px;
+    }
+    .pool-excl { color: var(--text-tertiary); }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 12px;
+    }
+
+    /* ── View pane ── */
+    .view-pane.hidden { display: none; }
+
+    /* ── Cards view ── */
+    .people-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .person-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 10px 12px;
+      display: flex; align-items: center; gap: 10px;
+      transition: opacity 0.25s, border-color 0.2s;
+    }
+    .person-card.eligible { border-color: var(--card-border, var(--border)); }
+    .person-card.excluded { opacity: 0.32; }
+    .person-card.skipped { opacity: 0.38; background: var(--surface-raised); }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .card-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .card-name { font-size: 14px; font-weight: 500; }
+    .card-badge { font-size: 10px; color: var(--text-tertiary); }
+    .skip-btn {
+      font-size: 10px; font-weight: 500; padding: 3px 8px;
+      border-radius: 5px; border: 1px solid var(--border-accent);
+      background: transparent; color: var(--text-tertiary);
+      cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .skip-btn:hover { background: var(--surface-raised); color: var(--text-secondary); }
+    .skip-btn.active {
+      background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3);
+      color: #dc2626;
+    }
+
+    /* Cards: cycling highlight */
+    .person-card.lit {
+      border-color: var(--card-border, rgba(108,92,231,0.5));
+      background: var(--card-bg, rgba(108,92,231,0.06));
+    }
+
+    /* ── Wheel view ── */
+    .wheel-wrap {
+      position: relative; width: 280px; height: 280px; margin: 0 auto;
+    }
+    .wheel-pointer {
+      position: absolute; top: -8px; left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 11px solid transparent;
+      border-right: 11px solid transparent;
+      border-top: 20px solid #1a1a2e;
+      z-index: 3;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+    }
+    #wheelCanvas {
+      display: block; border-radius: 50%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 4px #fff, 0 0 0 5px rgba(0,0,0,0.08);
+    }
+
+    /* ── Bottle view ── */
+    .bottle-arena {
+      position: relative; width: 300px; height: 300px; margin: 0 auto;
+    }
+    .ring-person {
+      position: absolute;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s;
+    }
+    .ring-person.excluded { opacity: 0.28; }
+    .ring-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      border: 2px solid transparent;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .ring-avatar.winner-glow {
+      border-color: #f5a623;
+      transform: scale(1.18);
+      box-shadow: 0 0 16px rgba(245,166,35,0.55);
+    }
+    .ring-name { font-size: 10px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+    .bottle-center {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .bottle-svg-wrap {
+      width: 42px; height: 110px;
+      transform-origin: 50% 50%;
+      transition: transform 4s cubic-bezier(0.12, 0.8, 0.1, 1.0);
+      filter: drop-shadow(0 3px 8px rgba(0,0,0,0.18));
+    }
+
+    /* ── Spin button ── */
+    .spin-btn {
+      width: 100%; padding: 15px; font-size: 15px; font-weight: 600;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(108,92,231,0.3);
+      background: linear-gradient(135deg, rgba(108,92,231,0.1) 0%, rgba(59,130,246,0.08) 100%);
+      color: #5344c4; cursor: pointer;
+      transition: background 0.15s, transform 0.1s, opacity 0.15s;
+      letter-spacing: 0.01em; margin-top: 24px; margin-bottom: 24px;
+    }
+    .spin-btn:hover { background: linear-gradient(135deg, rgba(108,92,231,0.18) 0%, rgba(59,130,246,0.14) 100%); }
+    .spin-btn:active { transform: scale(0.98); }
+    .spin-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+    /* ── Result ── */
+    .result-area {
+      min-height: 130px; display: flex; align-items: center;
+      justify-content: center; margin-bottom: 32px;
+    }
+    .result-placeholder { font-size: 14px; color: var(--text-tertiary); text-align: center; line-height: 1.6; }
+    .result-card {
+      background: var(--surface); border: 1px solid var(--border-accent);
+      border-radius: var(--radius-lg); padding: 24px; text-align: center; width: 100%;
+    }
+    .result-avatar {
+      width: 66px; height: 66px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; margin: 0 auto 12px;
+    }
+    .result-name { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .result-label {
+      font-size: 12px; color: var(--text-secondary); font-weight: 500;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .cycling-name {
+      font-size: 26px; font-weight: 700;
+      font-family: ui-monospace, "SF Mono", monospace;
+      color: var(--text-tertiary); letter-spacing: 0.04em;
+    }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border); margin: 0 0 28px; }
+
+    /* ── History ── */
+    .history-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .reset-btn {
+      font-size: 11px; font-weight: 500; padding: 4px 10px;
+      border-radius: 6px; border: 1px solid rgba(239,68,68,0.25);
+      background: rgba(239,68,68,0.06); color: #dc2626;
+      cursor: pointer; transition: background 0.15s, border-color 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .reset-btn:hover { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); }
+    .reset-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .history-list { display: flex; flex-direction: column; gap: 6px; }
+    .history-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    }
+    .history-avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; flex-shrink: 0;
+    }
+    .history-name { font-size: 13px; font-weight: 500; flex: 1; }
+    .history-date { font-size: 11px; color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+    .history-empty { font-size: 13px; color: var(--text-tertiary); padding: 12px 0; text-align: center; }
+
+    /* ── Save status ── */
+    .save-status {
+      font-size: 12px; text-align: center; margin-top: 12px;
+      min-height: 18px; transition: color 0.2s;
+    }
+    .save-status.saving { color: var(--text-tertiary); }
+    .save-status.saved  { color: #10b981; }
+    .save-status.error  { color: #ef4444; }
+
+    /* ── Animations ── */
+    @keyframes pop {
+      0%   { transform: scale(0.82); opacity: 0; }
+      60%  { transform: scale(1.05); }
+      100% { transform: scale(1);    opacity: 1; }
+    }
+    .pop { animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.45; }
+    }
+    .pulsing { animation: pulse 0.55s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <p class="header-eyebrow">Women in STEM</p>
+    <h1>MC Picker</h1>
+  </div>
+
+  <div class="view-switcher">
+    <button class="vsw-btn active" data-view="cards">🃏 Cards</button>
+    <button class="vsw-btn"        data-view="wheel" >🎡 Wheel</button>
+    <button class="vsw-btn"        data-view="bottle">🍾 Bottle</button>
+  </div>
+
+  <div class="pool-info" id="poolInfo">Loading…</div>
+
+  <!-- Cards -->
+  <div id="viewCards" class="view-pane">
+    <div class="people-grid" id="peopleGrid"></div>
+  </div>
+
+  <!-- Wheel -->
+  <div id="viewWheel" class="view-pane hidden">
+    <div class="wheel-wrap">
+      <div class="wheel-pointer"></div>
+      <canvas id="wheelCanvas" width="280" height="280"></canvas>
+    </div>
+  </div>
+
+  <!-- Bottle -->
+  <div id="viewBottle" class="view-pane hidden">
+    <div class="bottle-arena">
+      <div id="bottleRing"></div>
+      <div class="bottle-center">
+        <div id="bottleSvg" class="bottle-svg-wrap">
+          <!-- Bottle points UP — single unified path, tip (cork) at top -->
+          <svg viewBox="0 0 50 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Unified bottle silhouette: neck → shoulder → body → base, one smooth shape -->
+            <path d="
+              M20 12 L20 36
+              C20 52 7 60 7 74
+              L7 100
+              C7 124 43 124 43 100
+              L43 74
+              C43 60 30 52 30 36
+              L30 12 Z
+            " fill="#1a5c3a"/>
+            <!-- Cork -->
+            <rect x="17" y="2" width="16" height="12" rx="5" fill="#c4a265"/>
+            <!-- Neck collar -->
+            <rect x="18" y="12" width="14" height="4" rx="2" fill="#0f3d25"/>
+            <!-- Label -->
+            <rect x="11" y="80" width="28" height="24" rx="4" fill="white" opacity="0.2"/>
+            <!-- Shoulder highlight -->
+            <path d="M13 48 C11 52 10 57 10 62" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.15"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="spin-btn" id="spinBtn">Pick MC</button>
+
+  <div class="result-area" id="resultArea">
+    <p class="result-placeholder">Hit spin to pick!</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="history-header">
+    <p class="section-label" style="margin-bottom:0">Recent history</p>
+    <button class="reset-btn" id="resetBtn">Reset</button>
+  </div>
+  <div class="history-list" id="historyList"></div>
+  <div id="saveStatus" class="save-status"></div>
+
+</div>
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const WORKER_URL = "https://mc-picker-proxy.lawrence-165.workers.dev/history?project=wis";
+
+const people = [
+  { name: "Lawrence", initials: "LW", color: "#7c6df0", bg: "rgba(124,109,240,0.14)", text: "#5344c4" },
+  { name: "Homie",    initials: "HM", color: "#10b981", bg: "rgba(16,185,129,0.14)",   text: "#047857" },
+  { name: "Neda",     initials: "ND", color: "#ec4899", bg: "rgba(236,72,153,0.14)",   text: "#be185d" },
+  { name: "Arielle",  initials: "AR", color: "#3b82f6", bg: "rgba(59,130,246,0.14)",   text: "#1d4ed8" },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let ghHistory    = [];
+let isSpinning   = false;
+let currentView  = "cards";
+let wheelRotDeg  = 0;   // cumulative, always growing
+let bottleRotDeg = 0;   // cumulative, always growing
+let skippedNames = new Set(); // manually skipped for this spin
+
+// ── Elements ──────────────────────────────────────────────────────────────────
+const spinBtn     = document.getElementById("spinBtn");
+const resultArea  = document.getElementById("resultArea");
+const historyList = document.getElementById("historyList");
+const saveStatus  = document.getElementById("saveStatus");
+const poolInfoEl  = document.getElementById("poolInfo");
+const peopleGrid  = document.getElementById("peopleGrid");
+const wheelCanvas = document.getElementById("wheelCanvas");
+const bottleRing  = document.getElementById("bottleRing");
+const bottleSvg   = document.getElementById("bottleSvg");
+const wheelCtx    = wheelCanvas.getContext("2d");
+
+// ── Pool helpers ──────────────────────────────────────────────────────────────
+// Exclude people already picked in the current round.
+// A round resets when all 4 people have had a turn.
+function getExcludedNames() {
+  const seen = [];
+  for (const e of ghHistory) {
+    if (!seen.includes(e.winner)) seen.push(e.winner);
+    if (seen.length >= people.length) return []; // full round complete — everyone eligible
+  }
+  return seen; // people picked so far this round
+}
+
+function getPool() {
+  const excl = getExcludedNames();
+  const pool  = people.filter(p => !excl.includes(p.name) && !skippedNames.has(p.name));
+  return pool.length > 0 ? pool : people.filter(p => !skippedNames.has(p.name)); // safety fallback
+}
+
+// ── Pool info bar ─────────────────────────────────────────────────────────────
+function renderPoolInfo() {
+  const excl = getExcludedNames();
+  const pool = getPool();
+  const pickStr  = pool.map(p => `<strong>${p.name}</strong>`).join(", ") || "<em>Nobody eligible!</em>";
+  const exclStr  = excl.length
+    ? ` &nbsp;·&nbsp; <span class="pool-excl">Had a turn: ${excl.join(", ")}</span>`
+    : ` &nbsp;·&nbsp; <span style="color:#10b981;font-weight:500">New round!</span>`;
+  const skipStr  = skippedNames.size
+    ? ` &nbsp;·&nbsp; <span style="color:#dc2626">Skipped: ${[...skippedNames].join(", ")}</span>`
+    : "";
+  poolInfoEl.innerHTML = `Picking from ${pickStr}${exclStr}${skipStr}`;
+}
+
+// ── Cards view ────────────────────────────────────────────────────────────────
+function renderCards() {
+  const excl = getExcludedNames();
+  peopleGrid.innerHTML = "";
+  people.forEach(p => {
+    const isExcl    = excl.includes(p.name);
+    const isSkipped = skippedNames.has(p.name);
+    const div = document.createElement("div");
+    div.className = `person-card ${isSkipped ? "skipped" : isExcl ? "excluded" : "eligible"}`;
+    div.style.setProperty("--card-border", p.color + "70");
+    div.style.setProperty("--card-bg", p.bg);
+    div.innerHTML = `
+      <div class="avatar" style="background:${p.bg};color:${p.text}">${p.initials}</div>
+      <div class="card-info">
+        <span class="card-name">${p.name}</span>
+        ${isExcl && !isSkipped ? `<span class="card-badge">recent MC</span>` : ""}
+        ${isSkipped ? `<span class="card-badge" style="color:#dc2626">not present</span>` : ""}
+      </div>
+      <button class="skip-btn${isSkipped ? " active" : ""}" data-name="${p.name}">
+        ${isSkipped ? "Skipped" : "Skip"}
+      </button>`;
+    div.querySelector(".skip-btn").addEventListener("click", () => {
+      if (isSpinning) return;
+      if (skippedNames.has(p.name)) skippedNames.delete(p.name);
+      else skippedNames.add(p.name);
+      renderCards();
+      renderPoolInfo();
+      if (currentView === "wheel")  drawWheel(getPool(), wheelRotDeg);
+      if (currentView === "bottle") renderBottle();
+    });
+    peopleGrid.appendChild(div);
+  });
+}
+
+// ── Wheel view ────────────────────────────────────────────────────────────────
+function drawWheel(pool, rotDeg) {
+  const cx = 140, cy = 140, r = 128;
+  const N = pool.length;
+  const sliceAngle = (2 * Math.PI) / N;
+  const rotRad = (rotDeg * Math.PI) / 180;
+
+  wheelCtx.clearRect(0, 0, 280, 280);
+
+  pool.forEach((p, i) => {
+    const start = rotRad + i * sliceAngle;
+    const end   = start + sliceAngle;
+
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(cx, cy);
+    wheelCtx.arc(cx, cy, r, start, end);
+    wheelCtx.closePath();
+    wheelCtx.fillStyle = p.color;
+    wheelCtx.fill();
+    wheelCtx.strokeStyle = "#fff";
+    wheelCtx.lineWidth = 2.5;
+    wheelCtx.stroke();
+
+    // Label
+    const mid = start + sliceAngle / 2;
+    const tx  = cx + r * 0.63 * Math.cos(mid);
+    const ty  = cy + r * 0.63 * Math.sin(mid);
+    wheelCtx.save();
+    wheelCtx.translate(tx, ty);
+    wheelCtx.rotate(mid + Math.PI / 2);
+    wheelCtx.fillStyle = "#fff";
+    wheelCtx.font = "bold 14px -apple-system, BlinkMacSystemFont, sans-serif";
+    wheelCtx.textAlign = "center";
+    wheelCtx.textBaseline = "middle";
+    wheelCtx.fillText(p.name, 0, 0);
+    wheelCtx.restore();
+  });
+
+  // Centre circle
+  wheelCtx.beginPath();
+  wheelCtx.arc(cx, cy, 20, 0, 2 * Math.PI);
+  wheelCtx.fillStyle = "#fff";
+  wheelCtx.fill();
+  wheelCtx.beginPath();
+  wheelCtx.arc(cx, cy, 12, 0, 2 * Math.PI);
+  wheelCtx.fillStyle = "#e8e8f4";
+  wheelCtx.fill();
+}
+
+function spinWheel(winner, onDone) {
+  const pool = getPool();
+  const wi   = pool.findIndex(p => p.name === winner.name);
+  const N    = pool.length;
+  const segDeg = 360 / N;
+
+  // Target: winner slice centre must sit under the top pointer (−90°)
+  // slice i centre (no rotation) = i * segDeg + segDeg/2, measured CW from 3-o'clock
+  // Standard angle of centre = rotDeg + i*segDeg + segDeg/2
+  // For that to equal −90 + 360k:
+  //   targetDeg = (−90 − wi*segDeg − segDeg/2) mod 360
+  let targetDeg = ((-90 - wi * segDeg - segDeg / 2) % 360 + 360) % 360;
+  const currentMod = ((wheelRotDeg % 360) + 360) % 360;
+  let delta = (targetDeg - currentMod + 360) % 360;
+  if (delta < 30) delta += 360;
+
+  const startRot  = wheelRotDeg;
+  const endRot    = wheelRotDeg + 360 * 6 + delta;
+  const duration  = 4200;
+  const startTime = performance.now();
+
+  function ease(t) { return 1 - Math.pow(1 - t, 4); }
+
+  function frame(now) {
+    const t       = Math.min((now - startTime) / duration, 1);
+    const current = startRot + (endRot - startRot) * ease(t);
+    drawWheel(pool, current);
+    if (t < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      wheelRotDeg = endRot;
+      onDone();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+// ── Bottle view ───────────────────────────────────────────────────────────────
+function renderBottle(highlightName) {
+  const N    = people.length;
+  const R    = 108;           // ring radius (px from centre of 300×300 arena)
+  const cx   = 150, cy = 150;
+  const excl = getExcludedNames();
+
+  bottleRing.innerHTML = "";
+  people.forEach((p, i) => {
+    const isExcl = excl.includes(p.name);
+    // Start top (−90°), go clockwise
+    const angleDeg = -90 + i * (360 / N);
+    const angleRad = angleDeg * Math.PI / 180;
+    const x = cx + R * Math.cos(angleRad);
+    const y = cy + R * Math.sin(angleRad);
+
+    const div = document.createElement("div");
+    div.className = `ring-person${isExcl ? " excluded" : ""}`;
+    div.style.left = `${x}px`;
+    div.style.top  = `${y}px`;
+    div.innerHTML = `
+      <div class="ring-avatar${highlightName === p.name ? " winner-glow" : ""}"
+           id="ring-av-${p.name}"
+           style="background:${p.bg};color:${p.text}">${p.initials}</div>
+      <span class="ring-name">${p.name}</span>`;
+    bottleRing.appendChild(div);
+  });
+}
+
+function spinBottle(winner, onDone) {
+  const N  = people.length;
+  const wi = people.findIndex(p => p.name === winner.name);
+
+  // Bottle tip points UP at 0° rotation → aligned with person at index 0 (top, −90°)
+  // To point at person i: rotate clockwise by i × (360/N)
+  const targetOffset = wi * (360 / N);
+  const currentMod   = ((bottleRotDeg % 360) + 360) % 360;
+  let delta = (targetOffset - currentMod + 360) % 360;
+  if (delta < 30) delta += 360;
+
+  bottleRotDeg += 360 * 6 + delta;
+  bottleSvg.style.transform = `rotate(${bottleRotDeg}deg)`;
+
+  // CSS transition is 4s — wait 4.15s then fire done
+  setTimeout(() => {
+    renderBottle(winner.name); // re-render with glow on winner
+    onDone();
+  }, 4150);
+}
+
+// ── Spin entry ────────────────────────────────────────────────────────────────
+spinBtn.addEventListener("click", () => {
+  if (isSpinning) return;
+  const pool = getPool();
+  if (!pool.length) return;
+
+  isSpinning = true;
+  spinBtn.disabled = true;
+
+  const winner = pool[Math.floor(Math.random() * pool.length)];
+
+  if (currentView === "cards") {
+    const STEPS = 24;
+    let count = 0, idx = 0;
+    resultArea.innerHTML = `<div class="result-card"><div class="cycling-name pulsing" id="cycleText">···</div></div>`;
+    const cycleText = document.getElementById("cycleText");
+
+    // Light up cards as they cycle
+    function getDelay(i) { return i < 8 ? 65 : i < 16 ? 110 : 170; }
+    function tick() {
+      const p = pool[idx % pool.length];
+      cycleText.textContent = p.name;
+      // Flash the matching card
+      document.querySelectorAll(".person-card").forEach(c => c.classList.remove("lit"));
+      const cards = [...peopleGrid.children];
+      const match = cards.find(c => c.querySelector(".card-name")?.textContent === p.name);
+      if (match) match.classList.add("lit");
+      idx++; count++;
+      if (count >= STEPS) {
+        document.querySelectorAll(".person-card").forEach(c => c.classList.remove("lit"));
+        setTimeout(() => onSpinComplete(winner), getDelay(count));
+        return;
+      }
+      setTimeout(tick, getDelay(count));
+    }
+    setTimeout(tick, 65);
+
+  } else if (currentView === "wheel") {
+    spinWheel(winner, () => onSpinComplete(winner));
+
+  } else if (currentView === "bottle") {
+    document.querySelectorAll(".ring-avatar").forEach(a => a.classList.remove("winner-glow"));
+    spinBottle(winner, () => onSpinComplete(winner));
+  }
+});
+
+async function onSpinComplete(winner) {
+  // Show result card
+  resultArea.innerHTML = `
+    <div class="result-card pop">
+      <div class="result-avatar" style="background:${winner.bg};color:${winner.text}">${winner.initials}</div>
+      <p class="result-name" style="color:${winner.text}">${winner.name}</p>
+      <p class="result-label">Next week's MC 🎙️</p>
+    </div>`;
+
+  // Save to GitHub
+  const entry = { winner: winner.name, date: new Date().toISOString().slice(0, 10), ts: Date.now() };
+  setStatus("saving", "Saving to GitHub…");
+  try {
+    await saveToGitHub(entry);
+    ghHistory.unshift(entry);
+    renderHistory();
+    renderPoolInfo();
+    renderCards();
+    if (currentView === "wheel") drawWheel(getPool(), wheelRotDeg);
+    if (currentView === "bottle") renderBottle(winner.name);
+    skippedNames.clear(); // reset skips after each pick
+    setStatus("saved", "Saved ✓");
+    setTimeout(() => setStatus("", ""), 3000);
+  } catch (err) {
+    console.error(err);
+    setStatus("error", "Could not save — check network");
+  }
+
+  setTimeout(() => {
+    isSpinning = false;
+    spinBtn.disabled = false;
+    updateSpinLabel();
+  }, 600);
+}
+
+// ── View switcher ─────────────────────────────────────────────────────────────
+document.querySelectorAll(".vsw-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (isSpinning) return;
+    currentView = btn.dataset.view;
+    document.querySelectorAll(".vsw-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".view-pane").forEach(p => p.classList.add("hidden"));
+    const paneId = "view" + currentView.charAt(0).toUpperCase() + currentView.slice(1);
+    document.getElementById(paneId).classList.remove("hidden");
+
+    if (currentView === "wheel")  drawWheel(getPool(), wheelRotDeg);
+    if (currentView === "bottle") renderBottle();
+    updateSpinLabel();
+  });
+});
+
+function updateSpinLabel() {
+  const labels = { cards: "Pick MC", wheel: "Spin the Wheel", bottle: "Spin the Bottle" };
+  spinBtn.textContent = labels[currentView] || "Spin";
+}
+
+// ── History ───────────────────────────────────────────────────────────────────
+function formatDate(iso) {
+  const [y, m, d] = iso.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+function renderHistory() {
+  if (!ghHistory.length) {
+    historyList.innerHTML = `<p class="history-empty">No picks yet</p>`;
+    return;
+  }
+  historyList.innerHTML = ghHistory.slice(0, 6).map(entry => {
+    const p = people.find(x => x.name === entry.winner);
+    const avStyle  = p ? `background:${p.bg};color:${p.text}` : "";
+    const initials = p ? p.initials : entry.winner.slice(0, 2).toUpperCase();
+    return `
+      <div class="history-item">
+        <div class="history-avatar" style="${avStyle}">${initials}</div>
+        <span class="history-name">${entry.winner}</span>
+        <span class="history-date">${formatDate(entry.date)}</span>
+      </div>`;
+  }).join("");
+}
+
+// ── GitHub / Worker ───────────────────────────────────────────────────────────
+async function fetchFromGitHub() {
+  const res = await fetch(WORKER_URL);
+  if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+  const data = await res.json();
+  ghHistory = data.mc_history || [];
+}
+
+async function saveToGitHub(entry) {
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entry),
+  });
+  if (!res.ok) throw new Error(`Save failed: ${res.status}`);
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────────
+const resetBtn = document.getElementById("resetBtn");
+resetBtn.addEventListener("click", async () => {
+  if (!confirm("Clear all MC history? This cannot be undone.")) return;
+  resetBtn.disabled = true;
+  setStatus("saving", "Resetting…");
+  try {
+    const res = await fetch(WORKER_URL, { method: "DELETE" });
+    if (!res.ok) throw new Error(`Reset failed: ${res.status}`);
+    ghHistory = [];
+    renderHistory();
+    renderPoolInfo();
+    renderCards();
+    if (currentView === "wheel")  drawWheel(getPool(), wheelRotDeg);
+    if (currentView === "bottle") renderBottle();
+    setStatus("saved", "History cleared ✓");
+    setTimeout(() => setStatus("", ""), 3000);
+  } catch (err) {
+    console.error(err);
+    setStatus("error", "Reset failed — check network");
+  }
+  resetBtn.disabled = false;
+});
+
+function setStatus(state, msg) {
+  saveStatus.className = `save-status ${state}`;
+  saveStatus.textContent = msg;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+(async () => {
+  setStatus("saving", "Loading history…");
+  try {
+    await fetchFromGitHub();
+    setStatus("", "");
+  } catch (err) {
+    console.error(err);
+    setStatus("error", "Could not load history");
+  }
+  renderPoolInfo();
+  renderCards();
+  renderHistory();
+  drawWheel(getPool(), 0);
+  renderBottle();
+  updateSpinLabel();
+})();
+</script>
+</body>
+</html>

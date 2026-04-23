@@ -1,0 +1,3492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Crane Operator — Construction Game</title>
+
+<!-- Open Graph / Social Media Meta Tags -->
+<meta property="og:title" content="Crane Operator - Construction Game">
+<meta property="og:description" content="Operate a tower crane to move crates to the drop zone without taking damage.">
+<meta property="og:image" content="../../images/minigames_thumnails/crane.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Crane Operator - Construction Game">
+<meta name="twitter:description" content="Operate a tower crane to move crates to the drop zone without taking damage.">
+<meta name="twitter:image" content="../../images/minigames_thumnails/crane.png">
+
+<!-- Hotjar Tracking Code for WIS - Construction game -->
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:6646133,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Chakra+Petch:wght@400;600;700&family=Oswald:wght@500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #A69D93;
+    overflow: hidden;
+    font-family: 'Chakra Petch', monospace;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
+
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* Welcome overlay */
+  #startScreen {
+    position: fixed;
+    inset: 0;
+    background: #193e75de;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+    padding: 32px 20px;
+    transition: opacity 0.8s ease;
+  }
+
+  #startScreen.hiding {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .welcome-card {
+    background: #efefef;
+    border-radius: 16px;
+    height: 80%;
+    width: 100%;
+    max-width: 400px;
+    padding: 0;
+    position: relative;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .welcome-intro-body {
+    position: absolute;
+    inset: 0;
+    padding: 56px 28px 140px;
+    color: #1a2744;
+    z-index: 2;
+  }
+
+  .welcome-intro-title {
+    font-size: 48px;
+    font-weight: 900;
+    color: #224987;
+    text-align: center;
+    line-height: 0.95;
+    letter-spacing: 0.4px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .welcome-intro-text {
+    font-size: 16px;
+    line-height: 1.35;
+    margin-bottom: 14px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .welcome-intro-text.bold {
+    font-weight: 700;
+  }
+
+  .welcome-intro-character {
+    position: fixed;
+    right: 6px;
+    bottom: -8px;
+    width: 52vw;
+    max-width: 250px;
+    height: auto;
+    pointer-events: none;
+    z-index: 402;
+  }
+
+  #startBtn {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    background: #3BA53B;
+    color: white;
+    border: none;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 21px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    z-index: 3;
+    transition: all 0.15s;
+  }
+
+  #startBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+
+  #startBtn:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 767px) {
+    .welcome-intro-title {
+      font-size: 40px;
+    }
+    .welcome-intro-text {
+      font-size: 14px;
+    }
+    #startBtn {
+      width: 76px;
+      height: 76px;
+      font-size: 19px;
+    }
+  }
+
+  /* Landscape mobile: keep welcome content readable and avoid overlaps */
+  @media (orientation: landscape) and (max-height: 740px) and (max-width: 980px) {
+    #startScreen {
+      padding: 12px;
+      align-items: center;
+    }
+
+    .welcome-card {
+      width: min(940px, 96vw);
+      max-width: none;
+      height: auto;
+      max-height: 92vh;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      border-radius: 14px;
+    }
+
+    .welcome-intro-body {
+      position: relative;
+      inset: auto;
+      padding: 16px 170px 0 18px;
+    }
+
+    .welcome-intro-title {
+      font-size: clamp(28px, 5.4vw, 40px);
+      line-height: 0.9;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .welcome-intro-text {
+      font-size: 13px;
+      line-height: 1.28;
+      margin-bottom: 8px;
+    }
+
+    .welcome-intro-character {
+      position: absolute;
+      right: 6px;
+      bottom: 0;
+      width: min(22vw, 150px);
+      max-width: 150px;
+      z-index: 2;
+    }
+
+    #startBtn {
+      position: static;
+      align-self: flex-start;
+      margin: 8px 0 14px 18px;
+      width: 64px;
+      height: 64px;
+      font-size: 16px;
+      line-height: 1;
+      z-index: 3;
+    }
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+  }
+
+  /* HUD */
+  #hud {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    display: none;
+    z-index: 50;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+    max-width: calc(100% - 70px);
+  }
+
+  #hudRow1 {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  #blockCounter, #damageBar {
+    height: 28px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+
+  #blockCounter {
+    width: 107px;
+  }
+
+  #damageBar {
+    width: 170px;
+  }
+
+  #spotterBox {
+    position: fixed;
+    left: 384px;
+    right: 20px;
+    bottom: 20px;
+    min-height: 46px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(25, 62, 117, 0.14);
+    border-radius: 14px;
+    padding: 6px 14px;
+    color: #193E75;
+    font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    max-width: none;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
+  /* Controls */
+  #controls {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    transform: none;
+    display: none;
+    z-index: 55;
+    width: 350px;
+    gap: 10px;
+    align-items: flex-end;
+    padding: 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(245,198,66,0.35);
+    background: rgba(25,62,117,0.82);
+    backdrop-filter: blur(8px);
+  }
+
+  #mobileNavBar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 116px;
+    display: none;
+    z-index: 45;
+    pointer-events: none;
+    background: rgba(25, 62, 117, 0.9);
+    border-top: 1px solid rgba(245,198,66,0.28);
+    backdrop-filter: blur(4px);
+  }
+
+  .ctrl-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ctrl-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ctrl-spacer {
+    width: 56px;
+    height: 46px;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .ctrl-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    border: 2px solid rgba(245,198,66,0.5);
+    background: rgba(25,62,117,0.8);
+    color: #F5C942;
+    font-size: 1.4rem;
+    font-family: 'Chakra Petch', monospace;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: all 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .ctrl-btn:active, .ctrl-btn.active {
+    background: rgba(245,198,66,0.3);
+    border-color: #F5C942;
+    transform: scale(0.93);
+  }
+
+  .ctrl-btn.hook-btn {
+    width: 132px;
+    height: 56px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    background: #3CA63C;
+    border-color: #3CA63C;
+    color: white;
+  }
+
+  .ctrl-btn.hook-btn.hooked {
+    background: #F37329;
+    border-color: #F37329;
+    color: white;
+  }
+
+  /* Spotter character for mobile */
+  .spotter-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    margin-top: -54px;
+    min-width: 94px;
+  }
+
+  .spotter-character {
+    display: block;
+    width: 104px;
+    height: auto;
+    margin: 0;
+  }
+
+  .spotter-label {
+    margin-top: -6px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    color: #ffffff;
+    text-transform: uppercase;
+    background: #193E75;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  #spotterText {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+
+  @media (min-width: 701px) {
+    #spotterBox {
+      min-height: 40px;
+      padding: 4px 14px 4px 150px;
+      border-radius: 12px;
+      align-items: center;
+    }
+
+    .spotter-avatar {
+      position: absolute;
+      left: 10px;
+      bottom: -2px;
+      margin-top: 0;
+      min-width: 0;
+      width: 120px;
+      z-index: 2;
+    }
+
+    .spotter-character {
+      width: 92px;
+    }
+
+    .spotter-label {
+      margin-top: -8px;
+      font-size: 11px;
+      padding: 4px 9px;
+    }
+  }
+
+  /* Help Button */
+  .help-menu-btn {
+    background: #F5C942 !important;
+    border: 2px solid rgba(25,62,117,0.2) !important;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+  }
+
+  .help-menu-btn svg {
+    width: 24px;
+    height: 36px;
+  }
+
+  .help-menu-btn .help-mark {
+    fill: #193E75;
+  }
+
+  #helpBtn {
+    position: fixed;
+    top: 26px;
+    right: 100px;
+    z-index: 450;
+  }
+
+  /* Main nav hamburger button */
+  #menuBtn {
+    position: fixed;
+    top: 26px;
+    right: 26px;
+    z-index: 450;
+    width: 62px;
+    height: 62px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: none;
+  }
+
+  #menuBtn span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    border-radius: 999px;
+    background: #1f4888;
+  }
+
+  @media (max-width: 700px) {
+    #helpBtn {
+      top: 12px;
+      right: 84px;
+    }
+
+    #menuBtn {
+      top: 12px;
+      right: 12px;
+    }
+  }
+
+  /* Help Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    padding: 20px;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 24px 24px;
+    width: 90vw;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+
+  .modal h2 {
+    color: #193E75;
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #999;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .modal-close:hover {
+    color: #193E75;
+  }
+
+  .slide-container {
+    min-height: 250px;
+  }
+
+  .slide {
+    display: none;
+  }
+
+  .slide.active {
+    display: block;
+  }
+
+  .slide p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #1a2744;
+    margin-bottom: 16px;
+  }
+
+  .slide p:last-child {
+    margin-bottom: 0;
+  }
+
+  .slide strong {
+    font-weight: 700;
+    color: #193E75;
+  }
+
+  .slide ol, .slide ul {
+    margin-left: 20px;
+    margin-bottom: 16px;
+  }
+
+  .slide li {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #1a2744;
+    margin-bottom: 8px;
+  }
+
+  .modal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid #193E75;
+    background: white;
+    color: #193E75;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .modal-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .modal-btn:not(:disabled):hover {
+    background: #f0f0f0;
+  }
+
+  .modal-btn:not(:disabled):active {
+    transform: scale(0.95);
+  }
+
+  .modal-btn-primary {
+    background: #F5C942;
+    border-color: #F5C942;
+    color: #193E75;
+  }
+
+  .modal-btn-primary:not(:disabled):hover {
+    background: #f7d05f;
+  }
+
+  .slide-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .slide-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .slide-dot.active {
+    background: #193E75;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  /* Guided onboarding (Crew Planner style) */
+  .onboarding-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 24, 48, 0.34);
+    display: none;
+    z-index: 430;
+    pointer-events: none;
+  }
+
+  .onboarding-backdrop.active {
+    display: block;
+  }
+
+  .onboarding-focus-ring {
+    position: fixed;
+    display: none;
+    border: 3px solid #F5C942;
+    border-radius: 14px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.08), 0 0 0 8px rgba(245, 201, 66, 0.2);
+    z-index: 431;
+    pointer-events: none;
+    animation: onboardingPulse 1.1s ease-in-out infinite;
+  }
+
+  .onboarding-focus-ring.active {
+    display: block;
+  }
+
+  @keyframes onboardingPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+  .onboarding-hint {
+    position: fixed;
+    display: none;
+    width: min(340px, calc(100vw - 24px));
+    background: #ffffff;
+    color: #1a2744;
+    border-radius: 12px;
+    border: 2px solid #dfe5ee;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+    z-index: 432;
+    padding: 12px 12px 10px;
+    pointer-events: auto;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .onboarding-hint.active {
+    display: block;
+  }
+
+  .onboarding-title {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #193E75;
+    margin-bottom: 6px;
+  }
+
+  .onboarding-copy {
+    font-size: 14px;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+
+  .onboarding-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .onboarding-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+  }
+
+  .onboarding-btn.skip {
+    background: #e8edf5;
+    color: #193E75;
+  }
+
+  .onboarding-btn.next {
+    background: #F5C942;
+    color: #193E75;
+  }
+
+  .onboarding-hint.auto .onboarding-btn.next {
+    display: none;
+  }
+
+  @media (max-width: 700px) {
+    .onboarding-focus-ring {
+      border-radius: 12px;
+    }
+
+    .onboarding-hint {
+      width: calc(100vw - 16px);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .onboarding-copy {
+      font-size: 13px;
+    }
+  }
+
+  /* End Screen (win & game over) */
+  #endScreen {
+    position: fixed;
+    inset: 0;
+    background: rgba(25,62,117,0.92);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 200;
+    padding: 40px;
+  }
+
+  #endScreen .end-card {
+    width: min(1020px, calc(100vw - 120px));
+    background: #efefef;
+    border-radius: 30px;
+    padding: 46px 60px 46px;
+    color: #111;
+    position: relative;
+    text-align: left;
+  }
+
+  #endTitle {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(40px, 4.4vw, 58px);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  #endTitle.win-title {
+    color: #3CA63C;
+    text-shadow: none;
+  }
+
+  #endTitle.lose-title {
+    color: #E61E2A;
+    text-shadow: none;
+  }
+
+  #endLead {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(24px, 2.1vw, 38px);
+    line-height: 1.3;
+    font-weight: 800;
+    margin: 0 0 20px;
+  }
+
+  #endMsg {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(18px, 1.8vw, 30px);
+    line-height: 1.32;
+    font-weight: 500;
+    margin: 0;
+    max-width: calc(100% - 240px);
+  }
+
+  #restartBtn {
+    margin-top: 28px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    padding: 0.85em 2.2em;
+    background: linear-gradient(180deg, #3CA63C, #2a8a2a);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    box-shadow: none;
+  }
+
+  #endScreen.lose-mode {
+    background: rgba(230, 30, 42, 0.82);
+  }
+
+  #endScreen.lose-mode #restartBtn {
+    position: absolute;
+    right: 48px;
+    bottom: 36px;
+    width: 136px;
+    height: 136px;
+    margin-top: 0;
+    padding: 0;
+    border-radius: 50%;
+    background: #F0C638;
+    color: #193E75;
+    font-size: 2rem;
+    line-height: 1.02;
+    letter-spacing: 0;
+    box-shadow: none;
+  }
+
+  #endScreen.lose-mode #restartBtn .retry-lines {
+    display: block;
+    text-align: center;
+    font-weight: 900;
+  }
+
+  @media (max-width: 900px) {
+    #endScreen {
+      padding: 18px;
+    }
+
+    #endScreen .end-card {
+      width: 100%;
+      border-radius: 20px;
+      padding: 30px 22px 24px;
+    }
+
+    #endMsg {
+      max-width: 100%;
+    }
+
+    #endScreen.lose-mode #restartBtn {
+      position: static;
+      width: 110px;
+      height: 110px;
+      margin: 24px auto 0;
+      font-size: 1.95rem;
+      display: block;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .ctrl-btn { width: 48px; height: 48px; font-size: 1.2rem; }
+    .ctrl-btn.hook-btn { width: 68px; font-size: 0.65rem; }
+    #mobileNavBar { display: block; height: 140px; }
+    #spotterBox {
+      position: fixed;
+      bottom: 90px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: none;
+      background: #ffffff;
+      color: #1a2744;
+      border: none;
+      border-radius: 0;
+      padding: 12px 16px;
+      height: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      overflow: visible;
+    }
+    .spotter-avatar {
+      margin-top: 0;
+      min-width: 0;
+    }
+    .spotter-label {
+      display: none;
+    }
+    .spotter-character {
+      display: block;
+      width: 90px;
+      margin-left: -10px;
+      margin-bottom: 50px;
+    }
+    #controls {
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      flex-direction: row;
+      gap: 8px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      backdrop-filter: none;
+    }
+    .ctrl-group {
+      flex-direction: row;
+      gap: 8px;
+    }
+    .ctrl-row {
+      gap: 8px;
+    }
+    /* Hide spacers on mobile portrait */
+    .ctrl-spacer {
+      display: none;
+    }
+  }
+
+  @media (max-width: 600px) and (orientation: portrait) {
+    #spotterBox {
+      height: 56px;
+      min-height: 56px;
+      padding: 0 12px 0 96px;
+      gap: 0;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: row;
+      overflow: visible;
+    }
+
+    .spotter-avatar {
+      position: absolute;
+      left: 8px;
+      bottom: 0;
+      width: 78px;
+      min-width: 78px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .spotter-character {
+      width: 74px;
+      margin: 0;
+    }
+
+    .spotter-label {
+      display: inline-flex;
+      align-self: center;
+      margin: 0;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: #1f4888;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      transform: translateY(2px);
+    }
+
+    #spotterText {
+      display: block;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      line-height: 1.15;
+      text-align: left;
+    }
+  }
+
+  /* Mobile: ensure HUD doesn't overlap the hamburger menu */
+  @media (max-width: 700px) {
+    #hud { max-width: calc(100% - 70px); }
+  }
+
+  /* Landscape mobile: compact HUD/controls on the left to free gameplay space */
+  @media (orientation: landscape) and (max-height: 600px) and (hover: none) and (pointer: coarse) {
+    #mobileNavBar {
+      display: none;
+    }
+
+    #controls {
+      left: 12px;
+      bottom: 12px;
+      transform: none;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 180px;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    .ctrl-btn {
+      width: 42px;
+      height: 42px;
+      font-size: 1rem;
+    }
+
+    .ctrl-btn.hook-btn {
+      width: 100%;
+      height: 42px;
+      font-size: 0.54rem;
+      letter-spacing: 0.04em;
+    }
+
+    #spotterBox {
+      right: 20px !important;
+      transform: none;
+      top: auto;
+      bottom: 10px;
+      width: auto;
+      min-height: 0;
+      padding: 8px 12px;
+      border-radius: 12px;
+      gap: 0;
+      white-space: nowrap;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spotter-avatar {
+      position: fixed;
+      right: 0;
+      bottom: 2px;
+      margin-top: 0;
+      min-width: 0;
+      z-index: 56;
+      align-items: center;
+    }
+
+    .spotter-character {
+      width: 108px;
+    }
+
+    .spotter-label {
+      margin-top: -8px;
+      font-size: 9px;
+      padding: 3px 7px;
+    }
+
+    #spotterText {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.15;
+      text-align: center;
+      max-height: none;
+      max-width: 100%;
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+
+  /* Hidden SVG container for loading assets */
+  #svg-assets {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+</style>
+<link rel="stylesheet" href="../../nav.css?v=1.1.6">
+</head>
+<body>
+<nav class="nav-drawer" id="navDrawer">
+  <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
+  <a href="../../index.html" class="nav-link nav-link-home"><span class="nav-link-label">Home</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/home.svg" alt=""></span></a>
+  <a href="../../about.html" class="nav-link nav-link-about"><span class="nav-link-label">About</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/about.svg" alt=""></span></a>
+  <a href="../../career-explorer.html" class="nav-link nav-link-career"><span class="nav-link-label">Career Explorer</span><span class="nav-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.5 7a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm0 0V4m0 13v3m7-9h3m-3.5-5.5l2.2-2.2M4.8 18.2l2.2-2.2M3 11h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 14l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span></a>
+  <a href="../../explore-stories.html" class="nav-link nav-link-videos"><span class="nav-link-label">Video Stories</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/videos.svg" alt=""></span></a>
+  <a href="../../mini-games.html" class="nav-link nav-link-games active"><span class="nav-link-label">Mini Games</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/minigame.svg" alt=""></span></a>
+  <a href="https://www.menti.com/al3j6nyu9ebk" class="nav-link nav-link-survey" target="_blank" rel="noopener noreferrer"><span class="nav-link-label">Survey</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/survey.svg" alt=""></span></a>
+  <a href="../../credits.html" class="nav-link nav-link-credits"><span class="nav-link-label">Credits</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/credits.svg" alt=""></span></a>
+
+</nav>
+<div class="nav-scrim" id="navScrim"></div>
+
+<!-- Help and Menu buttons -->
+<button class="menu-btn help-menu-btn" id="helpBtn" aria-label="Help" title="Help">
+  <svg viewBox="0 0 50.9 84.5" xmlns="http://www.w3.org/2000/svg">
+    <path class="help-mark" d="M49.2,15.3c-1.2-3-3-5.7-5.3-8-3.3-3.3-9.2-7.3-18.5-7.3s-6.6.5-9.5,1.6c-2.7,1-5.2,2.5-7.4,4.4C4.9,9.1,2.1,13.4.4,18.3c-1.2,3.4.6,7.1,4,8.3s7.1-.6,8.3-4c.7-2,2-4.7,4.4-6.8,2.3-1.9,5-2.9,8.5-2.9s7,1.2,9.3,3.5c2.2,2.3,3.2,5.2,3.2,7.1,0,3.2-1,5-1.8,6.1-1.2,1.7-3,3.2-5,4.9-2.6,2.1-5.5,4.5-7.6,8-3,4.8-4.6,9.7-4.6,14.5s2.9,6.5,6.5,6.5,6.5-2.9,6.5-6.5.5-4.1,2.6-7.5c1.1-1.7,2.9-3.2,5-4.9,4.8-4,11.3-9.4,11.4-20.8,0-2.7-.6-5.6-1.7-8.4h0Z"/>
+    <path class="help-mark" d="M32.6,77c0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2s0-.1,0-.2c0,0,0-.1,0-.2,0-.1,0-.2,0-.3,0-.1,0-.2,0-.3,0-.1,0-.2-.1-.3s0-.2-.1-.3c0-.1,0-.2-.1-.3,0-.1,0-.2-.2-.3,0,0-.1-.2-.2-.3,0,0-.1-.2-.2-.3,0,0,0,0,0-.1,0,0,0,0,0-.1,0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1-.1,0,0,0,0-.1-.1,0,0,0,0-.1-.1,0,0,0,0-.1-.1s0,0-.1-.1,0,0-.1-.1c0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1,0s0,0-.2,0c0,0-.2-.1-.3-.2,0,0-.2-.1-.3-.2,0,0-.2-.1-.3-.2-.1,0-.2,0-.3-.1s-.2,0-.3-.1-.2,0-.3-.1-.2,0-.3,0c-.1,0-.2,0-.3,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0s-.1,0-.2,0c0,0-.1,0-.2,0s-.1,0-.2,0h-.7c0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0s-.1,0-.2,0c0,0-.1,0-.2,0-.1,0-.2,0-.3,0s-.2,0-.3,0-.2,0-.3.1-.2,0-.3.1c-.1,0-.2,0-.3.1-.1,0-.2,0-.3.2,0,0-.2.1-.3.2,0,0-.2.1-.3.2,0,0,0,0-.1,0,0,0,0,0-.1,0,0,0,0,0-.1.1s0,0-.1.1,0,0-.1.1c0,0,0,0-.1.1s0,0-.1.1,0,0-.1.1,0,0-.1.1c0,0,0,0-.1.1,0,0,0,0-.1.1,0,0,0,0-.1.1,0,0,0,0-.1.1s0,0-.1.1c0,0,0,0,0,.1s0,0,0,.1c0,0-.1.2-.2.3,0,0-.1.2-.2.3,0,0-.1.2-.2.3,0,.1,0,.2-.1.3s0,.2-.1.3,0,.2-.1.3,0,.2,0,.3c0,.1,0,.2,0,.3,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2s0,.1,0,.2c0,0,0,.1,0,.2,0,0,0,.1,0,.2v.7c0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2s0,.1,0,.2c0,0,0,.1,0,.2,0,.1,0,.2,0,.3,0,.1,0,.2,0,.3,0,.1,0,.2.1.3s0,.2.1.3,0,.2.1.3c0,.1,0,.2.2.3s.1.2.2.3c0,0,.1.2.2.3,0,0,0,0,0,.2,0,0,0,0,0,.1,0,0,0,0,.1.1s0,0,.1.1,0,0,.1.1,0,0,.1.1c0,0,0,0,.1.1,0,0,0,0,.1.1s0,0,.1.1c0,0,0,0,.1.1s0,0,.1.1,0,0,.1.1c0,0,0,0,.1.1s0,0,.1.1c0,0,0,0,.1,0s0,0,.1,0c0,0,.2.1.3.2,0,0,.2.1.3.2,0,0,.2.1.3.2.1,0,.2,0,.3.1s.2,0,.3.1.2,0,.3.1.2,0,.3,0c.1,0,.2,0,.3,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0s.1,0,.2,0c0,0,.1,0,.2,0,0,0,.1,0,.2,0h.7c0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0s.1,0,.2,0c0,0,.1,0,.2,0,.1,0,.2,0,.3,0s.2,0,.3,0,.2,0,.3-.1.2,0,.3-.1c.1,0,.2,0,.3-.1.1,0,.2,0,.3-.2,0,0,.2-.1.3-.2,0,0,.2-.1.3-.2,0,0,0,0,.2,0,0,0,0,0,.1,0,0,0,0,0,.1-.1s0,0,.1-.1,0,0,.1-.1c0,0,0,0,.1-.1s0,0,.1-.1,0,0,.1-.1,0,0,.1-.1c0,0,0,0,.1-.1,0,0,0,0,.1-.1,0,0,0,0,.1-.1,0,0,0,0,.1-.1s0,0,.1-.1c0,0,0,0,0-.1s0,0,0-.2c0,0,.1-.2.2-.3,0,0,.1-.2.2-.3,0,0,.1-.2.2-.3,0-.1,0-.2.1-.3,0-.1,0-.2.1-.3s0-.2.1-.3,0-.2,0-.3c0-.1,0-.2,0-.3,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2s0-.1,0-.2c0,0,0-.1,0-.2,0,0,0-.1,0-.2v-.7h0Z"/>
+  </svg>
+</button>
+<button class="menu-btn" id="menuBtn" aria-label="Open menu" title="Menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<canvas id="gameCanvas" aria-label="Crane Operator game canvas"></canvas>
+
+<!-- SVG Assets Container -->
+<div id="svg-assets"></div>
+
+<!-- Start Screen -->
+<div id="startScreen">
+  <div class="welcome-card">
+    <div class="welcome-intro-body">
+      <div class="welcome-intro-title">WELCOME TO<br>CRANE CRAZE!</div>
+      <p class="welcome-intro-text bold">
+        You're in charge of lifting, balancing, and placing massive blocks while the whole job site watches.
+      </p>
+      <p class="welcome-intro-text">
+        Lift and place three blocks exactly where they belong. Balance is everything. Be sure not to drop them!
+      </p>
+    </div>
+    <img class="welcome-intro-character" src="img/craneoperator.svg" alt="Crane Operator">
+    <button id="startBtn">READY</button>
+  </div>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="hudRow1">
+    <!-- Damage Bar -->
+    <svg id="damageBar" width="170" height="28" viewBox="0 0 170 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="170" height="28" rx="10" fill="#284572"/>
+      <defs>
+        <clipPath id="damageClip">
+          <rect x="74" y="0" width="96" height="28"/>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#damageClip)">
+        <rect id="damageYellow" x="74" y="0" width="0" height="28" fill="#F5C942"/>
+        <rect id="damageOrange" x="74" y="0" width="0" height="28" fill="#F37329"/>
+        <rect id="damageRed" x="74" y="0" width="0" height="28" fill="#E61E2A"/>
+      </g>
+      <path d="M12.8523 18H9.75852V9.27273H12.8778C13.7557 9.27273 14.5114 9.44744 15.1449 9.79688C15.7784 10.1435 16.2656 10.642 16.6065 11.2926C16.9503 11.9432 17.1222 12.7216 17.1222 13.6278C17.1222 14.5369 16.9503 15.3182 16.6065 15.9716C16.2656 16.625 15.7756 17.1264 15.1364 17.4759C14.5 17.8253 13.7386 18 12.8523 18ZM11.6037 16.419H12.7756C13.321 16.419 13.7798 16.3224 14.152 16.1293C14.527 15.9332 14.8082 15.6307 14.9957 15.2216C15.1861 14.8097 15.2812 14.2784 15.2812 13.6278C15.2812 12.983 15.1861 12.456 14.9957 12.0469C14.8082 11.6378 14.5284 11.3366 14.1562 11.1435C13.7841 10.9503 13.3253 10.8537 12.7798 10.8537H11.6037V16.419ZM20.3214 18.1236C19.9038 18.1236 19.5316 18.0511 19.2049 17.9062C18.8782 17.7585 18.6197 17.5412 18.4293 17.2543C18.2418 16.9645 18.1481 16.6037 18.1481 16.1719C18.1481 15.8082 18.2148 15.5028 18.3484 15.2557C18.4819 15.0085 18.6637 14.8097 18.8938 14.6591C19.1239 14.5085 19.3853 14.3949 19.6779 14.3182C19.9734 14.2415 20.283 14.1875 20.6069 14.1562C20.9876 14.1165 21.2944 14.0795 21.5273 14.0455C21.7603 14.0085 21.9293 13.9545 22.0344 13.8835C22.1396 13.8125 22.1921 13.7074 22.1921 13.5682V13.5426C22.1921 13.2727 22.1069 13.0639 21.9364 12.9162C21.7688 12.7685 21.5302 12.6946 21.2205 12.6946C20.8938 12.6946 20.6339 12.767 20.4407 12.9119C20.2475 13.054 20.1197 13.233 20.0572 13.4489L18.3782 13.3125C18.4634 12.9148 18.631 12.571 18.881 12.2812C19.131 11.9886 19.4535 11.7642 19.8484 11.608C20.2461 11.4489 20.7063 11.3693 21.229 11.3693C21.5927 11.3693 21.9407 11.4119 22.2731 11.4972C22.6083 11.5824 22.9052 11.7145 23.1637 11.8935C23.4251 12.0724 23.631 12.3026 23.7816 12.5838C23.9322 12.8622 24.0075 13.196 24.0075 13.5852V18H22.2859V17.0923H22.2347C22.1296 17.2969 21.989 17.4773 21.8129 17.6335C21.6367 17.7869 21.4251 17.9077 21.1779 17.9957C20.9308 18.081 20.6452 18.1236 20.3214 18.1236ZM20.8413 16.8707C21.1083 16.8707 21.3441 16.8182 21.5487 16.7131C21.7532 16.6051 21.9137 16.4602 22.0302 16.2784C22.1467 16.0966 22.2049 15.8906 22.2049 15.6605V14.9659C22.1481 15.0028 22.07 15.0369 21.9705 15.0682C21.8739 15.0966 21.7646 15.1236 21.6424 15.1491C21.5202 15.1719 21.3981 15.1932 21.2759 15.2131C21.1538 15.2301 21.043 15.2457 20.9435 15.2599C20.7305 15.2912 20.5444 15.3409 20.3853 15.4091C20.2262 15.4773 20.1026 15.5696 20.0146 15.6861C19.9265 15.7997 19.8825 15.9418 19.8825 16.1122C19.8825 16.3594 19.9719 16.5483 20.1509 16.679C20.3327 16.8068 20.5629 16.8707 20.8413 16.8707ZM25.4158 18V11.4545H27.146V12.6094H27.2227C27.359 12.2259 27.5863 11.9233 27.9045 11.7017C28.2227 11.4801 28.6033 11.3693 29.0465 11.3693C29.4954 11.3693 29.8775 11.4815 30.1928 11.706C30.5082 11.9276 30.7184 12.2287 30.8235 12.6094H30.8917C31.0252 12.2344 31.2667 11.9347 31.6161 11.7102C31.9684 11.483 32.3846 11.3693 32.8647 11.3693C33.4755 11.3693 33.9712 11.5639 34.3519 11.9531C34.7354 12.3395 34.9272 12.8878 34.9272 13.598V18H33.1161V13.956C33.1161 13.5923 33.0195 13.3196 32.8263 13.1378C32.6332 12.956 32.3917 12.8651 32.1019 12.8651C31.7724 12.8651 31.5153 12.9702 31.3306 13.1804C31.146 13.3878 31.0536 13.6619 31.0536 14.0028V18H29.2937V13.9176C29.2937 13.5966 29.2013 13.3409 29.0167 13.1506C28.8349 12.9602 28.5948 12.8651 28.2965 12.8651C28.0948 12.8651 27.913 12.9162 27.7511 13.0185C27.592 13.1179 27.4656 13.2585 27.3718 13.4403C27.2781 13.6193 27.2312 13.8295 27.2312 14.071V18H25.4158ZM38.2276 18.1236C37.81 18.1236 37.4379 18.0511 37.1112 17.9062C36.7844 17.7585 36.5259 17.5412 36.3356 17.2543C36.1481 16.9645 36.0543 16.6037 36.0543 16.1719C36.0543 15.8082 36.1211 15.5028 36.2546 15.2557C36.3881 15.0085 36.57 14.8097 36.8001 14.6591C37.0302 14.5085 37.2915 14.3949 37.5842 14.3182C37.8796 14.2415 38.1893 14.1875 38.5131 14.1562C38.8938 14.1165 39.2006 14.0795 39.4336 14.0455C39.6665 14.0085 39.8356 13.9545 39.9407 13.8835C40.0458 13.8125 40.0984 13.7074 40.0984 13.5682V13.5426C40.0984 13.2727 40.0131 13.0639 39.8427 12.9162C39.6751 12.7685 39.4364 12.6946 39.1268 12.6946C38.8001 12.6946 38.5401 12.767 38.3469 12.9119C38.1538 13.054 38.0259 13.233 37.9634 13.4489L36.2844 13.3125C36.3697 12.9148 36.5373 12.571 36.7873 12.2812C37.0373 11.9886 37.3597 11.7642 37.7546 11.608C38.1523 11.4489 38.6126 11.3693 39.1353 11.3693C39.4989 11.3693 39.8469 11.4119 40.1793 11.4972C40.5146 11.5824 40.8114 11.7145 41.07 11.8935C41.3313 12.0724 41.5373 12.3026 41.6879 12.5838C41.8384 12.8622 41.9137 13.196 41.9137 13.5852V18H40.1921V17.0923H40.141C40.0359 17.2969 39.8952 17.4773 39.7191 17.6335C39.543 17.7869 39.3313 17.9077 39.0842 17.9957C38.837 18.081 38.5515 18.1236 38.2276 18.1236ZM38.7475 16.8707C39.0146 16.8707 39.2504 16.8182 39.4549 16.7131C39.6594 16.6051 39.82 16.4602 39.9364 16.2784C40.0529 16.0966 40.1112 15.8906 40.1112 15.6605V14.9659C40.0543 15.0028 39.9762 15.0369 39.8768 15.0682C39.7802 15.0966 39.6708 15.1236 39.5487 15.1491C39.4265 15.1719 39.3043 15.1932 39.1822 15.2131C39.06 15.2301 38.9492 15.2457 38.8498 15.2599C38.6367 15.2912 38.4506 15.3409 38.2915 15.4091C38.1325 15.4773 38.0089 15.5696 37.9208 15.6861C37.8327 15.7997 37.7887 15.9418 37.7887 16.1122C37.7887 16.3594 37.8782 16.5483 38.0572 16.679C38.239 16.8068 38.4691 16.8707 38.7475 16.8707ZM46.271 20.5909C45.6829 20.5909 45.1786 20.5099 44.7582 20.348C44.3406 20.1889 44.0082 19.9716 43.761 19.696C43.5138 19.4205 43.3533 19.1108 43.2795 18.767L44.9585 18.5412C45.0096 18.6719 45.0906 18.794 45.2013 18.9077C45.3121 19.0213 45.4585 19.1122 45.6403 19.1804C45.8249 19.2514 46.0494 19.2869 46.3136 19.2869C46.7085 19.2869 47.0337 19.1903 47.2894 18.9972C47.5479 18.8068 47.6772 18.4872 47.6772 18.0384V16.8409H47.6005C47.521 17.0227 47.4016 17.1946 47.2425 17.3565C47.0835 17.5185 46.8789 17.6506 46.6289 17.7528C46.3789 17.8551 46.0806 17.9062 45.734 17.9062C45.2425 17.9062 44.7951 17.7926 44.3917 17.5653C43.9911 17.3352 43.6715 16.9844 43.4329 16.5128C43.1971 16.0384 43.0792 15.4389 43.0792 14.7145C43.0792 13.973 43.1999 13.3537 43.4414 12.8565C43.6829 12.3594 44.0039 11.9872 44.4045 11.7401C44.8079 11.4929 45.2496 11.3693 45.7298 11.3693C46.0962 11.3693 46.4031 11.4318 46.6502 11.5568C46.8974 11.679 47.0962 11.8324 47.2468 12.017C47.4002 12.1989 47.5181 12.3778 47.6005 12.554H47.6687V11.4545H49.4712V18.0639C49.4712 18.6207 49.3349 19.0866 49.0621 19.4616C48.7894 19.8366 48.4116 20.1179 47.9286 20.3054C47.4485 20.4957 46.896 20.5909 46.271 20.5909ZM46.3093 16.5426C46.6019 16.5426 46.8491 16.4702 47.0508 16.3253C47.2553 16.1776 47.4116 15.9673 47.5195 15.6946C47.6303 15.419 47.6857 15.0895 47.6857 14.706C47.6857 14.3224 47.6317 13.9901 47.5238 13.7088C47.4158 13.4247 47.2596 13.2045 47.055 13.0483C46.8505 12.892 46.6019 12.8139 46.3093 12.8139C46.011 12.8139 45.7596 12.8949 45.555 13.0568C45.3505 13.2159 45.1957 13.4375 45.0906 13.7216C44.9854 14.0057 44.9329 14.3338 44.9329 14.706C44.9329 15.0838 44.9854 15.4105 45.0906 15.6861C45.1985 15.9588 45.3533 16.1705 45.555 16.321C45.7596 16.4687 46.011 16.5426 46.3093 16.5426ZM53.8988 18.1278C53.2255 18.1278 52.646 17.9915 52.1602 17.7188C51.6772 17.4432 51.305 17.054 51.0437 16.5511C50.7823 16.0455 50.6516 15.4474 50.6516 14.7571C50.6516 14.0838 50.7823 13.4929 51.0437 12.9844C51.305 12.4759 51.6729 12.0795 52.1474 11.7955C52.6246 11.5114 53.1843 11.3693 53.8263 11.3693C54.2582 11.3693 54.6602 11.4389 55.0323 11.5781C55.4073 11.7145 55.734 11.9205 56.0124 12.196C56.2937 12.4716 56.5124 12.8182 56.6687 13.2358C56.8249 13.6506 56.9031 14.1364 56.9031 14.6932V15.1918H51.3761V14.0668H55.1942C55.1942 13.8054 55.1374 13.5739 55.0238 13.3722C54.9102 13.1705 54.7525 13.0128 54.5508 12.8991C54.3519 12.7827 54.1204 12.7244 53.8562 12.7244C53.5806 12.7244 53.3363 12.7884 53.1232 12.9162C52.913 13.0412 52.7482 13.2102 52.6289 13.4233C52.5096 13.6335 52.4485 13.8679 52.4457 14.1264V15.196C52.4457 15.5199 52.5053 15.7997 52.6246 16.0355C52.7468 16.2713 52.9187 16.4531 53.1403 16.581C53.3619 16.7088 53.6246 16.7727 53.9286 16.7727C54.1303 16.7727 54.315 16.7443 54.4826 16.6875C54.6502 16.6307 54.7937 16.5455 54.913 16.4318C55.0323 16.3182 55.1232 16.179 55.1857 16.0142L56.8647 16.125C56.7795 16.5284 56.6048 16.8807 56.3406 17.1818C56.0792 17.4801 55.7411 17.7131 55.3263 17.8807C54.9144 18.0455 54.4386 18.1278 53.8988 18.1278Z" fill="white"/>
+    </svg>
+
+    <!-- Block Counter -->
+    <svg id="blockCounter" width="107" height="28" viewBox="0 0 107 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="107" height="28" rx="10" fill="#284572"/>
+      <path d="M74 0H97C102.523 0 107 4.47715 107 10V18C107 23.5228 102.523 28 97 28H74V0Z" fill="#F5C942"/>
+      <path d="M9.75852 18V9.27273H13.2528C13.8949 9.27273 14.4304 9.3679 14.8594 9.55824C15.2884 9.74858 15.6108 10.0128 15.8267 10.3509C16.0426 10.6861 16.1506 11.0724 16.1506 11.5099C16.1506 11.8509 16.0824 12.1506 15.946 12.4091C15.8097 12.6648 15.6222 12.875 15.3835 13.0398C15.1477 13.2017 14.8778 13.3168 14.5739 13.3849V13.4702C14.9063 13.4844 15.2173 13.5781 15.5071 13.7514C15.7997 13.9247 16.0369 14.1676 16.2188 14.4801C16.4006 14.7898 16.4915 15.1591 16.4915 15.5881C16.4915 16.0511 16.3764 16.4645 16.1463 16.8281C15.919 17.1889 15.5824 17.4744 15.1364 17.6847C14.6903 17.8949 14.1406 18 13.4872 18H9.75852ZM11.6037 16.4915H13.108C13.6222 16.4915 13.9972 16.3935 14.233 16.1974C14.4688 15.9986 14.5866 15.7344 14.5866 15.4048C14.5866 15.1634 14.5284 14.9503 14.4119 14.7656C14.2955 14.581 14.1293 14.4361 13.9134 14.331C13.7003 14.2259 13.446 14.1733 13.1506 14.1733H11.6037V16.4915ZM11.6037 12.9247H12.9716C13.2244 12.9247 13.4489 12.8807 13.6449 12.7926C13.8438 12.7017 14 12.5739 14.1136 12.4091C14.2301 12.2443 14.2884 12.0469 14.2884 11.8168C14.2884 11.5014 14.1761 11.2472 13.9517 11.054C13.7301 10.8608 13.4148 10.7642 13.0057 10.7642H11.6037V12.9247ZM19.4734 9.27273V18H17.658V9.27273H19.4734ZM23.8849 18.1278C23.223 18.1278 22.6506 17.9872 22.1676 17.706C21.6875 17.4219 21.3168 17.027 21.0554 16.5213C20.794 16.0128 20.6634 15.4233 20.6634 14.7528C20.6634 14.0767 20.794 13.4858 21.0554 12.9801C21.3168 12.4716 21.6875 12.0767 22.1676 11.7955C22.6506 11.5114 23.223 11.3693 23.8849 11.3693C24.5469 11.3693 25.1179 11.5114 25.598 11.7955C26.081 12.0767 26.4531 12.4716 26.7145 12.9801C26.9759 13.4858 27.1065 14.0767 27.1065 14.7528C27.1065 15.4233 26.9759 16.0128 26.7145 16.5213C26.4531 17.027 26.081 17.4219 25.598 17.706C25.1179 17.9872 24.5469 18.1278 23.8849 18.1278ZM23.8935 16.7216C24.1946 16.7216 24.446 16.6364 24.6477 16.4659C24.8494 16.2926 25.0014 16.0568 25.1037 15.7585C25.2088 15.4602 25.2614 15.1207 25.2614 14.7401C25.2614 14.3594 25.2088 14.0199 25.1037 13.7216C25.0014 13.4233 24.8494 13.1875 24.6477 13.0142C24.446 12.8409 24.1946 12.7543 23.8935 12.7543C23.5895 12.7543 23.3338 12.8409 23.1264 13.0142C22.9219 13.1875 22.767 13.4233 22.6619 13.7216C22.5597 14.0199 22.5085 14.3594 22.5085 14.7401C22.5085 15.1207 22.5597 15.4602 22.6619 15.7585C22.767 16.0568 22.9219 16.2926 23.1264 16.4659C23.3338 16.6364 23.5895 16.7216 23.8935 16.7216ZM31.2443 18.1278C30.5739 18.1278 29.9972 17.9858 29.5142 17.7017C29.0341 17.4148 28.6648 17.017 28.4062 16.5085C28.1506 16 28.0227 15.4148 28.0227 14.7528C28.0227 14.0824 28.152 13.4943 28.4105 12.9886C28.6719 12.4801 29.0426 12.0838 29.5227 11.7997C30.0028 11.5128 30.5739 11.3693 31.2358 11.3693C31.8068 11.3693 32.3068 11.473 32.7358 11.6804C33.1648 11.8878 33.5043 12.179 33.7543 12.554C34.0043 12.929 34.142 13.3693 34.1676 13.875H32.4545C32.4063 13.5483 32.2784 13.2855 32.071 13.0866C31.8665 12.8849 31.598 12.7841 31.2656 12.7841C30.9844 12.7841 30.7386 12.8608 30.5284 13.0142C30.321 13.1648 30.1591 13.3849 30.0426 13.6747C29.9261 13.9645 29.8679 14.3153 29.8679 14.7273C29.8679 15.1449 29.9247 15.5 30.0384 15.7926C30.1548 16.0852 30.3182 16.3082 30.5284 16.4616C30.7386 16.6151 30.9844 16.6918 31.2656 16.6918C31.473 16.6918 31.6591 16.6491 31.8239 16.5639C31.9915 16.4787 32.1293 16.3551 32.2372 16.1932C32.348 16.0284 32.4205 15.831 32.4545 15.6009H34.1676C34.1392 16.1009 34.0028 16.5412 33.7585 16.9219C33.517 17.2997 33.1832 17.5952 32.7571 17.8082C32.331 18.0213 31.8267 18.1278 31.2443 18.1278ZM36.9748 16.1165L36.979 13.9389H37.2433L39.3398 11.4545H41.4237L38.6069 14.7443H38.1765L36.9748 16.1165ZM35.3299 18V9.27273H37.1452V18H35.3299ZM39.4208 18L37.4947 15.1491L38.7049 13.8665L41.5472 18H39.4208ZM52.4254 9.27273V18H50.8317L47.0348 12.5071H46.9709V18H45.1257V9.27273H46.745L50.5121 14.7614H50.5888V9.27273H52.4254ZM56.8732 18.1278C56.2113 18.1278 55.6388 17.9872 55.1559 17.706C54.6758 17.4219 54.305 17.027 54.0437 16.5213C53.7823 16.0128 53.6516 15.4233 53.6516 14.7528C53.6516 14.0767 53.7823 13.4858 54.0437 12.9801C54.305 12.4716 54.6758 12.0767 55.1559 11.7955C55.6388 11.5114 56.2113 11.3693 56.8732 11.3693C57.5352 11.3693 58.1062 11.5114 58.5863 11.7955C59.0692 12.0767 59.4414 12.4716 59.7028 12.9801C59.9641 13.4858 60.0948 14.0767 60.0948 14.7528C60.0948 15.4233 59.9641 16.0128 59.7028 16.5213C59.4414 17.027 59.0692 17.4219 58.5863 17.706C58.1062 17.9872 57.5352 18.1278 56.8732 18.1278ZM56.8817 16.7216C57.1829 16.7216 57.4343 16.6364 57.636 16.4659C57.8377 16.2926 57.9897 16.0568 58.092 15.7585C58.1971 15.4602 58.2496 15.1207 58.2496 14.7401C58.2496 14.3594 58.1971 14.0199 58.092 13.7216C57.9897 13.4233 57.8377 13.1875 57.636 13.0142C57.4343 12.8409 57.1829 12.7543 56.8817 12.7543C56.5778 12.7543 56.3221 12.8409 56.1147 13.0142C55.9102 13.1875 55.7553 13.4233 55.6502 13.7216C55.5479 14.0199 55.4968 14.3594 55.4968 14.7401C55.4968 15.1207 55.5479 15.4602 55.6502 15.7585C55.7553 16.0568 55.9102 16.2926 56.1147 16.4659C56.3221 16.6364 56.5778 16.7216 56.8817 16.7216ZM62.3363 18.1108C62.055 18.1108 61.8136 18.0114 61.6119 17.8125C61.413 17.6108 61.3136 17.3693 61.3136 17.0881C61.3136 16.8097 61.413 16.571 61.6119 16.3722C61.8136 16.1733 62.055 16.0739 62.3363 16.0739C62.609 16.0739 62.8477 16.1733 63.0522 16.3722C63.2567 16.571 63.359 16.8097 63.359 17.0881C63.359 17.2756 63.3107 17.4474 63.2141 17.6037C63.1204 17.7571 62.9968 17.8807 62.8434 17.9744C62.69 18.0653 62.521 18.1108 62.3363 18.1108Z" fill="white"/>
+      <text id="blockNumber" x="90" y="19" fill="#193E75" font-family="'Inter', sans-serif" font-size="14" font-weight="700" text-anchor="middle">0/3</text>
+    </svg>
+  </div>
+  <div id="spotterBox" role="status" aria-live="polite">
+    <div class="spotter-avatar">
+      <img src="img/craneoperator.svg" alt="Crane Operator" class="spotter-character">
+      <span class="spotter-label">Spotter</span>
+    </div>
+    <span id="spotterText">Ready</span>
+  </div>
+</div>
+
+<div id="mobileNavBar" aria-hidden="true"></div>
+
+<!-- On-screen Controls -->
+<div id="controls">
+  <div class="ctrl-group">
+    <div class="ctrl-row">
+      <div class="ctrl-spacer" aria-hidden="true"></div>
+      <button class="ctrl-btn" data-dir="up" aria-label="Move hook up">&#9650;</button>
+      <div class="ctrl-spacer" aria-hidden="true"></div>
+    </div>
+    <div class="ctrl-row">
+      <button class="ctrl-btn" data-dir="left" aria-label="Move hook left">&#9664;</button>
+      <button class="ctrl-btn" data-dir="down" aria-label="Move hook down">&#9660;</button>
+      <button class="ctrl-btn" data-dir="right" aria-label="Move hook right">&#9654;</button>
+    </div>
+  </div>
+  <button class="ctrl-btn hook-btn" id="hookBtn" aria-label="Hook" aria-pressed="false">Hook</button>
+</div>
+
+<!-- Help Modal -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal">
+    <h2>How to Play</h2>
+    <div class="slide-container">
+      <div class="slide active" data-slide="0">
+        <p><strong>Your Goal:</strong> Operate the crane to safely lift and deliver all 3 concrete blocks to the green drop zone.</p>
+        <p>Balance is everything. Avoid the obstacle drums and minimize damage to complete the job!</p>
+      </div>
+      <div class="slide" data-slide="1">
+        <p><strong>Controls:</strong></p>
+        <ul>
+          <li><strong>Arrow Keys / Buttons:</strong> Move the crane trolley left/right and raise/lower the hook</li>
+          <li><strong>HOOK Button / Spacebar:</strong> Attach to nearby crates or release them</li>
+        </ul>
+      </div>
+      <div class="slide" data-slide="2">
+        <p><strong>Tips:</strong></p>
+        <ol>
+          <li>🪝 Lower the hook close to a crate, then press HOOK to attach</li>
+          <li>⬆️ Raise the load high enough to clear the orange drum obstacle</li>
+          <li>⬇️ Lower the crate into the green drop zone before releasing</li>
+          <li>⚠️ Avoid hitting drums - collisions cause damage!</li>
+        </ol>
+      </div>
+      <div class="slide" data-slide="3">
+        <p><strong>Watch Out:</strong></p>
+        <p>If you take too much damage (100%), the job fails. Release crates too high and they'll break on impact.</p>
+        <p>Follow the spotter's instructions at the bottom of the screen for guidance!</p>
+      </div>
+    </div>
+    <div class="modal-nav">
+      <button class="modal-btn" id="prevSlide">← Back</button>
+      <div class="slide-dots" id="slideDots"></div>
+      <button class="modal-btn modal-btn-primary" id="nextSlide">Next →</button>
+    </div>
+    <div class="modal-nav" style="justify-content:flex-end; margin-top:10px;">
+      <button class="modal-btn" id="replayTutorialBtn">Replay tutorial</button>
+    </div>
+    <button class="modal-close" onclick="closeHelp()">×</button>
+  </div>
+</div>
+
+<!-- End Screen -->
+<div id="endScreen">
+  <div class="end-card">
+    <h2 id="endTitle">Job Complete!</h2>
+    <p id="endLead"></p>
+    <p id="endMsg">All crates delivered.</p>
+    <button id="restartBtn">Play Again</button>
+  </div>
+</div>
+
+<!-- Onboarding overlay -->
+<div id="onboardingBackdrop" class="onboarding-backdrop" aria-hidden="true"></div>
+<div id="onboardingFocusRing" class="onboarding-focus-ring" aria-hidden="true"></div>
+<div id="onboardingHint" class="onboarding-hint" role="dialog" aria-live="polite" aria-label="Tutorial step">
+  <div id="onboardingTitle" class="onboarding-title"></div>
+  <div id="onboardingCopy" class="onboarding-copy"></div>
+  <div class="onboarding-actions">
+    <button id="onboardingSkipBtn" class="onboarding-btn skip" type="button">Skip</button>
+    <button id="onboardingNextBtn" class="onboarding-btn next" type="button">Next</button>
+  </div>
+</div>
+
+<script>
+// ============ SVG ASSET LOADING ============
+const svgAssets = {};
+const svgImages = {}; // Store loaded Image objects for rendering
+const assetPaths = {
+  crane: 'img/crane.svg',
+  crate: 'img/crate.svg',
+  drum: 'img/drum.svg',
+  block: 'img/block.svg',
+  hook: 'img/hook.svg',
+  tophook: 'img/tophook.svg',
+  precast: 'img/precast.svg',
+  brokenprecast: 'img/brokenprecast.svg',
+  background: 'img/cityscape.svg',
+  hill01: 'img/hill01.svg',
+  hill02: 'img/hill02.svg'
+};
+
+async function loadSVGAssets() {
+  const container = document.getElementById('svg-assets');
+  const imagePromises = [];
+
+  for (const [name, path] of Object.entries(assetPaths)) {
+    // Non-SVG assets (e.g. PNG background) load directly as images.
+    if (/\.(png|jpg|jpeg|webp)$/i.test(path)) {
+      const promise = new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          svgImages[name] = img;
+          resolve();
+        };
+        img.onerror = () => {
+          console.warn(`Failed to load image for ${name}`);
+          resolve();
+        };
+        img.src = path;
+      });
+      imagePromises.push(promise);
+      continue;
+    }
+
+    try {
+      const response = await fetch(path);
+      const svgText = await response.text();
+      const div = document.createElement('div');
+      div.innerHTML = svgText;
+      const svgEl = div.querySelector('svg');
+      if (svgEl) {
+        container.appendChild(svgEl);
+        svgAssets[name] = svgEl;
+
+        // Create Image object for canvas rendering
+        const promise = new Promise((resolve) => {
+          const img = new Image();
+          const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+          const url = URL.createObjectURL(svgBlob);
+          img.onload = () => {
+            svgImages[name] = img;
+            resolve();
+          };
+          img.onerror = () => {
+            console.warn(`Failed to load image for ${name}`);
+            resolve();
+          };
+          img.src = url;
+        });
+        imagePromises.push(promise);
+      }
+    } catch (e) {
+      console.warn(`Failed to load ${name}:`, e);
+    }
+  }
+
+  await Promise.all(imagePromises);
+}
+
+// ============ GAME ENGINE ============
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth * devicePixelRatio;
+  canvas.height = window.innerHeight * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  updateHookIdleButtonLabel();
+}
+resize();
+window.addEventListener('resize', resize);
+
+const W = () => window.innerWidth;
+const H = () => window.innerHeight;
+
+// ============ GAME STATE ============
+const WORLD = {
+  groundY: 700,
+  craneBaseX: 200,
+  craneTopY: 245, // 30% shorter tower (650px -> 455px)
+  jibLength: 900,
+  towerHeight: 455,
+};
+
+let gameState = 'start';
+let camera = { x: 0, y: 0, zoom: 0.55 };
+let targetCamera = { x: 0, y: 0, zoom: 0.55 };
+let introOverviewTimer = null;
+let introZoomTimer = null;
+let autoLowerUntil = 0;
+const AUTO_LOWER_ACCEL_MULT = 0.55;
+
+const ONBOARDING_STORAGE_KEY = 'craneOperatorOnboardingCompleteV1';
+const onboarding = {
+  active: false,
+  step: 0,
+  force: false,
+  renderedStep: -1
+};
+
+let trolley = {
+  x: WORLD.craneBaseX + 200,
+  ropeLength: 200,
+  speed: 0,
+  ropeSpeed: 0,
+};
+
+const TROLLEY_MIN_X = WORLD.craneBaseX + 30;
+const TROLLEY_MAX_X = WORLD.craneBaseX + WORLD.jibLength - 30;
+const OBSTACLE_BASE_X = WORLD.craneBaseX + 510;
+// Prevent the hook from retracting too close to the trolley/top beam.
+const ROPE_MIN = 110;
+const ROPE_MAX = 680;
+
+let hook = {
+  x: 0, y: 0, vx: 0, vy: 0,
+  angle: 0, angleVel: 0,
+};
+
+let crates = [];
+let obstacles = [];
+let dropZone = { x: 1100, y: WORLD.groundY - 25, width: 120, height: 50 };
+let hookedCrate = null;
+let score = 0;
+let totalCrates = 3;
+let damage = 0;
+let activeDrumHitIds = new Set();
+let droppedCrates = [];
+let activeDropDisplayCrate = null;
+let debrisParticles = [];
+let drumsCollapseTriggered = false;
+let spotterMsg = '';
+let spotterArrow = null;
+const DROP_ZONE_TOP_Y = () => dropZone.y - 80;
+
+let inputState = { left: false, right: false, up: false, down: false };
+
+let wireSegments = [];
+const WIRE_SEG_COUNT = 20;
+const WIRE_ANCHOR_Y_OFFSET = 16; // lowered so wire tops sit behind trolley body
+
+function initWireSegments() {
+  wireSegments = [];
+  for (let i = 0; i <= WIRE_SEG_COUNT; i++) {
+    wireSegments.push({ x: trolley.x, y: WORLD.craneTopY + WIRE_ANCHOR_Y_OFFSET + (trolley.ropeLength * i / WIRE_SEG_COUNT) });
+  }
+}
+
+function initGame() {
+  trolley.x = WORLD.craneBaseX + 150;
+  trolley.ropeLength = 200;
+  trolley.speed = 0;
+  trolley.ropeSpeed = 0;
+
+  hook.x = trolley.x;
+  hook.y = WORLD.craneTopY + trolley.ropeLength;
+  hook.vx = 0; hook.vy = 0;
+  hook.angle = 0; hook.angleVel = 0;
+
+  // Precast concrete elements to transport (276x161 aspect ratio from SVG)
+  crates = [
+    { x: WORLD.craneBaseX + 100, y: WORLD.groundY - 45, w: 80, h: 47, color: '#C0C9CE', type: 'precast', delivered: false },
+    { x: WORLD.craneBaseX + 250, y: WORLD.groundY - 45, w: 80, h: 47, color: '#C0C9CE', type: 'precast', delivered: false },
+    { x: WORLD.craneBaseX + 400, y: WORLD.groundY - 45, w: 80, h: 47, color: '#C0C9CE', type: 'precast', delivered: false },
+  ];
+
+  // Create drum pyramid obstacle (3 levels high)
+  const drumW = 38;
+  const drumH = 47; // 95:118 ratio, scaled down by ~20%
+  const obstacleBaseX = OBSTACLE_BASE_X;
+
+  obstacles = [];
+  // Bottom row: 4 drums
+  for (let i = 0; i < 4; i++) {
+    obstacles.push({
+      x: obstacleBaseX + i * drumW,
+      y: WORLD.groundY - drumH,
+      w: drumW,
+      h: drumH,
+      color: '#F9893D',
+      type: 'drum'
+    });
+  }
+  // Middle row: 3 drums
+  for (let i = 0; i < 3; i++) {
+    obstacles.push({
+      x: obstacleBaseX + drumW/2 + i * drumW,
+      y: WORLD.groundY - drumH * 2,
+      w: drumW,
+      h: drumH,
+      color: '#F9893D',
+      type: 'drum'
+    });
+  }
+  // Top row: 2 drums
+  for (let i = 0; i < 2; i++) {
+    obstacles.push({
+      x: obstacleBaseX + drumW + i * drumW,
+      y: WORLD.groundY - drumH * 3,
+      w: drumW,
+      h: drumH,
+      color: '#F9893D',
+      type: 'drum'
+    });
+  }
+
+  obstacles.forEach((obs, index) => {
+    obs.id = index;
+    obs.rotation = 0;
+    obs.vx = 0;
+    obs.vy = 0;
+    obs.spin = 0;
+    obs.isFalling = false;
+    obs.collidable = true;
+  });
+
+  dropZone.x = WORLD.craneBaseX + WORLD.jibLength - 200;
+  hookedCrate = null;
+  score = 0;
+  totalCrates = crates.length;
+  damage = 0;
+  activeDrumHitIds = new Set();
+  droppedCrates = [];
+  activeDropDisplayCrate = null;
+  debrisParticles = [];
+  drumsCollapseTriggered = false;
+  spotterMsg = '';
+  spotterArrow = null;
+  autoLowerUntil = 0;
+  stopOnboarding({ markComplete: false, keepForce: false });
+
+  resetHookBtn();
+  initWireSegments();
+  updateHUD();
+}
+
+function getHookIdleLabel() {
+  const isPortraitMobile = window.matchMedia('(max-width: 700px) and (orientation: portrait)').matches;
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  return (isPortraitMobile || isTouchDevice) ? 'Hook' : 'HOOK (spacebar)';
+}
+
+function updateHookIdleButtonLabel() {
+  const hookBtn = document.getElementById('hookBtn');
+  if (!hookBtn || hookBtn.classList.contains('hooked')) return;
+  const label = getHookIdleLabel();
+  hookBtn.textContent = label;
+  hookBtn.setAttribute('aria-label', label);
+  hookBtn.setAttribute('title', label);
+}
+
+function resetHookBtn() {
+  const hookBtn = document.getElementById('hookBtn');
+  const label = getHookIdleLabel();
+  hookBtn.textContent = label;
+  hookBtn.classList.remove('hooked');
+  hookBtn.setAttribute('aria-label', label);
+  hookBtn.setAttribute('title', label);
+  hookBtn.setAttribute('aria-pressed', 'false');
+}
+
+// ============ SPOTTER SYSTEM ============
+function updateSpotter() {
+  const obstacleX = OBSTACLE_BASE_X;
+  const obstacleTopY = WORLD.groundY - 250;
+
+  if (!hookedCrate) {
+    const avail = crates.find(c => !c.delivered && !droppedCrates.includes(c));
+    if (!avail) {
+      if (score >= totalCrates) {
+        spotterMsg = '';
+        spotterArrow = null;
+      } else {
+        spotterMsg = 'No crates left!';
+        spotterArrow = null;
+      }
+      return;
+    }
+    const cx = avail.x + avail.w / 2;
+    const cy = avail.y + avail.h / 2;
+    const dist = Math.hypot(hook.x - cx, hook.y - cy);
+
+    if (dist < 60) {
+      spotterMsg = '🪝 PRESS HOOK to attach';
+      spotterArrow = { x: cx, y: cy - 50, dir: 'down' };
+    } else if (hook.y < cy - 80) {
+      spotterMsg = '⬇️ LOWER the hook to the crate';
+      spotterArrow = { x: cx, y: cy - 60, dir: 'down' };
+    } else {
+      const dx = cx - hook.x;
+      if (Math.abs(dx) > 40) {
+        spotterMsg = (dx > 0 ? '➡️' : '⬅️') + ' Move hook over the crate';
+        spotterArrow = { x: cx, y: cy - 60, dir: dx > 0 ? 'right' : 'left' };
+      } else {
+        spotterMsg = '⬇️ LOWER the hook';
+        spotterArrow = { x: cx, y: cy - 60, dir: 'down' };
+      }
+    }
+    return;
+  }
+
+  const crateX = hookedCrate.x + hookedCrate.w / 2;
+  const crateY = hookedCrate.y + hookedCrate.h;
+  const dzCenterX = dropZone.x + dropZone.width / 2;
+
+  if (crateX > dropZone.x && crateX < dropZone.x + dropZone.width) {
+    if (crateY >= DROP_ZONE_TOP_Y()) {
+      spotterMsg = '👍 RELEASE now! In the green zone!';
+      spotterArrow = { x: dzCenterX, y: dropZone.y - 40, dir: 'down' };
+    } else {
+      spotterMsg = '⬇️ Lower into the green zone first!';
+      spotterArrow = { x: dzCenterX, y: dropZone.y - 40, dir: 'down' };
+    }
+    return;
+  }
+
+  if (crateX > obstacleX + 80) {
+    spotterMsg = '➡️ Almost there! Move to drop zone';
+    spotterArrow = { x: dzCenterX, y: dropZone.y - 60, dir: 'right' };
+    return;
+  }
+
+  if (crateX > obstacleX - 100 && crateX < obstacleX + 130) {
+    if (crateY > obstacleTopY - 20) {
+      spotterMsg = '⬆️ RAISE the load! Clear the obstacle!';
+      spotterArrow = { x: obstacleX + 25, y: obstacleTopY - 60, dir: 'up' };
+    } else {
+      spotterMsg = '➡️ Clear! Move past the obstacle';
+      spotterArrow = { x: obstacleX + 130, y: obstacleTopY - 40, dir: 'right' };
+    }
+    return;
+  }
+
+  spotterMsg = '➡️ Move right towards drop zone';
+  spotterArrow = { x: obstacleX - 30, y: crateY - 60, dir: 'right' };
+}
+
+// ============ PHYSICS ============
+const TROLLEY_ACCEL = 400;
+const TROLLEY_FRICTION = 0.95;
+const ROPE_ACCEL = 220;
+const ROPE_FRICTION = 0.92;
+const GRAVITY = 9.81;
+const SWING_DAMPING = 0.988;
+const HOOK_TOP_OFFSET = 18;
+const HOOK_WIDTH = 24;
+const HOOK_HEIGHT = (79 / 37) * HOOK_WIDTH;
+const HOOK_ATTACH_LOCAL_Y = HOOK_HEIGHT * 0.82;
+const CRATE_ATTACH_INSET = 5;
+
+function getHookAttachmentPoint(wireAngle) {
+  const hookTopY = hook.y - HOOK_TOP_OFFSET;
+  return {
+    x: hook.x - Math.sin(wireAngle) * HOOK_ATTACH_LOCAL_Y,
+    y: hookTopY + Math.cos(wireAngle) * HOOK_ATTACH_LOCAL_Y
+  };
+}
+
+function getHookedCratePose(crate, wireAngle) {
+  const attach = getHookAttachmentPoint(wireAngle);
+  const attachToCenter = Math.max(4, crate.h / 2 - CRATE_ATTACH_INSET);
+  const centerX = attach.x - Math.sin(wireAngle) * attachToCenter;
+  const centerY = attach.y + Math.cos(wireAngle) * attachToCenter;
+  return {
+    x: centerX - crate.w / 2,
+    y: centerY - crate.h / 2,
+    attachX: attach.x,
+    attachY: attach.y
+  };
+}
+
+function triggerDrumCollapse(impactX, impactY) {
+  if (drumsCollapseTriggered) return;
+  drumsCollapseTriggered = true;
+
+  const hitX = Number.isFinite(impactX) ? impactX : (OBSTACLE_BASE_X + 70);
+  const hitY = Number.isFinite(impactY) ? impactY : (WORLD.groundY - 120);
+
+  for (const obs of obstacles) {
+    if (obs.type !== 'drum') continue;
+
+    const cx = obs.x + obs.w / 2;
+    const cy = obs.y + obs.h / 2;
+    const dx = cx - hitX;
+    const dy = cy - hitY;
+    const dist = Math.max(26, Math.hypot(dx, dy));
+    const dirX = dx / dist;
+    const lateralBoost = 180 + Math.random() * 160;
+    const upwardBoost = 160 + Math.random() * 170;
+
+    obs.collidable = false;
+    obs.isFalling = true;
+    obs.vx = dirX * lateralBoost + (Math.random() - 0.5) * 90;
+    obs.vy = -(upwardBoost + Math.max(0, 90 - Math.abs(dy) * 0.55));
+    obs.spin = (Math.random() - 0.5) * 9;
+  }
+
+  spawnCollisionDebris(hitX, hitY, 2.2);
+  setSpotterAlert('💥 Final hit! Drums are collapsing!');
+}
+
+function updateFallingDrums(dt) {
+  if (!drumsCollapseTriggered) return;
+
+  const gravity = 920;
+  for (const obs of obstacles) {
+    if (obs.type !== 'drum' || !obs.isFalling) continue;
+
+    obs.vy += gravity * dt;
+    obs.x += obs.vx * dt;
+    obs.y += obs.vy * dt;
+    obs.rotation += obs.spin * dt;
+
+    obs.vx *= 0.988;
+    obs.spin *= 0.992;
+
+    const floorY = WORLD.groundY - obs.h;
+    if (obs.y >= floorY) {
+      obs.y = floorY;
+      if (Math.abs(obs.vy) > 40) {
+        obs.vy *= -0.24;
+      } else {
+        obs.vy = 0;
+      }
+      obs.vx *= 0.84;
+      obs.spin *= 0.8;
+
+      if (Math.abs(obs.vx) < 8 && Math.abs(obs.vy) < 12 && Math.abs(obs.spin) < 0.35) {
+        obs.vx = 0;
+        obs.vy = 0;
+        obs.spin = 0;
+        obs.isFalling = false;
+      }
+    }
+  }
+}
+
+function applyDrumCollisionDamage(impactX, impactY, amount = 25) {
+  const prevDamage = damage;
+  addDamage(amount);
+  setSpotterAlert('⚠️ COLLISION! Avoid the obstacle!');
+  if (prevDamage < 100 && damage >= 100) {
+    triggerDrumCollapse(impactX, impactY);
+  }
+}
+
+function updatePhysics(dt) {
+  const frameDrumHitIds = new Set();
+  const autoLowerActive = gameState === 'playing' && performance.now() < autoLowerUntil;
+
+  if (inputState.left) trolley.speed -= TROLLEY_ACCEL * dt;
+  if (inputState.right) trolley.speed += TROLLEY_ACCEL * dt;
+  trolley.speed *= TROLLEY_FRICTION;
+  trolley.x += trolley.speed * dt;
+  trolley.x = Math.max(TROLLEY_MIN_X, Math.min(TROLLEY_MAX_X, trolley.x));
+
+  if (inputState.down) {
+    trolley.ropeSpeed += ROPE_ACCEL * dt;
+  } else if (autoLowerActive) {
+    trolley.ropeSpeed += (ROPE_ACCEL * AUTO_LOWER_ACCEL_MULT) * dt;
+  }
+  if (inputState.up) trolley.ropeSpeed -= ROPE_ACCEL * dt;
+  trolley.ropeSpeed *= ROPE_FRICTION;
+  trolley.ropeLength += trolley.ropeSpeed * dt;
+  trolley.ropeLength = Math.max(ROPE_MIN, Math.min(ROPE_MAX, trolley.ropeLength));
+
+  const trolleyAccel = (inputState.left ? -TROLLEY_ACCEL : 0) + (inputState.right ? TROLLEY_ACCEL : 0);
+  const speedFactor = 1 + Math.abs(trolley.speed) * 0.003;
+  const gravityRestore = -GRAVITY * Math.sin(hook.angle) * 1.3;
+  const trolleyForce = -trolleyAccel * Math.cos(hook.angle) * 0.008 * speedFactor;
+  const pendulumAccel = (gravityRestore + trolleyForce) / (trolley.ropeLength * 0.009);
+  hook.angleVel += pendulumAccel * dt;
+  hook.angleVel *= SWING_DAMPING;
+  hook.angleVel -= trolley.speed * 0.00001;
+  hook.angle += hook.angleVel * dt;
+  hook.angle = Math.max(-0.75, Math.min(0.75, hook.angle));
+
+  const anchorX = trolley.x;
+  const anchorY = WORLD.craneTopY + WIRE_ANCHOR_Y_OFFSET;
+  const targetHookX = anchorX + Math.sin(hook.angle) * trolley.ropeLength;
+  const targetHookY = anchorY + Math.cos(hook.angle) * trolley.ropeLength;
+
+  wireSegments[0].x = anchorX;
+  wireSegments[0].y = anchorY;
+
+  for (let i = 1; i <= WIRE_SEG_COUNT; i++) {
+    const t = i / WIRE_SEG_COUNT;
+    const targetX = anchorX + (targetHookX - anchorX) * t;
+    const targetY = anchorY + (targetHookY - anchorY) * t;
+    const speedSag = Math.abs(trolley.speed) * 0.015;
+    const sag = Math.sin(t * Math.PI) * (trolley.ropeLength * 0.018 + Math.abs(hook.angleVel) * 4 + speedSag);
+    const lateralDrag = -trolley.speed * 0.12 * Math.sin(t * Math.PI);
+    const lerpSpeed = 0.08 + (1 - Math.sin(t * Math.PI)) * 0.06;
+    wireSegments[i].x += (targetX + lateralDrag - wireSegments[i].x) * lerpSpeed;
+    wireSegments[i].y += (targetY + sag - wireSegments[i].y) * lerpSpeed;
+  }
+
+  hook.x = wireSegments[WIRE_SEG_COUNT].x;
+  hook.y = wireSegments[WIRE_SEG_COUNT].y;
+  let currentWireAngle = -Math.atan2(
+    wireSegments[WIRE_SEG_COUNT].x - wireSegments[WIRE_SEG_COUNT - 1].x,
+    wireSegments[WIRE_SEG_COUNT].y - wireSegments[WIRE_SEG_COUNT - 1].y
+  );
+
+  updateFallingDrums(dt);
+
+  // --- Hard block: prevent hook/crate from passing through drum tops ---
+  // Use per-drum rectangles so the collision map matches the drum stack shape.
+  const margin = 8;
+  let blockY = null;
+  if (hookedCrate) {
+    const previewPose = getHookedCratePose(hookedCrate, currentWireAngle);
+    const cLeft = previewPose.x;
+    const cRight = previewPose.x + hookedCrate.w;
+    const cBottom = previewPose.y + hookedCrate.h;
+    const hookToCrateBottom = cBottom - hook.y;
+    for (const obs of obstacles) {
+      if (obs.collidable === false) continue;
+      const overlapsX = cRight > obs.x && cLeft < obs.x + obs.w;
+      if (!overlapsX) continue;
+      const topY = obs.y - margin;
+      if (cBottom > topY) {
+        const candidate = topY - hookToCrateBottom;
+        if (blockY === null || candidate < blockY) {
+          blockY = candidate;
+        }
+      }
+    }
+  } else {
+    for (const obs of obstacles) {
+      if (obs.collidable === false) continue;
+      const withinX = hook.x > obs.x && hook.x < obs.x + obs.w;
+      if (!withinX) continue;
+      const topY = obs.y - margin;
+      if (hook.y > topY) {
+        if (blockY === null || topY < blockY) {
+          blockY = topY;
+        }
+      }
+    }
+  }
+  if (blockY !== null && hook.y > blockY) {
+    hook.y = blockY;
+    wireSegments[WIRE_SEG_COUNT].y = blockY;
+    if (hookedCrate) hookedCrate.broken = true;
+    if (trolley.ropeSpeed > 0) trolley.ropeSpeed = 0;
+    const anchorYBlock = WORLD.craneTopY + WIRE_ANCHOR_Y_OFFSET;
+    const dy = hook.y - anchorYBlock;
+    const dx = hook.x - trolley.x;
+    const maxLen = Math.sqrt(dx * dx + dy * dy);
+    if (trolley.ropeLength > maxLen) trolley.ropeLength = maxLen;
+
+    // Apply damage only when the blocked point is on one or more drum top surfaces.
+    const touchedDrumIds = [];
+    for (let i = 0; i < obstacles.length; i++) {
+      const obs = obstacles[i];
+      if (obs.collidable === false) continue;
+      if (hookedCrate) {
+        const previewPose = getHookedCratePose(hookedCrate, currentWireAngle);
+        const cLeft = previewPose.x;
+        const cRight = previewPose.x + hookedCrate.w;
+        const cBottom = previewPose.y + hookedCrate.h;
+        if (cRight > obs.x && cLeft < obs.x + obs.w &&
+            cBottom >= obs.y - margin && cBottom <= obs.y + margin) {
+          touchedDrumIds.push(i);
+        }
+      } else {
+        if (hook.x > obs.x && hook.x < obs.x + obs.w &&
+            hook.y >= obs.y - margin && hook.y <= obs.y + margin) {
+          touchedDrumIds.push(i);
+        }
+      }
+    }
+    touchedDrumIds.forEach((id) => frameDrumHitIds.add(id));
+    const newlyTouchedId = touchedDrumIds.find((id) => !activeDrumHitIds.has(id));
+    if (newlyTouchedId !== undefined) {
+      const obs = obstacles[newlyTouchedId];
+      const impactX = obs
+        ? Math.max(obs.x + 4, Math.min(obs.x + obs.w - 4, hook.x))
+        : hook.x;
+      const impactY = obs ? obs.y + 2 : hook.y;
+      applyDrumCollisionDamage(impactX, impactY, 25);
+      if (hookedCrate) {
+        if (obs) {
+          const spawnX = impactX;
+          const spawnY = impactY;
+          spawnCollisionDebris(spawnX, spawnY, 1);
+        }
+      }
+    }
+  }
+
+  // Hard ground limit so the hook/load cannot go below the visible ground.
+  const hookGroundOffset = hookedCrate
+    ? (getHookedCratePose(hookedCrate, currentWireAngle).y + hookedCrate.h - hook.y + 2)
+    : 34;
+  const maxHookYAtGround = WORLD.groundY - hookGroundOffset;
+  if (hook.y > maxHookYAtGround) {
+    hook.y = maxHookYAtGround;
+    wireSegments[WIRE_SEG_COUNT].y = hook.y;
+    if (trolley.ropeSpeed > 0) trolley.ropeSpeed = 0;
+
+    // Keep rope length consistent with the clamped hook point.
+    const anchorYGround = WORLD.craneTopY + WIRE_ANCHOR_Y_OFFSET;
+    const dyGround = hook.y - anchorYGround;
+    const dxGround = hook.x - trolley.x;
+    const maxLenGround = Math.sqrt(dxGround * dxGround + dyGround * dyGround);
+    if (trolley.ropeLength > maxLenGround) trolley.ropeLength = maxLenGround;
+  }
+
+  const prevSeg = wireSegments[WIRE_SEG_COUNT - 1];
+  const lastSeg = wireSegments[WIRE_SEG_COUNT];
+  currentWireAngle = -Math.atan2(lastSeg.x - prevSeg.x, lastSeg.y - prevSeg.y);
+
+  if (hookedCrate) {
+    const pose = getHookedCratePose(hookedCrate, currentWireAngle);
+    hookedCrate.x = pose.x;
+    hookedCrate.y = pose.y;
+    hookedCrate.rotation = currentWireAngle;
+    hookedCrate.attachX = pose.attachX;
+    hookedCrate.attachY = pose.attachY;
+  }
+
+  for (let i = droppedCrates.length - 1; i >= 0; i--) {
+    const dc = droppedCrates[i];
+    dc.vy += 800 * dt;
+    dc.x += dc.vx * dt;
+    dc.y += dc.vy * dt;
+    dc.rotation *= 0.96;
+
+    if (dc.y + dc.h >= WORLD.groundY) {
+      dc.y = WORLD.groundY - dc.h;
+      dc.vy = 0;
+      dc.vx *= 0.3;
+      dc.landed = true;
+    }
+
+    for (const obs of obstacles) {
+      if (obs.collidable === false) continue;
+      if (dc.x + dc.w > obs.x && dc.x < obs.x + obs.w &&
+          dc.y + dc.h > obs.y && dc.y < obs.y + obs.h) {
+        if (dc.y + dc.h - obs.y < obs.y + obs.h - dc.y) {
+          dc.y = obs.y - dc.h;
+          dc.vy = 0;
+          dc.vx *= 0.3;
+          dc.landed = true;
+        }
+      }
+    }
+
+    if (dc.landed && !dc.scored) {
+      dc.scored = true;
+      const cx = dc.x + dc.w / 2;
+      const inZone = cx > dropZone.x && cx < dropZone.x + dropZone.width;
+
+      if (dc.releasedTooHigh) {
+        dc.broken = true;
+        dc.delivered = false;
+        setSpotterAlert('⚠️ DROPPED TOO HIGH! Crate destroyed!');
+        addDamage(30);
+        setTimeout(() => {
+          const idx = droppedCrates.indexOf(dc);
+          if (idx !== -1) droppedCrates.splice(idx, 1);
+        }, 1200);
+      } else if (inZone) {
+        dc.delivered = true;
+        dc.x = dropZone.x + (dropZone.width - dc.w) / 2;
+        dc.y = dropZone.y - dc.h + 25;
+        activeDropDisplayCrate = dc;
+        const deliveredCount = crates.filter(c => c.delivered).length;
+        dc.y -= (deliveredCount - 1) * 35;
+        dc.rotation = 0;
+        score++;
+        updateHUD();
+        setSpotterAlert('✅ Delivered! Good work!');
+
+        if (score >= totalCrates) {
+          setTimeout(() => {
+            gameState = 'win';
+            showEndScreen(true);
+          }, 800);
+        }
+        setTimeout(() => {
+          const idx = droppedCrates.indexOf(dc);
+          if (idx !== -1) droppedCrates.splice(idx, 1);
+        }, 500);
+      } else {
+        setSpotterAlert('❌ Missed the drop zone! Crate lost.');
+        setTimeout(() => {
+          const idx = droppedCrates.indexOf(dc);
+          if (idx !== -1) droppedCrates.splice(idx, 1);
+        }, 1500);
+      }
+    }
+  }
+
+  if (!hookedCrate) {
+    const btn = document.getElementById('hookBtn');
+    if (btn.classList.contains('hooked')) resetHookBtn();
+  }
+
+  for (let i = 0; i < obstacles.length; i++) {
+    const obs = obstacles[i];
+    if (obs.collidable === false) continue;
+    let wasHit = false;
+    let crateCollisionPoint = null;
+    if (hook.x > obs.x && hook.x < obs.x + obs.w &&
+        hook.y > obs.y && hook.y < obs.y + obs.h) {
+      hook.angleVel *= -0.5;
+      if (hook.x < obs.x + obs.w / 2) trolley.speed = Math.min(trolley.speed, -40);
+      else trolley.speed = Math.max(trolley.speed, 40);
+      wasHit = true;
+    }
+    if (hookedCrate) {
+      if (hookedCrate.x + hookedCrate.w > obs.x && hookedCrate.x < obs.x + obs.w &&
+          hookedCrate.y + hookedCrate.h > obs.y && hookedCrate.y < obs.y + obs.h) {
+        hookedCrate.broken = true;
+        hook.angleVel *= -0.5;
+        if (hookedCrate.x < obs.x) trolley.speed = Math.min(trolley.speed, -60);
+        else trolley.speed = Math.max(trolley.speed, 60);
+        const overlapLeft = Math.max(hookedCrate.x, obs.x);
+        const overlapRight = Math.min(hookedCrate.x + hookedCrate.w, obs.x + obs.w);
+        const overlapTop = Math.max(hookedCrate.y, obs.y);
+        const overlapBottom = Math.min(hookedCrate.y + hookedCrate.h, obs.y + obs.h);
+        crateCollisionPoint = {
+          x: (overlapLeft + overlapRight) / 2,
+          y: (overlapTop + overlapBottom) / 2
+        };
+        wasHit = true;
+      }
+    }
+    if (wasHit) {
+      frameDrumHitIds.add(i);
+    }
+    if (wasHit && !activeDrumHitIds.has(i)) {
+      const impactX = crateCollisionPoint ? crateCollisionPoint.x : hook.x;
+      const impactY = crateCollisionPoint ? crateCollisionPoint.y : hook.y;
+      applyDrumCollisionDamage(impactX, impactY, 25);
+      if (crateCollisionPoint) {
+        spawnCollisionDebris(crateCollisionPoint.x, crateCollisionPoint.y, 1.1);
+      }
+    }
+  }
+  activeDrumHitIds = frameDrumHitIds;
+  updateCollisionDebris(dt);
+
+  if (gameState === 'playing' && !spotterAlertTimer) {
+    updateSpotter();
+    document.getElementById('spotterText').textContent = spotterMsg;
+  }
+}
+
+let spotterAlertTimer = null;
+function setSpotterAlert(msg) {
+  document.getElementById('spotterText').textContent = msg;
+  if (spotterAlertTimer) clearTimeout(spotterAlertTimer);
+  spotterAlertTimer = setTimeout(() => { spotterAlertTimer = null; }, 2000);
+}
+
+function addDamage(amount) {
+  damage = Math.min(100, damage + amount);
+  updateHUD();
+  if (damage >= 100) {
+    setTimeout(() => {
+      gameState = 'gameover';
+      showEndScreen(false);
+    }, 600);
+  }
+}
+
+function spawnCollisionDebris(x, y, intensity = 1) {
+  const count = Math.round(8 + Math.random() * 8 * intensity);
+  const palette = ['#C0C9CE', '#B4BEC4', '#9EA7AE', '#F9893D', '#D97634'];
+
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = (80 + Math.random() * 170) * intensity;
+    const life = 0.35 + Math.random() * 0.35;
+    debrisParticles.push({
+      x: x + (Math.random() - 0.5) * 10,
+      y: y + (Math.random() - 0.5) * 10,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - (30 + Math.random() * 80),
+      size: 2 + Math.random() * 4,
+      life,
+      maxLife: life,
+      rotation: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 12,
+      color: palette[Math.floor(Math.random() * palette.length)]
+    });
+  }
+
+  if (debrisParticles.length > 220) {
+    debrisParticles.splice(0, debrisParticles.length - 220);
+  }
+}
+
+function updateCollisionDebris(dt) {
+  const gravity = 680;
+  for (let i = debrisParticles.length - 1; i >= 0; i--) {
+    const p = debrisParticles[i];
+    p.life -= dt;
+    if (p.life <= 0) {
+      debrisParticles.splice(i, 1);
+      continue;
+    }
+    p.vy += gravity * dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vx *= 0.98;
+    p.vy *= 0.995;
+    p.rotation += p.spin * dt;
+  }
+}
+
+function drawCollisionDebris() {
+  for (const p of debrisParticles) {
+    const alpha = Math.max(0, Math.min(1, p.life / p.maxLife));
+    const width = p.size;
+    const height = Math.max(1.5, p.size * 0.58);
+
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation);
+    ctx.globalAlpha = alpha * 0.85;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-width / 2, -height / 2, width, height);
+    ctx.restore();
+  }
+}
+
+function updateCamera(dt) {
+  if (gameState === 'overview') {
+    targetCamera.zoom = 0.52;
+    targetCamera.x = WORLD.craneBaseX + WORLD.jibLength / 2;
+    targetCamera.y = WORLD.groundY / 2;
+  } else if (gameState === 'zooming') {
+    targetCamera.zoom = 1.4;
+    targetCamera.x = hook.x;
+    targetCamera.y = hook.y;
+  } else if (gameState === 'playing') {
+    targetCamera.zoom = 1.3;
+    targetCamera.x = hook.x;
+    targetCamera.y = hook.y + 30;
+  }
+  const lerpSpeed = 2.5 * dt;
+  camera.x += (targetCamera.x - camera.x) * lerpSpeed;
+  camera.y += (targetCamera.y - camera.y) * lerpSpeed;
+  camera.zoom += (targetCamera.zoom - camera.zoom) * lerpSpeed;
+}
+
+// ============ RENDERING ============
+function drawWorld() {
+  const w = W();
+  const h = H();
+  ctx.save();
+  const applyLayerTransform = (parallaxX = 1, parallaxY = 1) => {
+    const cx = w / 2 - camera.x * camera.zoom * parallaxX;
+    const cy = h / 2 - camera.y * camera.zoom * parallaxY;
+    ctx.translate(cx, cy);
+    ctx.scale(camera.zoom, camera.zoom);
+  };
+
+  // Draw background image in screen space (no blur/filter effects).
+  if (svgImages.background) {
+    const imgAspect = (svgImages.background.naturalWidth > 0 && svgImages.background.naturalHeight > 0)
+      ? (svgImages.background.naturalWidth / svgImages.background.naturalHeight)
+      : (w / h);
+    const bgH = h;
+    const bgW = bgH * imgAspect;
+    const bgX = (w - bgW) / 2;
+    const bgY = h - bgH;
+    ctx.drawImage(svgImages.background, bgX, bgY, bgW, bgH);
+  }
+
+  if (!svgImages.background) {
+    ctx.save();
+    applyLayerTransform(1);
+    // Fallback: Sky - lighter gradient
+    const skyGrad = ctx.createLinearGradient(0, -200, 0, WORLD.groundY);
+    skyGrad.addColorStop(0, '#D8DBE3');
+    skyGrad.addColorStop(0.5, '#BBC0CD');
+    skyGrad.addColorStop(1, '#A6ADC1');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(-2000, -500, 5000, WORLD.groundY + 500);
+    ctx.restore();
+  }
+
+  // Hill layers: world-aligned, with depth parallax (hill02 behind hill01).
+  if (svgImages.hill02) {
+    ctx.save();
+    applyLayerTransform(0.58, 1);
+    const hillImg = svgImages.hill02;
+    const hillW = 2200;
+    const hillCenterX = WORLD.craneBaseX + WORLD.jibLength / 2;
+    const hillX = hillCenterX - hillW / 2 - 120;
+    const aspect = hillImg.naturalWidth > 0 ? (hillImg.naturalHeight / hillImg.naturalWidth) : 0.35;
+    const hillH = hillW * aspect;
+    const hillY = WORLD.groundY - hillH + 5;
+    ctx.drawImage(hillImg, hillX, hillY, hillW, hillH);
+    ctx.restore();
+  }
+
+  // Foreground hill layer.
+  if (svgImages.hill01) {
+    ctx.save();
+    applyLayerTransform(0.72, 1);
+    const hillImg = svgImages.hill01;
+    const hillW = 1800;
+    const hillCenterX = WORLD.craneBaseX + WORLD.jibLength / 2;
+    const hillX = hillCenterX - hillW / 2 - 120;
+    const aspect = hillImg.naturalWidth > 0 ? (hillImg.naturalHeight / hillImg.naturalWidth) : 0.35;
+    const hillH = hillW * aspect;
+    const hillY = WORLD.groundY - hillH + 10;
+    ctx.drawImage(hillImg, hillX, hillY, hillW, hillH);
+    ctx.restore();
+  }
+
+  // Ground - solid color
+  ctx.save();
+  applyLayerTransform(0.88, 1);
+  ctx.fillStyle = '#B17F57';
+  ctx.fillRect(-2000, WORLD.groundY - 10, 5000, 500);
+  ctx.restore();
+
+  ctx.save();
+  applyLayerTransform(1);
+  drawCrane();
+  drawDropZone();
+  obstacles.forEach(obs => drawObstacle(obs));
+
+  if (!hookedCrate && gameState === 'playing') {
+    const pickupTarget = getPickupTargetCrate();
+    if (pickupTarget) drawPickupMarker(pickupTarget);
+  }
+
+  if (activeDropDisplayCrate && activeDropDisplayCrate !== hookedCrate) {
+    drawCrate(activeDropDisplayCrate);
+  }
+  crates.forEach(c => { if (c.delivered || c === hookedCrate || droppedCrates.includes(c)) return; drawCrate(c); });
+
+  drawWire();
+  drawTrolley();
+  drawHook();
+
+  droppedCrates.forEach(dc => drawCrate(dc));
+  if (hookedCrate) drawHookToLoadLink(hookedCrate);
+  if (hookedCrate) drawCrate(hookedCrate);
+  drawCollisionDebris();
+
+  if (spotterArrow && gameState === 'playing') {
+    drawSpotterArrow(spotterArrow);
+  }
+
+  ctx.restore();
+  ctx.restore();
+}
+
+function drawSpotterArrow(arrow) {
+  const { x, y, dir } = arrow;
+  const t = performance.now() / 1000;
+  const bob = Math.sin(t * 4) * 6;
+  const s = 14;
+  const edgePadPx = 18 + s;
+
+  const toScreenX = (wx) => (wx - camera.x) * camera.zoom + W() / 2;
+  const toScreenY = (wy) => (wy - camera.y) * camera.zoom + H() / 2;
+  const toWorldX = (sx) => (sx - W() / 2) / camera.zoom + camera.x;
+  const toWorldY = (sy) => (sy - H() / 2) / camera.zoom + camera.y;
+
+  let minX = edgePadPx;
+  let maxX = W() - edgePadPx;
+  let minY = edgePadPx;
+  let maxY = H() - edgePadPx;
+
+  const navBar = document.getElementById('mobileNavBar');
+  if (navBar) {
+    const navStyle = getComputedStyle(navBar);
+    if (navStyle.display !== 'none') {
+      const navRect = navBar.getBoundingClientRect();
+      maxY = Math.min(maxY, navRect.top - edgePadPx);
+    }
+  }
+
+  const controlsEl = document.getElementById('controls');
+  if (controlsEl) {
+    const controlsStyle = getComputedStyle(controlsEl);
+    if (controlsStyle.display !== 'none') {
+      const r = controlsEl.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        // Portrait mobile: keep guidance arrow above the control cluster.
+        if (window.matchMedia('(max-width: 700px) and (orientation: portrait)').matches) {
+          maxY = Math.min(maxY, r.top - edgePadPx);
+        }
+        // Landscape mobile: controls sit on the left, so keep arrow out of that strip.
+        if (window.matchMedia('(orientation: landscape) and (max-width: 900px)').matches && r.left < W() * 0.35) {
+          minX = Math.max(minX, r.right + edgePadPx);
+        }
+      }
+    }
+  }
+
+  // Extra bottom padding on mobile so the down-arrow doesn't go behind the control panel.
+  if (window.matchMedia('(max-width: 700px)').matches) {
+    maxY -= 120;
+  }
+
+  if (minX > maxX) minX = maxX = W() / 2;
+  if (minY > maxY) minY = maxY = H() / 2;
+
+  const screenX = toScreenX(x);
+  const screenY = toScreenY(y + bob);
+  const clampedX = toWorldX(Math.min(maxX, Math.max(minX, screenX)));
+  const clampedY = toWorldY(Math.min(maxY, Math.max(minY, screenY)));
+
+  ctx.save();
+  ctx.translate(clampedX, clampedY);
+  ctx.fillStyle = '#3CA63C';
+  ctx.strokeStyle = '#3CA63C';
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+  if (dir === 'down') {
+    ctx.moveTo(0, s);
+    ctx.lineTo(-s * 0.7, -s * 0.3);
+    ctx.lineTo(s * 0.7, -s * 0.3);
+  } else if (dir === 'up') {
+    ctx.moveTo(0, -s);
+    ctx.lineTo(-s * 0.7, s * 0.3);
+    ctx.lineTo(s * 0.7, s * 0.3);
+  } else if (dir === 'right') {
+    ctx.moveTo(s, 0);
+    ctx.lineTo(-s * 0.3, -s * 0.7);
+    ctx.lineTo(-s * 0.3, s * 0.7);
+  } else if (dir === 'left') {
+    ctx.moveTo(-s, 0);
+    ctx.lineTo(s * 0.3, -s * 0.7);
+    ctx.lineTo(s * 0.3, s * 0.7);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawCraneSVG(svg, x, y, width, height) {
+  const img = new Image();
+  const svgData = new XMLSerializer().serializeToString(svg);
+  const blob = new Blob([svgData], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  img.src = url;
+  ctx.drawImage(img, x, y, width, height);
+  URL.revokeObjectURL(url);
+}
+
+function drawCrane() {
+  const bx = WORLD.craneBaseX;
+  const topY = WORLD.craneTopY;
+  const gndY = WORLD.groundY;
+  const drawRoundedRect = (x, y, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  };
+
+  // Base - using yellow/orange tones from SVG
+  ctx.fillStyle = '#F5C942';
+  const baseX = bx - 40;
+  const baseY = gndY - 15;
+  const baseW = 80;
+  const baseH = 25;
+  const baseTopRadius = 8;
+  ctx.beginPath();
+  ctx.moveTo(baseX, baseY + baseH);
+  ctx.lineTo(baseX, baseY + baseTopRadius);
+  ctx.quadraticCurveTo(baseX, baseY, baseX + baseTopRadius, baseY);
+  ctx.lineTo(baseX + baseW - baseTopRadius, baseY);
+  ctx.quadraticCurveTo(baseX + baseW, baseY, baseX + baseW, baseY + baseTopRadius);
+  ctx.lineTo(baseX + baseW, baseY + baseH);
+  ctx.closePath();
+  ctx.fill();
+
+  // Tower structure - crane yellow
+  ctx.strokeStyle = '#F5C942';
+  ctx.lineWidth = 5;
+  const towerW = 28;
+
+  ctx.beginPath();
+  ctx.moveTo(bx - towerW / 2, gndY - 15);
+  ctx.lineTo(bx - towerW / 2, topY);
+  ctx.moveTo(bx + towerW / 2, gndY - 15);
+  ctx.lineTo(bx + towerW / 2, topY);
+  ctx.stroke();
+
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = '#F5C942';
+  const segH = 50;
+  for (let y = gndY - 15; y > topY; y -= segH) {
+    ctx.beginPath();
+    ctx.moveTo(bx - towerW / 2, y);
+    ctx.lineTo(bx + towerW / 2, y - segH);
+    ctx.moveTo(bx + towerW / 2, y);
+    ctx.lineTo(bx - towerW / 2, y - segH);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(bx - towerW / 2, y - segH);
+    ctx.lineTo(bx + towerW / 2, y - segH);
+    ctx.stroke();
+  }
+
+  // Jib - crane yellow
+  const jibY = topY;
+  const jibEnd = bx + WORLD.jibLength;
+  const jibTipDiagX = jibEnd - 48;
+  const jibTipNoseX = jibEnd - 10;
+
+  ctx.strokeStyle = '#F5C942';
+  ctx.lineWidth = 6;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(bx, jibY);
+  ctx.lineTo(jibTipDiagX, jibY);
+  ctx.moveTo(bx, jibY + 14);
+  ctx.lineTo(jibEnd, jibY + 14);
+  ctx.moveTo(jibTipDiagX, jibY);
+  ctx.lineTo(jibTipNoseX, jibY + 14);
+  ctx.stroke();
+  ctx.lineCap = 'butt';
+
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#F5C942';
+  const jibSegW = 40;
+  for (let x = bx; x < jibTipDiagX - jibSegW; x += jibSegW) {
+    ctx.beginPath();
+    ctx.moveTo(x, jibY);
+    ctx.lineTo(x + jibSegW, jibY + 14);
+    ctx.moveTo(x + jibSegW, jibY);
+    ctx.lineTo(x, jibY + 14);
+    ctx.stroke();
+  }
+
+  // Tip truss detail
+  ctx.beginPath();
+  ctx.moveTo(jibTipDiagX - 24, jibY);
+  ctx.lineTo(jibTipDiagX - 24, jibY + 14);
+  ctx.moveTo(jibTipDiagX - 24, jibY);
+  ctx.lineTo(jibTipNoseX - 10, jibY + 14);
+  ctx.stroke();
+
+  // Counterweight (outer corners rounded, inner touching corners square)
+  const cwX = bx - 96;
+  const cwY = jibY - 5;
+  const cwOrangeW = 13;
+  const cwBlueW = 26;
+  const cwH = 42;
+  const cwRadius = 8;
+  const cwOverlap = 4;
+
+  ctx.fillStyle = '#F37329';
+  ctx.beginPath();
+  ctx.moveTo(cwX + cwRadius, cwY);
+  ctx.lineTo(cwX + cwOrangeW + cwOverlap, cwY);
+  ctx.lineTo(cwX + cwOrangeW + cwOverlap, cwY + cwH);
+  ctx.lineTo(cwX + cwRadius, cwY + cwH);
+  ctx.quadraticCurveTo(cwX, cwY + cwH, cwX, cwY + cwH - cwRadius);
+  ctx.lineTo(cwX, cwY + cwRadius);
+  ctx.quadraticCurveTo(cwX, cwY, cwX + cwRadius, cwY);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#3268A5';
+  const cwBlueX = cwX + cwOrangeW - cwOverlap;
+  ctx.beginPath();
+  ctx.moveTo(cwBlueX, cwY);
+  ctx.lineTo(cwBlueX + cwBlueW - cwRadius, cwY);
+  ctx.quadraticCurveTo(cwBlueX + cwBlueW, cwY, cwBlueX + cwBlueW, cwY + cwRadius);
+  ctx.lineTo(cwBlueX + cwBlueW, cwY + cwH - cwRadius);
+  ctx.quadraticCurveTo(cwBlueX + cwBlueW, cwY + cwH, cwBlueX + cwBlueW - cwRadius, cwY + cwH);
+  ctx.lineTo(cwBlueX, cwY + cwH);
+  ctx.lineTo(cwBlueX, cwY);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#F5C942';
+  drawRoundedRect(bx - 116, jibY + 10, 122, 8, 4);
+  ctx.fill();
+
+  // Triangular truss between cabin and top joint
+  const triApexX = bx;
+  const triApexY = topY - 40;
+  const triBaseY = topY + 10;
+  const triHalfW = 24;
+  const triLeftX = triApexX - triHalfW;
+  const triRightX = triApexX + triHalfW;
+
+  ctx.strokeStyle = '#F5C942';
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(triLeftX, triBaseY);
+  ctx.lineTo(triApexX, triApexY);
+  ctx.lineTo(triRightX, triBaseY);
+  ctx.lineTo(triLeftX, triBaseY);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#F5C942';
+  ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  ctx.moveTo(triLeftX + 3, triBaseY - 2);
+  ctx.lineTo(triApexX + 9, triBaseY - 16);
+  ctx.moveTo(triApexX - 9, triBaseY - 16);
+  ctx.lineTo(triRightX - 3, triBaseY - 2);
+  ctx.moveTo(triLeftX + 8, triBaseY - 22);
+  ctx.lineTo(triApexX + 6, triApexY + 10);
+  ctx.moveTo(triRightX - 8, triBaseY - 22);
+  ctx.lineTo(triApexX - 6, triApexY + 10);
+  ctx.stroke();
+
+  // Support cables
+  ctx.strokeStyle = '#193E75';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(bx, topY - 40);
+  ctx.lineTo(bx - 60, jibY);
+  ctx.moveTo(bx, topY - 40);
+  ctx.lineTo(bx + 80, jibY);
+  ctx.stroke();
+
+  // Orange joint at cable intersection
+  ctx.fillStyle = '#F37329';
+  ctx.beginPath();
+  ctx.arc(bx, topY - 40, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(25,62,117,0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(bx, topY - 40);
+  ctx.lineTo(jibEnd - 50, jibY);
+  ctx.stroke();
+
+  // Cabin (square with chamfered top-right corner and subtle corner radius)
+  const cabinW = 54;
+  const cabinH = 60;
+  const cabinX = bx - cabinW / 2;
+  const cabinY = topY - 5;
+  const cabinChamfer = 14;
+  const cabinRadius = 5;
+
+  ctx.fillStyle = '#F37329';
+  ctx.beginPath();
+  ctx.moveTo(cabinX + cabinRadius, cabinY);
+  ctx.lineTo(cabinX + cabinW - cabinChamfer, cabinY);
+  ctx.lineTo(cabinX + cabinW, cabinY + cabinChamfer);
+  ctx.lineTo(cabinX + cabinW, cabinY + cabinH - cabinRadius);
+  ctx.quadraticCurveTo(
+    cabinX + cabinW,
+    cabinY + cabinH,
+    cabinX + cabinW - cabinRadius,
+    cabinY + cabinH
+  );
+  ctx.lineTo(cabinX + cabinRadius, cabinY + cabinH);
+  ctx.quadraticCurveTo(cabinX, cabinY + cabinH, cabinX, cabinY + cabinH - cabinRadius);
+  ctx.lineTo(cabinX, cabinY + cabinRadius);
+  ctx.quadraticCurveTo(cabinX, cabinY, cabinX + cabinRadius, cabinY);
+  ctx.closePath();
+  ctx.fill();
+
+  // Cabin window (square with matching top-right chamfer and subtle corner radius)
+  const winX = cabinX + 11;
+  const winY = cabinY + 12;
+  const winW = 27;
+  const winH = 30;
+  const winChamfer = 8;
+  const winRadius = 3;
+
+  ctx.fillStyle = '#3268A5';
+  ctx.beginPath();
+  ctx.moveTo(winX + winRadius, winY);
+  ctx.lineTo(winX + winW - winChamfer, winY);
+  ctx.lineTo(winX + winW, winY + winChamfer);
+  ctx.lineTo(winX + winW, winY + winH - winRadius);
+  ctx.quadraticCurveTo(winX + winW, winY + winH, winX + winW - winRadius, winY + winH);
+  ctx.lineTo(winX + winRadius, winY + winH);
+  ctx.quadraticCurveTo(winX, winY + winH, winX, winY + winH - winRadius);
+  ctx.lineTo(winX, winY + winRadius);
+  ctx.quadraticCurveTo(winX, winY, winX + winRadius, winY);
+  ctx.closePath();
+  ctx.fill();
+
+}
+
+function drawTrolley() {
+  const topY = WORLD.craneTopY;
+  ctx.fillStyle = '#F4762B';
+  const trolleyX = trolley.x - 17;
+  const trolleyY = topY + 14;
+  const trolleyW = 34;
+  const trolleyH = 12;
+  const trolleyRadius = 4;
+
+  ctx.beginPath();
+  ctx.moveTo(trolleyX, trolleyY);
+  ctx.lineTo(trolleyX + trolleyW, trolleyY);
+  ctx.lineTo(trolleyX + trolleyW, trolleyY + trolleyH - trolleyRadius);
+  ctx.quadraticCurveTo(
+    trolleyX + trolleyW,
+    trolleyY + trolleyH,
+    trolleyX + trolleyW - trolleyRadius,
+    trolleyY + trolleyH
+  );
+  ctx.lineTo(trolleyX + trolleyRadius, trolleyY + trolleyH);
+  ctx.quadraticCurveTo(
+    trolleyX,
+    trolleyY + trolleyH,
+    trolleyX,
+    trolleyY + trolleyH - trolleyRadius
+  );
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawWire() {
+  const TOP_SPREAD = 8;
+  const BOTTOM_SPREAD = 3.5; // slightly closer at the hook, but not touching
+
+  for (let side = -1; side <= 1; side += 2) {
+    ctx.beginPath();
+    for (let i = 0; i <= WIRE_SEG_COUNT; i++) {
+      const t = i / WIRE_SEG_COUNT;
+      const spread = TOP_SPREAD + (BOTTOM_SPREAD - TOP_SPREAD) * t;
+      const sx = wireSegments[i].x + side * spread;
+      const sy = wireSegments[i].y;
+      if (i === 0) {
+        ctx.moveTo(sx, sy);
+      } else {
+        const prevT = (i - 1) / WIRE_SEG_COUNT;
+        const prevSpread = TOP_SPREAD + (BOTTOM_SPREAD - TOP_SPREAD) * prevT;
+        const prevSx = wireSegments[i - 1].x + side * prevSpread;
+        const prevSy = wireSegments[i - 1].y;
+        const cpx = (prevSx + sx) / 2;
+        const cpy = (prevSy + sy) / 2;
+        ctx.quadraticCurveTo(prevSx, prevSy, cpx, cpy);
+      }
+    }
+    ctx.strokeStyle = '#193E75';
+    ctx.lineWidth = 2.6;
+    ctx.stroke();
+
+    ctx.beginPath();
+    for (let i = 0; i <= WIRE_SEG_COUNT; i++) {
+      const t = i / WIRE_SEG_COUNT;
+      const spread = TOP_SPREAD + (BOTTOM_SPREAD - TOP_SPREAD) * t;
+      const hlOff = side * (spread + 0.9);
+      const sx = wireSegments[i].x + hlOff;
+      const sy = wireSegments[i].y;
+      if (i === 0) {
+        ctx.moveTo(sx, sy);
+      } else {
+        const prevT = (i - 1) / WIRE_SEG_COUNT;
+        const prevSpread = TOP_SPREAD + (BOTTOM_SPREAD - TOP_SPREAD) * prevT;
+        const prevHlOff = side * (prevSpread + 0.9);
+        const prevSx = wireSegments[i - 1].x + prevHlOff;
+        const prevSy = wireSegments[i - 1].y;
+        const cpx = (prevSx + sx) / 2;
+        const cpy = (prevSy + sy) / 2;
+        ctx.quadraticCurveTo(prevSx, prevSy, cpx, cpy);
+      }
+    }
+    ctx.strokeStyle = 'rgba(25,62,117,0.12)';
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+  }
+}
+
+function drawHook() {
+  const hx = hook.x;
+  const hy = hook.y - HOOK_TOP_OFFSET;
+  const prevSeg = wireSegments[WIRE_SEG_COUNT - 1];
+  const lastSeg = wireSegments[WIRE_SEG_COUNT];
+  const wireAngle = -Math.atan2(lastSeg.x - prevSeg.x, lastSeg.y - prevSeg.y);
+
+  ctx.save();
+  ctx.translate(hx, hy);
+  ctx.rotate(wireAngle);
+
+  // Draw hook SVG without color overlay
+  if (svgImages.hook) {
+    ctx.drawImage(svgImages.hook, -HOOK_WIDTH / 2, 0, HOOK_WIDTH, HOOK_HEIGHT);
+  }
+
+  ctx.restore();
+
+  // Proximity indicator - centered at bottom of hook
+  if (!hookedCrate && gameState === 'playing') {
+    const nearby = findNearestCrate();
+    if (nearby) {
+      ctx.beginPath();
+      ctx.arc(hx, hy + HOOK_HEIGHT, 20, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(245,198,66,0.15)';
+      ctx.fill();
+    }
+  }
+}
+
+function drawHookToLoadLink(crate) {
+  const rot = crate.rotation || 0;
+  const cx = crate.x + crate.w / 2;
+  const cy = crate.y + crate.h / 2;
+  const attachToCenter = Math.max(4, crate.h / 2 - CRATE_ATTACH_INSET);
+  const crateAttachX = cx + Math.sin(rot) * attachToCenter;
+  const crateAttachY = cy - Math.cos(rot) * attachToCenter;
+
+  const hookAttachX = typeof crate.attachX === 'number'
+    ? crate.attachX
+    : getHookAttachmentPoint(rot).x;
+  const hookAttachY = typeof crate.attachY === 'number'
+    ? crate.attachY
+    : getHookAttachmentPoint(rot).y;
+
+  ctx.save();
+  ctx.strokeStyle = '#193E75';
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(hookAttachX, hookAttachY);
+  ctx.lineTo(crateAttachX, crateAttachY);
+  ctx.stroke();
+
+  ctx.fillStyle = '#193E75';
+  ctx.beginPath();
+  ctx.arc(crateAttachX, crateAttachY, 2.3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawCrate(c) {
+  ctx.save();
+  const cx = c.x + c.w / 2;
+  const cy = c.y + c.h / 2;
+  const rot = c.rotation || 0;
+
+  ctx.translate(cx, cy);
+  ctx.rotate(rot);
+
+  // Draw SVG if available, otherwise fallback to colored rectangle
+  if (c.broken && c.type === 'precast' && svgImages.brokenprecast) {
+    // Draw broken precast SVG
+    ctx.drawImage(svgImages.brokenprecast, -c.w / 2, -c.h / 2, c.w, c.h);
+  } else if (c.broken) {
+    // Fallback for broken crates without SVG
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = '#555';
+    ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+    ctx.strokeStyle = '#f55';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-c.w / 2 + 5, -c.h / 2 + 5);
+    ctx.lineTo(c.w / 2 - 5, c.h / 2 - 5);
+    ctx.moveTo(c.w / 2 - 5, -c.h / 2 + 5);
+    ctx.lineTo(-c.w / 2 + 5, c.h / 2 - 5);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  } else if (c.type === 'precast' && svgImages.precast) {
+    ctx.drawImage(svgImages.precast, -c.w / 2, -c.h / 2, c.w, c.h);
+  } else if (c.type === 'drum' && svgImages.drum) {
+    ctx.drawImage(svgImages.drum, -c.w / 2, -c.h / 2, c.w, c.h);
+  } else if (c.type === 'crate' && svgImages.crate) {
+    ctx.drawImage(svgImages.crate, -c.w / 2, -c.h / 2, c.w, c.h);
+  } else {
+    // Fallback: colored rectangle
+    ctx.fillStyle = c.color;
+    ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+
+    // Highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h * 0.3);
+
+    // Border
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-c.w / 2, -c.h / 2, c.w, c.h);
+
+    // Detail lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-c.w / 2 + 5, -c.h / 2 + 5);
+    ctx.lineTo(c.w / 2 - 5, c.h / 2 - 5);
+    ctx.moveTo(c.w / 2 - 5, -c.h / 2 + 5);
+    ctx.lineTo(-c.w / 2 + 5, c.h / 2 - 5);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawObstacle(obs) {
+  ctx.save();
+  const cx = obs.x + obs.w / 2;
+  const cy = obs.y + obs.h / 2;
+  const rotation = obs.rotation || 0;
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+
+  // Draw SVG if available (drums), otherwise fallback
+  if (obs.type === 'drum' && svgImages.drum) {
+    ctx.drawImage(svgImages.drum, -obs.w / 2, -obs.h / 2, obs.w, obs.h);
+  } else if (obs.type === 'block' && svgImages.block) {
+    ctx.drawImage(svgImages.block, -obs.w / 2, -obs.h / 2, obs.w, obs.h);
+  } else {
+    // Fallback: colored rectangle with stripes
+    ctx.fillStyle = obs.color;
+    ctx.fillRect(-obs.w / 2, -obs.h / 2, obs.w, obs.h);
+
+    // Diagonal stripes
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(-obs.w / 2, -obs.h / 2, obs.w, obs.h);
+    ctx.clip();
+    ctx.strokeStyle = 'rgba(255,198,66,0.3)';
+    ctx.lineWidth = 4;
+    const stripeGap = 16;
+    for (let i = -obs.h; i < obs.w + obs.h; i += stripeGap) {
+      ctx.beginPath();
+      ctx.moveTo(-obs.w / 2 + i, -obs.h / 2);
+      ctx.lineTo(-obs.w / 2 + i - obs.h, obs.h / 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Border
+    ctx.strokeStyle = 'rgba(128,143,150,0.6)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-obs.w / 2, -obs.h / 2, obs.w, obs.h);
+
+    // Highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.fillRect(-obs.w / 2, -obs.h / 2, obs.w, obs.h * 0.15);
+
+    if (obs.w >= 60) {
+      ctx.fillStyle = '#F5C942';
+      ctx.font = 'bold 14px "Chakra Petch", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('\u26a0 DANGER', 0, 5);
+      ctx.textAlign = 'left';
+    }
+  }
+
+  ctx.restore();
+}
+
+function drawDropZone() {
+  const dz = dropZone;
+  const refCrate = hookedCrate || getPickupTargetCrate() || activeDropDisplayCrate || crates[0];
+  const refW = refCrate ? refCrate.w : 80;
+  const refH = refCrate ? refCrate.h : 47;
+  const t = performance.now() / 1000;
+  const pulse = 1 + Math.sin(t * 4) * 0.06;
+  const alpha = 0.5 + Math.sin(t * 4) * 0.12;
+  const ghostAlpha = 0.2 + Math.sin(t * 3.2) * 0.08;
+  const cx = dz.x + dz.width / 2;
+  const cy = dz.y + 30;
+  const rx = Math.max(24, refW * 0.9) * pulse;
+  const ry = Math.max(8, refH * 0.28) * pulse;
+  const ghostY = dz.y - refH + 25;
+
+  ctx.save();
+  // Ghost block in target position so players know exact drop location.
+  ctx.globalAlpha = Math.max(0.12, Math.min(0.32, ghostAlpha));
+  if (refCrate && refCrate.type === 'precast' && svgImages.precast) {
+    ctx.drawImage(svgImages.precast, cx - refW / 2, ghostY, refW, refH);
+  } else {
+    ctx.fillStyle = 'rgba(60,166,60,0.38)';
+    ctx.strokeStyle = 'rgba(60,166,60,0.9)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 4]);
+    ctx.fillRect(cx - refW / 2, ghostY, refW, refH);
+    ctx.strokeRect(cx - refW / 2, ghostY, refW, refH);
+    ctx.setLineDash([]);
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.fillStyle = `rgba(60,166,60,${alpha.toFixed(3)})`;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 12px "Chakra Petch", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('DROP ZONE', cx, cy);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.restore();
+}
+
+function drawPickupMarker(c) {
+  const t = performance.now() / 1000;
+  const pulse = 1 + Math.sin(t * 4) * 0.06;
+  const alpha = 0.55 + Math.sin(t * 4) * 0.12;
+  const cx = c.x + c.w / 2;
+  const cy = c.y + c.h + 6;
+  const rx = Math.max(24, c.w * 0.9) * pulse;
+  const ry = Math.max(8, c.h * 0.28) * pulse;
+
+  ctx.save();
+  ctx.fillStyle = `rgba(245,201,66,${alpha.toFixed(3)})`;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+// ============ HOOK/UNHOOK ============
+function getPickupTargetCrate() {
+  return crates.find(c => !c.delivered && !droppedCrates.includes(c)) || null;
+}
+
+function findNearestCrate() {
+  let best = null;
+  let bestDist = 60;
+  for (const c of crates) {
+    if (c.delivered || droppedCrates.includes(c)) continue;
+    const cx = c.x + c.w / 2;
+    const cy = c.y + c.h / 2;
+    const dist = Math.hypot(hook.x - cx, hook.y - cy);
+    if (dist < bestDist) { bestDist = dist; best = c; }
+  }
+  return best;
+}
+
+function toggleHook() {
+  if (hookedCrate) {
+    hookedCrate.vx = trolley.speed * 0.3;
+    hookedCrate.vy = 0;
+    hookedCrate.landed = false;
+    hookedCrate.scored = false;
+    hookedCrate.releasedTooHigh = (hookedCrate.y + hookedCrate.h) < DROP_ZONE_TOP_Y();
+    droppedCrates.push(hookedCrate);
+    hookedCrate = null;
+    resetHookBtn();
+  } else {
+    const crate = findNearestCrate();
+    if (crate) {
+      // Picking a new block clears previous delivered block display.
+      activeDropDisplayCrate = null;
+      droppedCrates = droppedCrates.filter(dc => !dc.delivered);
+      hookedCrate = crate;
+      if (typeof hookedCrate.broken !== 'boolean') hookedCrate.broken = false;
+      const hookBtn = document.getElementById('hookBtn');
+      hookBtn.textContent = 'Release';
+      hookBtn.classList.add('hooked');
+      hookBtn.setAttribute('aria-label', 'Release');
+      hookBtn.setAttribute('title', 'Release');
+      hookBtn.setAttribute('aria-pressed', 'true');
+    }
+  }
+}
+
+function updateHUD() {
+  // Update block counter
+  document.getElementById('blockNumber').textContent = `${score}/${totalCrates}`;
+
+  // Update damage bar (3 segments: yellow 0-33%, orange 33-66%, red 66-100%)
+  const pct = Math.min(100, Math.max(0, damage));
+  const maxWidth = 96; // Total width of damage area
+
+  // Calculate widths for each segment
+  const yellowWidth = Math.min(maxWidth / 3, (pct / 100) * maxWidth);
+  const orangeWidth = pct > 33.33 ? Math.min(maxWidth / 3, ((pct - 33.33) / 100) * maxWidth * 3) : 0;
+  const redWidth = pct > 66.66 ? Math.min(maxWidth / 3, ((pct - 66.66) / 100) * maxWidth * 3) : 0;
+
+  document.getElementById('damageYellow').setAttribute('width', yellowWidth);
+  document.getElementById('damageOrange').setAttribute('x', 74 + yellowWidth);
+  document.getElementById('damageOrange').setAttribute('width', orangeWidth);
+  document.getElementById('damageRed').setAttribute('x', 74 + yellowWidth + orangeWidth);
+  document.getElementById('damageRed').setAttribute('width', redWidth);
+}
+
+function showEndScreen(won) {
+  const el = document.getElementById('endScreen');
+  const title = document.getElementById('endTitle');
+  const lead = document.getElementById('endLead');
+  const msg = document.getElementById('endMsg');
+  const btn = document.getElementById('restartBtn');
+  el.style.display = 'flex';
+  el.classList.toggle('win-mode', won);
+  el.classList.toggle('lose-mode', !won);
+  if (won) {
+    title.textContent = 'Job Complete!';
+    title.className = 'win-title';
+    lead.textContent = 'All crates delivered safely.';
+    msg.textContent = `Total damage: ${Math.round(damage)}%.`;
+    btn.innerHTML = 'Play Again';
+    btn.textContent = 'Play Again';
+  } else {
+    title.textContent = 'Load Failure';
+    title.className = 'lose-title';
+    lead.textContent = 'You have damaged the blocks you were responsible for.';
+    msg.innerHTML = 'Improper load control can cause structural failure, falling debris, and serious injury on a real job site. A crane operator\'s duty is precision and safety.<br><br>Check your load balance, and try again.';
+    btn.innerHTML = '<span class="retry-lines">TRY<br>AGAIN</span>';
+  }
+  if (onboarding.active) {
+    stopOnboarding({ markComplete: true, keepForce: false });
+  }
+}
+
+// ============ INPUT ============
+const keyDirMap = {
+  ArrowLeft: 'left', a: 'left',
+  ArrowRight: 'right', d: 'right',
+  ArrowUp: 'up', w: 'up',
+  ArrowDown: 'down', s: 'down',
+};
+
+function setDirBtnActive(dir, active) {
+  const btn = document.querySelector(`.ctrl-btn[data-dir="${dir}"]`);
+  if (btn) btn.classList.toggle('active', active);
+}
+
+function bindButtonKeyboardClick(button, handler) {
+  if (!button) return;
+  button.addEventListener('keydown', e => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      handler();
+    }
+  });
+}
+
+window.addEventListener('keydown', e => {
+  if (gameState !== 'playing') return;
+  const dir = keyDirMap[e.key];
+  if (dir) { e.preventDefault(); inputState[dir] = true; setDirBtnActive(dir, true); }
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    toggleHook();
+    const hb = document.getElementById('hookBtn');
+    hb.classList.add('active');
+    setTimeout(() => hb.classList.remove('active'), 150);
+  }
+});
+
+window.addEventListener('keyup', e => {
+  const dir = keyDirMap[e.key];
+  if (dir) { e.preventDefault(); inputState[dir] = false; setDirBtnActive(dir, false); }
+});
+
+document.querySelectorAll('.ctrl-btn[data-dir]').forEach(btn => {
+  const dir = btn.dataset.dir;
+  const start = () => { if (gameState === 'playing') { inputState[dir] = true; btn.classList.add('active'); } };
+  const end = () => { inputState[dir] = false; btn.classList.remove('active'); };
+  btn.addEventListener('mousedown', start);
+  btn.addEventListener('mouseup', end);
+  btn.addEventListener('mouseleave', end);
+  btn.addEventListener('touchstart', e => { e.preventDefault(); start(); });
+  btn.addEventListener('touchend', e => { e.preventDefault(); end(); });
+  btn.addEventListener('touchcancel', end);
+  btn.addEventListener('keydown', e => {
+    if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) {
+      e.preventDefault();
+      start();
+    }
+  });
+  btn.addEventListener('keyup', e => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      end();
+    }
+  });
+  btn.addEventListener('blur', end);
+});
+
+document.getElementById('hookBtn').addEventListener('click', () => { if (gameState === 'playing') toggleHook(); });
+document.getElementById('hookBtn').addEventListener('touchstart', e => { e.preventDefault(); if (gameState === 'playing') toggleHook(); });
+bindButtonKeyboardClick(document.getElementById('hookBtn'), () => {
+  if (gameState === 'playing') toggleHook();
+});
+
+// ============ GAME FLOW ============
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('restartBtn').addEventListener('click', () => {
+  document.getElementById('endScreen').style.display = 'none';
+  startGame();
+});
+bindButtonKeyboardClick(document.getElementById('startBtn'), startGame);
+bindButtonKeyboardClick(document.getElementById('restartBtn'), () => {
+  document.getElementById('endScreen').style.display = 'none';
+  startGame();
+});
+
+function startGame() {
+  if (introOverviewTimer) clearTimeout(introOverviewTimer);
+  if (introZoomTimer) clearTimeout(introZoomTimer);
+  introOverviewTimer = null;
+  introZoomTimer = null;
+
+  initGame();
+  const shouldOnboard = shouldStartOnboarding();
+  const isDesktopView = window.matchMedia('(min-width: 701px)').matches;
+  gameState = isDesktopView ? 'zooming' : 'overview';
+
+  camera = { x: WORLD.craneBaseX + WORLD.jibLength / 2, y: WORLD.groundY / 2, zoom: 0.52 };
+  targetCamera = { ...camera };
+
+  document.getElementById('startScreen').classList.add('hiding');
+  document.getElementById('hud').style.display = 'flex';
+  document.getElementById('controls').style.display = 'flex';
+
+  document.getElementById('spotterText').textContent = 'Stand by...';
+
+  setTimeout(() => { document.getElementById('startScreen').style.display = 'none'; }, 900);
+
+  if (isDesktopView) {
+    introZoomTimer = setTimeout(() => {
+      gameState = 'playing';
+      if (shouldOnboard) {
+        startOnboarding({ force: false });
+      } else {
+        autoLowerUntil = performance.now() + 2000;
+      }
+      document.getElementById('spotterText').textContent = '⬇️ Lower the hook to a crate';
+    }, 1000);
+  } else {
+    introOverviewTimer = setTimeout(() => {
+      gameState = 'zooming';
+      introZoomTimer = setTimeout(() => {
+        gameState = 'playing';
+        if (shouldOnboard) {
+          startOnboarding({ force: false });
+        } else {
+          autoLowerUntil = performance.now() + 2000;
+        }
+        document.getElementById('spotterText').textContent = '⬇️ Lower the hook to a crate';
+      }, 1000);
+    }, 2000);
+  }
+}
+
+// ============ MAIN LOOP ============
+let lastTime = 0;
+
+function gameLoop(time) {
+  const dt = Math.min((time - lastTime) / 1000, 0.05);
+  lastTime = time;
+
+  if (gameState === 'playing' || gameState === 'zooming' || gameState === 'overview') {
+    updatePhysics(dt);
+    updateCamera(dt);
+  }
+
+  ctx.clearRect(0, 0, W(), H());
+  ctx.fillStyle = '#A69D93';
+  ctx.fillRect(0, 0, W(), H());
+
+  if (gameState !== 'start') drawWorld();
+
+  if (onboarding.active) {
+    updateOnboardingState();
+    renderOnboardingUI();
+  }
+
+  const vGrad = ctx.createRadialGradient(W() / 2, H() / 2, W() * 0.3, W() / 2, H() / 2, W() * 0.8);
+  vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  vGrad.addColorStop(1, 'rgba(0,0,0,0.4)');
+  ctx.fillStyle = vGrad;
+  ctx.fillRect(0, 0, W(), H());
+
+  requestAnimationFrame(gameLoop);
+}
+
+function hasCompletedOnboarding() {
+  try {
+    return localStorage.getItem(ONBOARDING_STORAGE_KEY) === '1';
+  } catch (error) {
+    return false;
+  }
+}
+
+function setOnboardingCompleted(value) {
+  try {
+    if (value) {
+      localStorage.setItem(ONBOARDING_STORAGE_KEY, '1');
+    } else {
+      localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    }
+  } catch (error) {
+    // no-op
+  }
+}
+
+function shouldStartOnboarding() {
+  return onboarding.force || !hasCompletedOnboarding();
+}
+
+function getOnboardingStepConfig(step) {
+  switch (step) {
+    case 0:
+      return {
+        title: 'Controls',
+        text: 'Use left/right to move the trolley and up/down to raise or lower the hook.',
+        target: 'controls',
+        auto: false
+      };
+    case 1:
+      return {
+        title: 'Hook Button',
+        text: 'Press Hook to attach when close to a block, then press Hook again to release.',
+        target: 'hook',
+        auto: false
+      };
+    default:
+      return null;
+  }
+}
+
+function getWorldToScreenRect(wx, wy, ww, wh) {
+  const sx = (wx - camera.x) * camera.zoom + W() / 2;
+  const sy = (wy - camera.y) * camera.zoom + H() / 2;
+  return {
+    left: sx,
+    top: sy,
+    width: Math.max(22, ww * camera.zoom),
+    height: Math.max(22, wh * camera.zoom)
+  };
+}
+
+function getOnboardingTargetRect(targetType) {
+  if (targetType === 'controls') {
+    const el = document.getElementById('controls');
+    return el ? el.getBoundingClientRect() : null;
+  }
+  if (targetType === 'hook') {
+    const el = document.getElementById('hookBtn');
+    return el ? el.getBoundingClientRect() : null;
+  }
+  if (targetType === 'crate') {
+    const c = getPickupTargetCrate();
+    if (!c) return null;
+    return getWorldToScreenRect(c.x, c.y, c.w, c.h);
+  }
+  if (targetType === 'dropzone') {
+    return getWorldToScreenRect(dropZone.x, dropZone.y - 45, dropZone.width, 90);
+  }
+  return null;
+}
+
+function positionOnboardingHint(rect) {
+  const hint = document.getElementById('onboardingHint');
+  if (!hint) return;
+  const pad = 10;
+  const hintRect = hint.getBoundingClientRect();
+
+  let left = rect ? rect.left + (rect.width / 2) - (hintRect.width / 2) : (W() - hintRect.width) / 2;
+  left = Math.max(pad, Math.min(W() - hintRect.width - pad, left));
+
+  let top = rect ? rect.bottom + 12 : (H() * 0.7);
+  if (rect && top + hintRect.height > H() - pad) {
+    top = rect.top - hintRect.height - 12;
+  }
+  top = Math.max(pad, Math.min(H() - hintRect.height - pad, top));
+
+  hint.style.left = `${left}px`;
+  hint.style.top = `${top}px`;
+}
+
+function renderOnboardingUI() {
+  if (!onboarding.active) return;
+
+  const cfg = getOnboardingStepConfig(onboarding.step);
+  if (!cfg) {
+    stopOnboarding({ markComplete: true, keepForce: false });
+    return;
+  }
+
+  const backdrop = document.getElementById('onboardingBackdrop');
+  const ring = document.getElementById('onboardingFocusRing');
+  const hint = document.getElementById('onboardingHint');
+  const title = document.getElementById('onboardingTitle');
+  const copy = document.getElementById('onboardingCopy');
+  const nextBtn = document.getElementById('onboardingNextBtn');
+
+  backdrop.classList.add('active');
+  ring.classList.add('active');
+  hint.classList.add('active');
+  hint.classList.toggle('auto', !!cfg.auto);
+
+  if (onboarding.renderedStep !== onboarding.step) {
+    title.textContent = cfg.title;
+    copy.textContent = cfg.text;
+    onboarding.renderedStep = onboarding.step;
+  }
+
+  if (nextBtn) {
+    nextBtn.textContent = onboarding.step >= 1 ? 'Got it' : 'Next';
+  }
+
+  const rect = getOnboardingTargetRect(cfg.target);
+  if (rect) {
+    ring.style.left = `${rect.left - 6}px`;
+    ring.style.top = `${rect.top - 6}px`;
+    ring.style.width = `${rect.width + 12}px`;
+    ring.style.height = `${rect.height + 12}px`;
+    positionOnboardingHint(rect);
+  } else {
+    ring.style.left = `${W() / 2 - 60}px`;
+    ring.style.top = `${H() / 2 - 40}px`;
+    ring.style.width = '120px';
+    ring.style.height = '80px';
+    positionOnboardingHint(null);
+  }
+}
+
+function hideOnboardingUI() {
+  const backdrop = document.getElementById('onboardingBackdrop');
+  const ring = document.getElementById('onboardingFocusRing');
+  const hint = document.getElementById('onboardingHint');
+  if (backdrop) backdrop.classList.remove('active');
+  if (ring) ring.classList.remove('active');
+  if (hint) hint.classList.remove('active');
+}
+
+function startOnboarding({ force = false } = {}) {
+  onboarding.force = force;
+  onboarding.active = true;
+  onboarding.step = 0;
+  onboarding.renderedStep = -1;
+  renderOnboardingUI();
+}
+
+function stopOnboarding({ markComplete = true, keepForce = false } = {}) {
+  onboarding.active = false;
+  onboarding.step = 0;
+  onboarding.renderedStep = -1;
+  if (!keepForce) onboarding.force = false;
+  hideOnboardingUI();
+  if (markComplete) setOnboardingCompleted(true);
+}
+
+function nextOnboardingStep() {
+  if (!onboarding.active) return;
+  onboarding.step += 1;
+  onboarding.renderedStep = -1;
+  if (!getOnboardingStepConfig(onboarding.step)) {
+    stopOnboarding({ markComplete: true, keepForce: false });
+  }
+}
+
+function updateOnboardingState() {
+  if (!onboarding.active || gameState !== 'playing') return;
+}
+
+// ============ HELP MODAL ============
+let currentSlide = 0;
+const totalSlides = 4;
+
+function showHelp() {
+  goToSlide(0);
+  document.getElementById('helpModal').classList.add('active');
+}
+
+function closeHelp() {
+  document.getElementById('helpModal').classList.remove('active');
+}
+
+function goToSlide(index) {
+  currentSlide = index;
+
+  // Update slides
+  document.querySelectorAll('.slide').forEach((slide, i) => {
+    slide.classList.toggle('active', i === currentSlide);
+  });
+
+  // Update dots
+  const dotsContainer = document.getElementById('slideDots');
+  dotsContainer.innerHTML = '';
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'slide-dot' + (i === currentSlide ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  // Update buttons
+  document.getElementById('prevSlide').disabled = currentSlide === 0;
+  const nextBtn = document.getElementById('nextSlide');
+  if (currentSlide === totalSlides - 1) {
+    nextBtn.textContent = 'Got it!';
+    nextBtn.onclick = closeHelp;
+  } else {
+    nextBtn.textContent = 'Next →';
+    nextBtn.onclick = () => goToSlide(currentSlide + 1);
+  }
+}
+
+// Event listeners for help modal
+document.getElementById('prevSlide').addEventListener('click', () => {
+  if (currentSlide > 0) goToSlide(currentSlide - 1);
+});
+
+document.getElementById('helpModal').addEventListener('click', (e) => {
+  if (e.target.id === 'helpModal') closeHelp();
+});
+
+document.getElementById('helpBtn').addEventListener('click', showHelp);
+
+const onboardingNextBtn = document.getElementById('onboardingNextBtn');
+const onboardingSkipBtn = document.getElementById('onboardingSkipBtn');
+const replayTutorialBtn = document.getElementById('replayTutorialBtn');
+
+if (onboardingNextBtn) {
+  onboardingNextBtn.addEventListener('click', () => {
+    nextOnboardingStep();
+  });
+}
+
+if (onboardingSkipBtn) {
+  onboardingSkipBtn.addEventListener('click', () => {
+    stopOnboarding({ markComplete: true, keepForce: false });
+  });
+}
+
+if (replayTutorialBtn) {
+  replayTutorialBtn.addEventListener('click', () => {
+    closeHelp();
+    onboarding.force = true;
+    if (gameState === 'playing') {
+      startOnboarding({ force: true });
+    } else {
+      startGame();
+    }
+  });
+}
+
+window.addEventListener('resize', () => {
+  if (onboarding.active) {
+    onboarding.renderedStep = -1;
+    renderOnboardingUI();
+  }
+});
+
+// ============ INITIALIZATION ============
+loadSVGAssets().then(() => {
+  console.log('SVG assets loaded:', Object.keys(svgAssets));
+  console.log('SVG images ready:', Object.keys(svgImages));
+  if (!svgImages.hook) console.warn('Hook image not loaded!');
+  if (!svgImages.tophook) console.warn('Tophook image not loaded!');
+  requestAnimationFrame(gameLoop);
+});
+</script>
+<script src="../../nav.js?v=1.0.0"></script>
+</body>
+</html>

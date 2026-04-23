@@ -1,0 +1,364 @@
+/* ===================================
+   SHARED NAVIGATION — Hamburger + Drawer
+   =================================== */
+
+/* Top Navigation Icons Container */
+.top-nav-icons {
+    position: relative;
+    margin: 20px 20px 0 auto;
+    width: max-content;
+    z-index: 10;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+/* Navigation Icon Button */
+.nav-icon-btn {
+    width: 62px;
+    height: 62px;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 0;
+}
+
+.nav-icon-btn:hover {
+    transform: scale(1.05);
+    box-shadow: none;
+}
+
+.nav-icon-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Card button */
+.card-btn {
+    flex-shrink: 0;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Hamburger button */
+.menu-btn {
+    flex-shrink: 0;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.menu-btn:focus-visible,
+.nav-close:focus-visible,
+.nav-link:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+}
+
+/* Hide the top-left page logo while drawer is open so it never overlaps menu content */
+body.nav-open .page-corner-logo {
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+/* Nav Drawer */
+.nav-drawer {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 320px;
+    max-width: 85vw;
+    height: 100%;
+    background: #1f4888;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 22px 24px;
+    gap: 14px;
+    transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+    border-radius: 0 0 0 32px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.nav-drawer.open {
+    right: 0;
+    box-shadow: none;
+}
+
+/* Close button */
+.nav-close {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 60px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-close:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+/* Nav links */
+.nav-link {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    position: relative;
+    isolation: isolate;
+    flex: 0 0 auto;
+    min-height: 52px;
+    color: #1f4888;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: 0.25px;
+    border-radius: 16px;
+    background: #d7dde6;
+    overflow: hidden;
+    transition: color 0.25s ease;
+}
+
+.nav-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #193E75;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.3s ease;
+    z-index: 0;
+}
+
+.nav-link-label {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 22px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+    transition: color 0.25s ease;
+}
+
+.nav-link-icon {
+    width: 56px;
+    min-width: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #b9cedd;
+    color: #5e95b2;
+    position: relative;
+    z-index: 1;
+    transition: background 0.25s ease, color 0.25s ease, filter 0.25s ease;
+}
+
+.nav-link-icon svg,
+.nav-link-icon img {
+    width: 27px;
+    height: 27px;
+}
+
+.nav-link-about .nav-link-icon {
+    background: #d6c5de;
+    color: #a978b5;
+}
+
+.nav-link-career .nav-link-icon {
+    background: #d6e7cf;
+    color: #7ea67e;
+}
+
+.nav-link-videos .nav-link-icon {
+    background: #f0c7bf;
+    color: #e46f5b;
+}
+
+.nav-link-games .nav-link-icon {
+    background: #c7ddbc;
+    color: #7ea67e;
+}
+
+.nav-link-survey .nav-link-icon {
+    background: #f3d8b3;
+    color: #e39f58;
+}
+
+.nav-link-credits .nav-link-icon {
+    background: #f1e2af;
+    color: #e8c66c;
+}
+
+.nav-link.no-icon {
+    background: #dad2e4;
+}
+
+.nav-link.no-icon .nav-link-label {
+    width: 100%;
+}
+
+.nav-link.no-icon .nav-link-icon {
+    display: none;
+}
+
+/* Consistent menu order across pages */
+.nav-drawer .nav-link-home { order: 10; }
+.nav-drawer .nav-link-about { order: 20; }
+.nav-drawer .nav-link[href*="rmit.edu.au"] { order: 30; }
+.nav-drawer .nav-link[href*="bigbuild.vic.gov.au"] { order: 40; }
+.nav-drawer .nav-link-career { order: 50; }
+.nav-drawer .nav-link-videos { order: 60; }
+.nav-drawer .nav-link-games { order: 70; }
+.nav-drawer .nav-link-survey { order: 80; }
+.nav-drawer .nav-link-credits { order: 90; }
+
+/* About submenu links */
+.nav-drawer .nav-link[href*="rmit.edu.au"],
+.nav-drawer .nav-link[href*="bigbuild.vic.gov.au"] {
+    width: 80%;
+    align-self: flex-end;
+    margin-left: 0;
+    margin-right: 0;
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    background: #d6cde1;
+}
+
+.nav-drawer .nav-link[href*="rmit.edu.au"] .nav-link-label,
+.nav-drawer .nav-link[href*="bigbuild.vic.gov.au"] .nav-link-label {
+    justify-content: space-between;
+    width: 100%;
+    padding-right: 14px;
+}
+
+.nav-drawer .nav-link[href*="rmit.edu.au"] .nav-link-label::after,
+.nav-drawer .nav-link[href*="bigbuild.vic.gov.au"] .nav-link-label::after {
+    content: "↗";
+    font-size: 15px;
+    line-height: 1;
+    color: #1f4888;
+    opacity: 0.9;
+    margin-left: 10px;
+}
+
+.nav-link:hover {
+    color: #ffffff;
+}
+
+.nav-link:hover::before {
+    transform: scaleX(1);
+}
+
+.nav-link:hover .nav-link-label {
+    color: #ffffff;
+}
+
+.nav-link:hover .nav-link-icon {
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+}
+
+.nav-link:hover .nav-link-icon img {
+    filter: brightness(0) invert(1);
+}
+
+.nav-link.active {
+    box-shadow: inset 0 0 0 3px rgba(31, 72, 136, 0.25);
+}
+
+/* Scrim (backdrop) */
+.nav-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+
+.nav-scrim.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .top-nav-icons {
+        top: 16px;
+        margin: 0px 16px 0 auto;
+        gap: 12px;
+    }
+
+    .nav-icon-btn {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-nav-icons {
+        top: 12px;
+        margin: 0px 12px 0 auto;
+        gap: 10px;
+    }
+
+    .nav-icon-btn {
+        width: 60px;
+        height: 60px;
+    }
+
+    .nav-drawer {
+        padding: 72px 16px 20px;
+        gap: 10px;
+    }
+
+    .nav-link {
+        min-height: 44px;
+        border-radius: 14px;
+        font-size: 15px;
+    }
+
+    .nav-link-label {
+        padding-left: 16px;
+    }
+
+    .nav-link-icon {
+        width: 48px;
+        min-width: 48px;
+    }
+
+    .nav-link-icon svg,
+    .nav-link-icon img {
+        width: 23px;
+        height: 23px;
+    }
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 453.1 462.6" class="moon-icon">
+  <defs>
+    <style>
+      .st0 { fill: #ffbf4e; }
+
+      /* Animations */
+      .moon {
+        transform-origin: 320px 231px;
+        animation: moonFloat 4.2s ease-in-out infinite;
+      }
+
+      .star-big {
+        transform-origin: 68px 268px;
+        animation: twinkle 1.8s ease-in-out infinite;
+      }
+
+      .star-small {
+        transform-origin: 160px 160px;
+        animation: twinkle 2.4s ease-in-out infinite;
+        animation-delay: -0.6s;
+      }
+
+      @keyframes moonFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(-3px, -4px) scale(1.015); }
+      }
+
+      @keyframes twinkle {
+        0%, 100% { transform: scale(1); opacity: 0.9; }
+        50% { transform: scale(1.12); opacity: 1; }
+      }
+
+      /* Optional: respect reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .moon, .star-big, .star-small { animation: none; }
+      }
+    </style>
+  </defs>
+
+  <!-- Moon -->
+  <path class="st0 moon" d="M221.7,0C200.9,0,180.7,2.8,161.5,7.9c-10.1,2.7-11.9,16.4-2.7,21.6,70.5,39.6,118.2,115.1,118.2,201.8s-47.7,162.2-118.2,201.8c-9.1,5.1-7.4,18.8,2.7,21.6,19.2,5.2,39.4,8,60.3,8,127.6,0,231-103.3,231.3-230.8C453.4,104.1,349.5,0,221.7,0h0Z"/>
+
+  <!-- Stars -->
+  <polygon class="st0 star-big" points="91 228.9 135.1 234.8 117.5 275.7 125.5 319.5 81.2 315.4 42 336.6 32.2 293.2 0 262.5 38.2 239.7 57.5 199.6 91 228.9"/>
+  <polygon class="st0 star-small" points="178.5 146.6 194 162.7 174.4 173.2 163.9 192.8 147.8 177.4 125.9 173.5 135.5 153.5 132.5 131.4 154.6 134.4 174.6 124.7 178.5 146.6"/>
+</svg>

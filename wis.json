@@ -1,0 +1,1251 @@
+{
+  "roles": [
+    {
+      "name": "Building Estimator",
+      "salary_range": "$65,000 - $120,000",
+      "overview": "Building estimators calculate the cost of construction projects, working closely with designers, engineers and contractors to make sure projects are financially viable.",
+      "work_style": "Analytical-Formal",
+      "core_skills": [
+        "Numerical analysis",
+        "Attention to detail",
+        "Problem-solving",
+        "Technical knowledge of construction",
+        "Communication",
+        "Organisation",
+        "Teamwork",
+        "Computer and digital modelling skills"
+      ],
+      "core_education": [
+        "Certificate IV in Building (Construction Estimation)",
+        "Diploma of Building and Construction"
+      ],
+      "related_roles": [
+        "Contract Administrator",
+        "Quantity Surveyor",
+        "Project Coordinator",
+        "Project Manager"
+      ],
+      "levels": [
+        {
+          "title": "Junior Estimator",
+          "summary": "Supports senior estimators by measuring quantities from drawings, updating spreadsheets and assisting with basic cost estimates.",
+          "typical_experience": "Entry-level role for people with a trade background, certificate-level study or strong numeracy skills.",
+          "progresses_to": [
+            "Building Estimator"
+          ],
+          "related_roles": [
+            "Project Assistant",
+            "Graduate Quantity Surveyor",
+            "Apprentice Electrician",
+            "Apprentice Plumber"
+          ]
+        },
+        {
+          "title": "Building Estimator",
+          "summary": "Prepares detailed cost estimates, researches material and labour rates and helps prepare competitive tenders.",
+          "typical_experience": "3 years experience in estimating or a related construction role plus Certificate IV in Building (Estimation) or similar.",
+          "progresses_to": [
+            "Senior Estimator"
+          ],
+          "related_roles": [
+            "Contract Administrator",
+            "Quantity Surveyor",
+            "Project Coordinator"
+          ]
+        },
+        {
+          "title": "Senior Estimator",
+          "summary": "Leads estimating on larger or more complex projects, reviews junior work and works directly with clients and project managers.",
+          "typical_experience": "Several years as a building estimator, strong track record on medium to large projects.",
+          "progresses_to": [
+            "Commercial Manager"
+          ],
+          "related_roles": [
+            "Senior Quantity Surveyor",
+            "Senior Contract Administrator",
+            "Project Manager"
+          ]
+        },
+        {
+          "title": "Commercial Manager (Estimating Focus)",
+          "summary": "Oversees the financial performance of projects or a business unit, sets pricing strategies and manages commercial risk.",
+          "typical_experience": "Extensive experience as a senior estimator or quantity surveyor, often with leadership responsibilities.",
+          "progresses_to": [
+            "Commercial Director",
+            "Construction Manager"
+          ],
+          "related_roles": [
+            "Commercial Manager (QS)",
+            "Construction Manager",
+            "Project Director"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Contract Administrator",
+      "salary_range": "$60,000 - $110,000",
+      "overview": "Contract administrators manage the paperwork, contracts and financial documentation that keep construction projects on track and compliant.",
+      "core_skills": [
+        "Organisation",
+        "Attention to detail",
+        "Knowledge of contracts and law",
+        "Communication",
+        "Negotiation",
+        "Problem-solving"
+      ],
+      "core_education": [
+        "Certificate IV in Building and Construction (Contract Administration)",
+        "Diploma of Construction Management"
+      ],
+      "work_style": "Analytical-Formal",
+      "levels": [
+        {
+          "title": "Assistant Contract Administrator",
+          "summary": "Supports the contract admin team with document control, registers, reports and basic claims.",
+          "typical_experience": "Entry-level, often while completing relevant VET or degree-level study.",
+          "progresses_to": [
+            "Contract Administrator"
+          ],
+          "related_roles": [
+            "Project Assistant",
+            "Junior Estimator",
+            "Graduate Quantity Surveyor"
+          ]
+        },
+        {
+          "title": "Contract Administrator",
+          "summary": "Manages contract documentation, RFIs, variations and progress claims for specific projects.",
+          "typical_experience": "3 years in an assistant CA or project admin role.",
+          "progresses_to": [
+            "Senior Contract Administrator"
+          ],
+          "related_roles": [
+            "Building Estimator",
+            "Quantity Surveyor",
+            "Project Coordinator"
+          ]
+        },
+        {
+          "title": "Senior Contract Administrator",
+          "summary": "Leads contract administration on larger projects, mentors junior staff and advises on contractual risks.",
+          "typical_experience": "Several years as a contract administrator on mid to large projects.",
+          "progresses_to": [
+            "Contract Manager",
+            "Project Manager"
+          ],
+          "related_roles": [
+            "Senior Quantity Surveyor",
+            "Project Manager",
+            "Commercial Manager"
+          ]
+        },
+        {
+          "title": "Contract Manager",
+          "summary": "Oversees multiple contracts or major projects, negotiates major agreements and sets standards for contract processes.",
+          "typical_experience": "Extensive CA experience plus strong client and negotiation skills.",
+          "progresses_to": [
+            "Commercial Manager",
+            "Project Director"
+          ],
+          "related_roles": [
+            "Commercial Manager",
+            "Construction Manager"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Building Estimator",
+        "Quantity Surveyor",
+        "Project Manager",
+        "Project Coordinator"
+      ]
+    },
+    {
+      "name": "Quantity Surveyor",
+      "salary_range": "$70,000 - $140,000",
+      "overview": "Quantity surveyors are cost experts who plan, manage and report on construction costs from early design through to project completion.",
+      "core_skills": [
+        "Cost planning",
+        "Analytical thinking",
+        "Attention to detail",
+        "Problem-solving",
+        "Financial management",
+        "Negotiation",
+        "Organisation",
+        "IT and digital modelling"
+      ],
+      "core_education": [
+        "Bachelor of Construction Management",
+        "Graduate Diploma of Construction Management"
+      ],
+      "work_style": "Analytical-Formal",
+      "levels": [
+        {
+          "title": "Graduate Quantity Surveyor",
+          "summary": "Supports senior QS staff with measurement, basic cost plans and financial reporting.",
+          "typical_experience": "Recent graduate or final-year student in construction management or related field.",
+          "progresses_to": [
+            "Quantity Surveyor"
+          ],
+          "related_roles": [
+            "Junior Estimator",
+            "Assistant Contract Administrator"
+          ]
+        },
+        {
+          "title": "Quantity Surveyor",
+          "summary": "Prepares detailed cost plans, bills of quantities and monitors project costs during construction.",
+          "typical_experience": "3 years in a QS or estimating role.",
+          "progresses_to": [
+            "Senior Quantity Surveyor"
+          ],
+          "related_roles": [
+            "Building Estimator",
+            "Contract Administrator",
+            "Project Coordinator"
+          ]
+        },
+        {
+          "title": "Senior Quantity Surveyor",
+          "summary": "Leads cost management on major projects and provides strategic cost advice to clients and project teams.",
+          "typical_experience": "Extensive QS experience and responsibility for large or complex projects.",
+          "progresses_to": [
+            "Commercial Manager (QS)"
+          ],
+          "related_roles": [
+            "Senior Estimator",
+            "Senior Contract Administrator",
+            "Project Manager"
+          ]
+        },
+        {
+          "title": "Commercial Manager (QS)",
+          "summary": "Manages the commercial performance of multiple projects or a portfolio, including risk, claims and high-level reporting.",
+          "typical_experience": "Senior QS/estimating background with leadership responsibilities.",
+          "progresses_to": [
+            "Commercial Director"
+          ],
+          "related_roles": [
+            "Commercial Manager (Estimating Focus)",
+            "Construction Manager"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Building Estimator",
+        "Contract Administrator",
+        "Project Manager"
+      ]
+    },
+    {
+      "name": "Project Coordinator",
+      "salary_range": "$55,000 - $95,000",
+      "overview": "Project coordinators keep projects organised by managing schedules, documentation and communication between stakeholders.",
+      "core_skills": [
+        "Organisation",
+        "Scheduling",
+        "Communication",
+        "Problem-solving",
+        "Time management",
+        "Documentation",
+        "Attention to detail",
+        "Software proficiency"
+      ],
+      "core_education": [
+        "Certificate IV or Diploma in Project Management",
+        "Certificate IV or Diploma in Construction Management"
+      ],
+      "work_style": "Organisational-Hybrid",
+      "levels": [
+        {
+          "title": "Project Assistant",
+          "summary": "Supports project teams with meeting notes, document management and basic reporting.",
+          "typical_experience": "Entry-level or early career admin/coordination role.",
+          "progresses_to": [
+            "Project Coordinator"
+          ],
+          "related_roles": [
+            "Assistant Contract Administrator",
+            "Junior Estimator"
+          ]
+        },
+        {
+          "title": "Project Coordinator",
+          "summary": "Coordinates meetings, schedules, documentation and communication for one or more projects.",
+          "typical_experience": " 3 years in project support or coordination roles.",
+          "progresses_to": [
+            "Project Manager"
+          ],
+          "related_roles": [
+            "Contract Administrator",
+            "Site Supervisor",
+            "Plumber (Supervisor Level)"
+          ]
+        },
+        {
+          "title": "Senior Project Coordinator",
+          "summary": "Supports complex or multiple projects, often taking on quasi-project management responsibilities.",
+          "typical_experience": "Several years as a project coordinator on medium to large projects.",
+          "progresses_to": [
+            "Project Manager"
+          ],
+          "related_roles": [
+            "Assistant Project Manager",
+            "Project Engineer"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Project Manager",
+        "Contract Administrator",
+        "Building Estimator"
+      ]
+    },
+    {
+      "name": "Project Manager",
+      "salary_range": "$90,000 - $160,000",
+      "overview": "Project managers are responsible for delivering projects safely, on time and on budget, while coordinating teams and stakeholders.",
+      "core_skills": [
+        "Leadership",
+        "Decision-making",
+        "Budget management",
+        "Communication",
+        "Negotiation",
+        "Organisation",
+        "Risk management"
+      ],
+      "core_education": [
+        "Bachelor of Construction Management",
+        "Civil Engineering",
+        "Architecture",
+        "Master of Project Management"
+      ],
+      "work_style": "Leadership-Formal",
+      "levels": [
+        {
+          "title": "Assistant Project Manager",
+          "summary": "Supports a project manager with planning, reporting and coordination tasks.",
+          "typical_experience": "Experienced project coordinator or engineer stepping into management.",
+          "progresses_to": [
+            "Project Manager"
+          ],
+          "related_roles": [
+            "Project Coordinator",
+            "Project Engineer",
+            "Site Supervisor"
+          ]
+        },
+        {
+          "title": "Project Manager",
+          "summary": "Manages scope, time, cost, quality and risk for a project, coordinating teams and resources.",
+          "typical_experience": "Several years in coordination, engineering or site roles.",
+          "progresses_to": [
+            "Senior Project Manager"
+          ],
+          "related_roles": [
+            "Construction Manager",
+            "Senior Quantity Surveyor",
+            "Senior Contract Administrator"
+          ]
+        },
+        {
+          "title": "Senior Project Manager",
+          "summary": "Leads complex or multiple projects, mentors other project managers and contributes to business strategy.",
+          "typical_experience": "Extensive PM experience and strong stakeholder management skills.",
+          "progresses_to": [
+            "Project Director"
+          ],
+          "related_roles": [
+            "Construction Manager",
+            "Commercial Manager",
+            "Program Manager"
+          ]
+        },
+        {
+          "title": "Project Director",
+          "summary": "Provides strategic leadership across a portfolio of projects and high-value client relationships.",
+          "typical_experience": "Senior or executive-level PM experience across multiple large projects.",
+          "progresses_to": [],
+          "related_roles": [
+            "Operations Manager",
+            "Director of Construction"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Project Coordinator",
+        "Quantity Surveyor",
+        "Construction Manager",
+        "Project Engineer"
+      ]
+    },
+    {
+      "name": "Construction Manager",
+      "salary_range": "$100,000 - $180,000",
+      "overview": "Construction managers oversee on-site delivery of projects, leading site teams and making sure work is completed safely and efficiently.",
+      "core_skills": [
+        "Leadership",
+        "Planning",
+        "Budgeting",
+        "Problem-solving",
+        "Communication",
+        "Time management",
+        "Health & Safety",
+        "Teamwork"
+      ],
+      "core_education": [
+        "Trade Qualification",
+        "Diploma or Bachelor in Construction Management"
+      ],
+      "work_style": "Leadership-HandsOn",
+      "video_url": "https://youtu.be/kpSOYGXUb0A",
+      "person_name": "Brett Kavanaugh",
+      "person_thumbnail": "images/video_profiles/brett_square.jpg",
+      "person_bio": "Brett Kavanaugh is a Construction Manager with Acciona on the M80 completions project. With around 15 years in the industry and an engineering background, he progressed from site engineer to project engineer, senior engineer, project manager and now leads a multidisciplinary team delivering safe, staged construction outcomes.",
+      "levels": [
+        {
+          "title": "Site Supervisor",
+          "summary": "Manages day-to-day site activities for a specific area of work, coordinating trades and monitoring safety.",
+          "typical_experience": "Experienced tradesperson or leading hand with supervisory training.",
+          "progresses_to": [
+            "Site Manager"
+          ],
+          "related_roles": [
+            "Leading Hand",
+            "Project Coordinator",
+            "Health and Safety Officer"
+          ]
+        },
+        {
+          "title": "Site Manager",
+          "summary": "Responsible for the whole site, including program, logistics, site safety and quality.",
+          "typical_experience": "Several years as a site supervisor or foreperson on busy projects.",
+          "progresses_to": [
+            "Construction Manager"
+          ],
+          "related_roles": [
+            "Project Manager",
+            "Health and Safety Officer",
+            "Crane Operator (Senior)"
+          ]
+        },
+        {
+          "title": "Construction Manager",
+          "summary": "Oversees multiple sites or large projects, sets delivery strategy and supports site and project managers.",
+          "typical_experience": "Extensive experience as a site manager or project manager.",
+          "progresses_to": [
+            "Operations Manager",
+            "Director of Construction"
+          ],
+          "related_roles": [
+            "Operations Manager",
+            "Commercial Manager",
+            "Project Director"
+          ]
+        },
+        {
+          "title": "Operations Manager",
+          "summary": "Manages construction operations across a region or business unit, aligning resources and strategy.",
+          "typical_experience": "Senior-level construction leadership across multiple projects.",
+          "progresses_to": [
+            "Director of Construction"
+          ],
+          "related_roles": [
+            "Director of Construction",
+            "General Manager"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Project Manager",
+        "Project Engineer",
+        "Health and Safety Officer",
+        "Crane Operator",
+        "Heavy Vehicle Operator",
+        "Site Supervisor"
+      ]
+    },
+    {
+      "name": "Project Engineer",
+      "salary_range": "$70,000 - $130,000",
+      "overview": "Project engineers handle the technical aspects of construction, linking design and on-site delivery.",
+      "core_skills": [
+        "Engineering principles",
+        "Technical problem-solving",
+        "Coordination",
+        "Documentation",
+        "Communication",
+        "Attention to detail"
+      ],
+      "core_education": [
+        "Bachelor of Civil Engineering",
+        "Bachelor of Structural Engineering",
+        "Bachelor of Mechanical Engineering"
+      ],
+      "work_style": "Technical-Analytical",
+      "levels": [
+        {
+          "title": "Graduate Engineer",
+          "summary": "Rotates through different areas of the project, learning design, site work and documentation.",
+          "typical_experience": "Recent engineering graduate.",
+          "progresses_to": [
+            "Project Engineer"
+          ],
+          "related_roles": [
+            "Graduate Quantity Surveyor",
+            "Project Assistant"
+          ]
+        },
+        {
+          "title": "Project Engineer",
+          "summary": "Manages technical queries, coordinates design changes and quality tests and supports the site team.",
+          "typical_experience": " 3 years in engineering roles with site exposure.",
+          "progresses_to": [
+            "Senior Project Engineer"
+          ],
+          "related_roles": [
+            "Project Manager",
+            "Site Manager",
+            "Electrician (Senior level - commercial projects)"
+          ]
+        },
+        {
+          "title": "Senior Project Engineer",
+          "summary": "Leads engineering teams, coordinates complex technical packages and supports project planning.",
+          "typical_experience": "Strong experience across multiple projects.",
+          "progresses_to": [
+            "Engineering Manager"
+          ],
+          "related_roles": [
+            "Senior Project Manager",
+            "Construction Manager"
+          ]
+        },
+        {
+          "title": "Engineering Manager",
+          "summary": "Oversees engineering delivery across multiple projects or a business unit.",
+          "typical_experience": "Extensive engineering and leadership experience.",
+          "progresses_to": [],
+          "related_roles": [
+            "Technical Director",
+            "Project Director"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Construction Manager",
+        "Project Manager",
+        "Quantity Surveyor",
+        "Electrician"
+      ]
+    },
+    {
+      "name": "Health and Safety Officer",
+      "salary_range": "$65,000 - $115,000",
+      "overview": "Health and safety officers focus on keeping workers safe, ensuring legal compliance and promoting a positive safety culture.",
+      "video_url": "https://youtu.be/A2LX8uD-0fY",
+      "person_name": "Bailey Griffiths",
+      "person_thumbnail": "images/video_profiles/bailey_square.jpg",
+      "person_bio": "Bailey Griffiths is a Safety Coordinator at Acciona with experience in civil construction. After studying building and construction at RMIT, Bailey moved into safety and now works closely with engineers and supervisors to run inductions, lead site safety walks, check critical documentation and deliver training that protects both workers and the wider public.",
+      "core_skills": [
+        "Risk assessment",
+        "Attention to detail",
+        "Communication",
+        "Organisation",
+        "Compliance management",
+        "Training",
+        "Leadership"
+      ],
+      "core_education": [
+        "Certificate IV in Work Health and Safety",
+        "Diploma of Work Health and Safety"
+      ],
+      "work_style": "Compliance-Formal",
+      "levels": [
+        {
+          "title": "Assistant Safety Officer",
+          "summary": "Supports the WHS team with inspections, incident reporting and toolbox talks.",
+          "typical_experience": "Entry-level role, often with trade or site experience.",
+          "progresses_to": [
+            "Health and Safety Officer"
+          ],
+          "related_roles": [
+            "Site Supervisor",
+            "Leading Hand"
+          ]
+        },
+        {
+          "title": "Health and Safety Officer",
+          "summary": "Conducts site inspections, risk assessments and safety training and supports investigations.",
+          "typical_experience": " 3 years in WHS roles or relevant on-site experience.",
+          "progresses_to": [
+            "Senior Safety Officer"
+          ],
+          "related_roles": [
+            "Site Manager",
+            "Construction Manager"
+          ]
+        },
+        {
+          "title": "Senior Safety Officer",
+          "summary": "Leads safety on major projects, coaches teams and drives safety initiatives.",
+          "typical_experience": "Extensive WHS experience on large and complex projects.",
+          "progresses_to": [
+            "Safety Manager"
+          ],
+          "related_roles": [
+            "Safety Manager",
+            "Operations Manager"
+          ]
+        },
+        {
+          "title": "Safety Manager",
+          "summary": "Oversees WHS across multiple projects or an organisation, setting policy and strategy.",
+          "typical_experience": "Senior WHS background and leadership capability.",
+          "progresses_to": [],
+          "related_roles": [
+            "HSE Director",
+            "Operations Manager"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Construction Manager",
+        "Project Manager",
+        "Site Supervisor"
+      ]
+    },
+    {
+      "name": "Environmental Coordinator",
+      "salary_range": "$70,000 - $120,000",
+      "overview": "Environmental coordinators manage environmental risks on construction sites, helping teams control dust, water runoff, noise and compliance impacts while works are underway.",
+      "video_url": "https://youtu.be/CWV4h8MiJOc",
+      "person_name": "Alexandra Seerungen",
+      "person_thumbnail": "images/video_profiles/alex_square.jpg",
+      "person_bio": "Alexandra Seerungen is an Environmental Coordinator working in construction after first training and working as a civil engineer. She now combines site work with postgraduate environmental engineering study, carrying out risk assessments, monitoring changing site conditions and coordinating practical controls for dust, water and environmental compliance.",
+      "core_skills": [
+        "Risk assessment",
+        "Compliance management",
+        "Problem-solving",
+        "Communication",
+        "Organisation",
+        "Analytical thinking",
+        "Technical problem-solving",
+        "Attention to detail"
+      ],
+      "core_education": [
+        "Bachelor of Civil Engineering",
+        "Master of Environmental Engineering (or equivalent postgraduate study)"
+      ],
+      "work_style": "Analytical-Compliance",
+      "levels": [
+        {
+          "title": "Graduate Environmental Advisor",
+          "summary": "Supports environmental inspections, data collection and reporting while learning site controls and approval requirements.",
+          "typical_experience": "Entry-level role after engineering or environmental science study.",
+          "progresses_to": [
+            "Environmental Coordinator"
+          ],
+          "related_roles": [
+            "Graduate Project Engineer",
+            "Assistant Safety Officer"
+          ]
+        },
+        {
+          "title": "Environmental Coordinator",
+          "summary": "Leads day-to-day environmental management on site, including risk assessments and controls for dust, runoff, sediment and changing conditions.",
+          "typical_experience": "Several years in site engineering, environmental advisory or compliance roles.",
+          "progresses_to": [
+            "Senior Environmental Coordinator"
+          ],
+          "related_roles": [
+            "Health and Safety Officer",
+            "Project Engineer",
+            "Site Supervisor"
+          ]
+        },
+        {
+          "title": "Senior Environmental Coordinator",
+          "summary": "Coordinates environmental systems across complex packages, mentors teams and drives continual improvement with delivery teams.",
+          "typical_experience": "Extensive experience in construction environmental management and stakeholder engagement.",
+          "progresses_to": [
+            "Environmental Manager"
+          ],
+          "related_roles": [
+            "Senior Safety Officer",
+            "Construction Manager",
+            "Project Manager"
+          ]
+        },
+        {
+          "title": "Environmental Manager",
+          "summary": "Oversees environmental strategy, compliance and performance across projects or major programs.",
+          "typical_experience": "Senior environmental leadership experience in construction or infrastructure.",
+          "progresses_to": [],
+          "related_roles": [
+            "Safety Manager",
+            "Operations Manager",
+            "Construction Manager"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Health and Safety Officer",
+        "Project Engineer",
+        "Site Supervisor",
+        "Construction Manager"
+      ]
+    },
+    {
+      "name": "Waterproofer",
+      "salary_range": "$55,000 - $95,000",
+      "overview": "Waterproofers protect buildings from leaks and moisture damage by installing specialised membranes and systems.",
+      "core_skills": [
+        "Attention to detail",
+        "Surface preparation",
+        "Problem-solving",
+        "Teamwork",
+        "Physical fitness",
+        "Tool handling",
+        "Communication"
+      ],
+      "core_education": [
+        "Certificate III in Construction Waterproofing (CPC31420)"
+      ],
+      "work_style": "HandsOn-Practical",
+      "levels": [
+        {
+          "title": "Apprentice Waterproofer",
+          "summary": "Learns surface preparation, membrane systems and safety procedures under supervision.",
+          "typical_experience": "Entry-level trade assistant or apprentice.",
+          "progresses_to": [
+            "Qualified Waterproofer"
+          ],
+          "related_roles": [
+            "Apprentice Tiler",
+            "Apprentice Plumber"
+          ]
+        },
+        {
+          "title": "Qualified Waterproofer",
+          "summary": "Installs waterproofing systems in bathrooms, rooftops, balconies and basements.",
+          "typical_experience": "Completed apprenticeship or Certificate III in Waterproofing.",
+          "progresses_to": [
+            "Waterproofing Supervisor"
+          ],
+          "related_roles": [
+            "Qualified Tiler",
+            "Qualified Plumber",
+            "Site Supervisor"
+          ]
+        },
+        {
+          "title": "Waterproofing Supervisor",
+          "summary": "Leads waterproofing teams, coordinates work with other trades and checks compliance with standards.",
+          "typical_experience": "Experienced tradesperson with leadership responsibility.",
+          "progresses_to": [
+            "Waterproofing Consultant",
+            "Site Supervisor"
+          ],
+          "related_roles": [
+            "Site Supervisor",
+            "Construction Manager"
+          ]
+        },
+        {
+          "title": "Waterproofing Consultant",
+          "summary": "Advises builders and designers on waterproofing design, defect rectification and compliance.",
+          "typical_experience": "Extensive experience in waterproofing and defect investigation.",
+          "progresses_to": [],
+          "related_roles": [
+            "Building Consultant",
+            "Building Estimator"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Tiler",
+        "Plumber",
+        "Site Supervisor"
+      ]
+    },
+    {
+      "name": "Tiler",
+      "salary_range": "$50,000 - $90,000",
+      "overview": "Tilers install tiles on walls and floors in bathrooms, kitchens and other spaces, combining precision with a sense of design.",
+      "core_skills": [
+        "Precision",
+        "Creativity",
+        "Design sense",
+        "Manual dexterity",
+        "Mathematics",
+        "Surface preparation",
+        "Physical fitness"
+      ],
+      "core_education": [
+        "Certificate III in Wall and Floor Tiling (CPC31320)"
+      ],
+      "work_style": "HandsOn-Creative",
+      "levels": [
+        {
+          "title": "Apprentice Tiler",
+          "summary": "Learns how to prepare surfaces, cut tiles and lay them accurately under supervision.",
+          "typical_experience": "Entry-level trade role.",
+          "progresses_to": [
+            "Qualified Tiler"
+          ],
+          "related_roles": [
+            "Apprentice Waterproofer",
+            "Apprentice Plumber"
+          ]
+        },
+        {
+          "title": "Qualified Tiler",
+          "summary": "Installs wall and floor tiles, follows plans and ensures quality finishes.",
+          "typical_experience": "Completed tiling apprenticeship or equivalent experience.",
+          "progresses_to": [
+            "Specialist Tiler",
+            "Tiling Supervisor"
+          ],
+          "related_roles": [
+            "Qualified Waterproofer",
+            "Qualified Plumber",
+            "Building Estimator (Finishes)"
+          ]
+        },
+        {
+          "title": "Specialist Tiler",
+          "summary": "Works on complex patterns, feature walls or high-end materials such as mosaic and stone.",
+          "typical_experience": "Several years tiling experience and strong design skills.",
+          "progresses_to": [
+            "Business Owner",
+            "Site Supervisor (finishes)"
+          ],
+          "related_roles": [
+            "Interior Finishes Specialist",
+            "Site Supervisor"
+          ]
+        },
+        {
+          "title": "Tiling Business Owner",
+          "summary": "Runs a tiling business, manages clients, quoting and staff, and coordinates with builders.",
+          "typical_experience": "Experienced tiler with business or leadership skills.",
+          "progresses_to": [],
+          "related_roles": [
+            "Subcontractor Manager",
+            "Small Business Owner"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Waterproofer",
+        "Plumber",
+        "Building Estimator",
+        "Site Supervisor"
+      ]
+    },
+    {
+      "name": "Plumber",
+      "salary_range": "$60,000 - $110,000",
+      "overview": "Plumbers install and maintain water, drainage and gas systems, playing a key role in making buildings safe and liveable.",
+      "core_skills": [
+        "Problem-solving",
+        "Technical knowledge",
+        "Attention to detail",
+        "Physical fitness",
+        "Safety awareness",
+        "Customer service"
+      ],
+      "core_education": [
+        "Certificate III in Plumbing (CPC32420)",
+        "Apprenticeship"
+      ],
+      "work_style": "HandsOn-Practical",
+      "levels": [
+        {
+          "title": "Apprentice Plumber",
+          "summary": "Learns how to install and maintain plumbing systems under supervision.",
+          "typical_experience": "Entry-level trade apprentice.",
+          "progresses_to": [
+            "Qualified Plumber"
+          ],
+          "related_roles": [
+            "Apprentice Electrician",
+            "Apprentice Waterproofer",
+            "Apprentice Tiler"
+          ]
+        },
+        {
+          "title": "Qualified Plumber",
+          "summary": "Installs, maintains and repairs plumbing systems in residential or commercial settings.",
+          "typical_experience": "Completed apprenticeship and licensing requirements.",
+          "progresses_to": [
+            "Plumbing Supervisor",
+            "Specialist Plumber"
+          ],
+          "related_roles": [
+            "Qualified Electrician",
+            "Qualified Waterproofer",
+            "Site Supervisor (services)"
+          ]
+        },
+        {
+          "title": "Plumbing Supervisor",
+          "summary": "Leads a team of plumbers, coordinates site work and liaises with builders and inspectors.",
+          "typical_experience": "Several years as a qualified plumber with leadership skills.",
+          "progresses_to": [
+            "Plumbing Contractor"
+          ],
+          "related_roles": [
+            "Site Supervisor",
+            "Project Coordinator"
+          ]
+        },
+        {
+          "title": "Plumbing Contractor / Business Owner",
+          "summary": "Runs a plumbing business, manages multiple teams and jobs and handles quoting and client relationships.",
+          "typical_experience": "Experienced supervisor or senior plumber with business skills.",
+          "progresses_to": [],
+          "related_roles": [
+            "Small Business Owner",
+            "Construction Manager (services focus)"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Waterproofer",
+        "Electrician",
+        "Project Coordinator",
+        "Site Supervisor"
+      ]
+    },
+    {
+      "name": "Electrician",
+      "salary_range": "$65,000 - $120,000",
+      "overview": "Electricians install, maintain and repair electrical systems, making sure buildings are safe, reliable and energy efficient.",
+      "core_skills": [
+        "Technical knowledge",
+        "Problem-solving",
+        "Attention to detail",
+        "Safety awareness",
+        "Mathematics",
+        "Communication"
+      ],
+      "core_education": [
+        "Certificate III in Electrotechnology (Electrician)",
+        "Electrical Apprenticeship (typically 3-4 years)"
+      ],
+      "work_style": "HandsOn-Technical",
+      "levels": [
+        {
+          "title": "Electrical Apprentice",
+          "summary": "Learns basic wiring, installation and fault-finding under supervision while completing formal training.",
+          "typical_experience": "Entry-level trade apprentice.",
+          "progresses_to": [
+            "Qualified Electrician"
+          ],
+          "related_roles": [
+            "Apprentice Plumber",
+            "Apprentice Refrigeration Mechanic",
+            "Junior Estimator (Electrical)"
+          ]
+        },
+        {
+          "title": "Qualified Electrician",
+          "summary": "Installs, maintains and repairs electrical systems in residential, commercial or industrial settings.",
+          "typical_experience": "Completed apprenticeship and licensing requirements.",
+          "progresses_to": [
+            "Senior Electrician",
+            "Electrical Specialist"
+          ],
+          "related_roles": [
+            "Qualified Plumber",
+            "Project Engineer (building services)",
+            "Service Technician"
+          ]
+        },
+        {
+          "title": "Senior Electrician / Leading Hand",
+          "summary": "Leads small teams, tackles complex faults and mentors apprentices on site.",
+          "typical_experience": "Several years as a qualified electrician with leadership responsibilities.",
+          "progresses_to": [
+            "Electrical Supervisor",
+            "Electrical Project Manager"
+          ],
+          "related_roles": [
+            "Site Supervisor (services)",
+            "Project Coordinator",
+            "Health and Safety Officer"
+          ]
+        },
+        {
+          "title": "Electrical Supervisor / Project Electrician",
+          "summary": "Plans and coordinates electrical works across larger projects, including safety, quality and scheduling.",
+          "typical_experience": "Experienced senior electrician comfortable with documentation and coordination.",
+          "progresses_to": [
+            "Electrical Project Manager",
+            "Electrical Contractor / Business Owner"
+          ],
+          "related_roles": [
+            "Project Engineer",
+            "Project Manager",
+            "Construction Manager"
+          ]
+        },
+        {
+          "title": "Electrical Project Manager",
+          "summary": "Manages electrical packages on large projects, overseeing time, cost and quality and coordinating with other trades.",
+          "typical_experience": "Strong field and coordination experience plus project management skills.",
+          "progresses_to": [
+            "Senior Project Manager",
+            "Construction Manager"
+          ],
+          "related_roles": [
+            "Project Manager",
+            "Project Engineer",
+            "Commercial Manager"
+          ]
+        },
+        {
+          "title": "Electrical Contractor / Business Owner",
+          "summary": "Runs an electrical business, managing multiple teams, contracts and client relationships.",
+          "typical_experience": "Extensive experience as a senior electrician or supervisor with business skills.",
+          "progresses_to": [],
+          "related_roles": [
+            "Small Business Owner",
+            "Construction Manager (services focus)"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Plumber",
+        "Project Engineer",
+        "Building Estimator",
+        "Project Manager"
+      ]
+    },
+    {
+      "name": "Crane Operator",
+      "salary_range": "$70,000 - $130,000",
+      "overview": "Crane operators operate lifting equipment to move heavy materials and equipment safely around construction sites.",
+      "core_skills": [
+        "Technical precision",
+        "Safety awareness",
+        "Coordination",
+        "Communication",
+        "Problem-solving",
+        "Focus"
+      ],
+      "core_education": [
+        "Certificate III in Rigging or Crane Operations",
+        "High Risk Work Licence"
+      ],
+      "work_style": "HandsOn-Structured",
+      "video_url": "https://youtu.be/1V8XM-4-A-w",
+      "person_name": "Kathryn Webb",
+      "person_thumbnail": "images/video_profiles/kat_square.jpg",
+      "person_bio": "Kathryn (Kat) Webb works in a crane crew as a crane operator and also does dogging and rigging. She began through a traineeship pathway and now helps deliver safe lifts on site, coordinating closely with the crew using hand signals, radios and pre-start planning.",
+      "levels": [
+        {
+          "title": "Trainee Crane Operator",
+          "summary": "Learns basic crane operations, hand signals and safety procedures under supervision.",
+          "typical_experience": "Entry-level role, often moving from general labouring or dogging.",
+          "progresses_to": [
+            "Crane Operator"
+          ],
+          "related_roles": [
+            "Dogman / Rigger",
+            "General Labourer"
+          ]
+        },
+        {
+          "title": "Crane Operator",
+          "summary": "Operates cranes to lift and move materials safely on site within a team.",
+          "typical_experience": "Completed training and licence requirements.",
+          "progresses_to": [
+            "Senior Crane Operator"
+          ],
+          "related_roles": [
+            "Heavy Vehicle Operator",
+            "Site Supervisor (logistics)"
+          ]
+        },
+        {
+          "title": "Senior Crane Operator",
+          "summary": "Handles complex lifts, mentors junior operators and works closely with site management on lift planning.",
+          "typical_experience": "Strong experience operating cranes on busy sites.",
+          "progresses_to": [
+            "Crane Supervisor"
+          ],
+          "related_roles": [
+            "Crane Supervisor",
+            "Construction Manager (logistics focus)"
+          ]
+        },
+        {
+          "title": "Crane Supervisor / Lift Planner",
+          "summary": "Plans lifts, coordinates teams and ensures compliance with lift plans and safety requirements.",
+          "typical_experience": "Senior crane or rigging background with planning responsibilities.",
+          "progresses_to": [],
+          "related_roles": [
+            "Site Manager",
+            "Construction Manager"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Heavy Vehicle Operator",
+        "Construction Manager",
+        "Site Supervisor"
+      ]
+    },
+    {
+      "name": "Heavy Vehicle Operator",
+      "salary_range": "$60,000 - $100,000",
+      "overview": "Heavy vehicle operators drive trucks and plant that move materials, equipment and waste to and from construction sites.",
+      "core_skills": [
+        "Vehicle operation",
+        "Safety awareness",
+        "Attention to detail",
+        "Teamwork",
+        "Problem-solving",
+        "Physical stamina"
+      ],
+      "core_education": [
+        "Heavy Rigid (HR) or Heavy Combination (HC) Licence",
+        "On-the-job training"
+      ],
+      "work_style": "HandsOn-Structured",
+      "levels": [
+        {
+          "title": "Trainee Heavy Vehicle Operator",
+          "summary": "Drives under supervision and learns site access, loading and safety procedures.",
+          "typical_experience": "Junior driver or labourer obtaining heavy vehicle licence.",
+          "progresses_to": [
+            "Heavy Vehicle Operator"
+          ],
+          "related_roles": [
+            "General Labourer",
+            "Plant Operator"
+          ]
+        },
+        {
+          "title": "Heavy Vehicle Operator",
+          "summary": "Transports materials and equipment safely to and around construction sites.",
+          "typical_experience": "Licensed heavy vehicle driver with some site experience.",
+          "progresses_to": [
+            "Senior Heavy Vehicle Operator"
+          ],
+          "related_roles": [
+            "Crane Operator",
+            "Plant Operator",
+            "Traffic Controller"
+          ]
+        },
+        {
+          "title": "Senior Heavy Vehicle Operator",
+          "summary": "Manages more complex vehicle operations and supports planning of logistics.",
+          "typical_experience": "Several years of heavy vehicle driving on busy construction or civil sites.",
+          "progresses_to": [
+            "Transport Supervisor"
+          ],
+          "related_roles": [
+            "Crane Supervisor",
+            "Site Supervisor (logistics)"
+          ]
+        },
+        {
+          "title": "Transport Supervisor / Fleet Coordinator",
+          "summary": "Coordinates fleets, drivers and delivery schedules across projects.",
+          "typical_experience": "Experienced driver or logistics professional.",
+          "progresses_to": [],
+          "related_roles": [
+            "Construction Manager (logistics focus)",
+            "Operations Coordinator"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Crane Operator",
+        "Construction Manager"
+      ]
+    },
+    {
+      "name": "Site Supervisor",
+      "salary_range": "$75,000 - $130,000",
+      "overview": "Site supervisors coordinate day-to-day work on site, looking after teams, safety, quality and short-term scheduling.",
+      "video_url": "https://youtu.be/pYu0IL_sVio",
+      "person_name": "Jackson Coulthard",
+      "person_thumbnail": "images/video_profiles/jackson_square.jpg",
+      "person_bio": "Jackson Coulthard is a site structure supervisor at Acciona with over 10 years in civil construction. After completing Year 12 and a Certificate III in Carpentry at Swinburne, he progressed from leading hand to supervisor and now coordinates daily pre-starts, crew planning and concrete works, with a strong focus on communication, reading drawings and on-site problem solving.",
+      "core_skills": [
+        "On-site leadership",
+        "Communication",
+        "Scheduling",
+        "Health & Safety",
+        "Problem-solving",
+        "Attention to detail",
+        "Trade knowledge",
+        "Team coordination"
+      ],
+      "core_education": [
+        "Trade Qualification (e.g. Carpentry, Tiling, Waterproofing, Plumbing, Electrical)",
+        "Certificate IV in Building and Construction (Site Management) or equivalent"
+      ],
+      "work_style": "Leadership-HandsOn",
+      "levels": [
+        {
+          "title": "Leading Hand",
+          "summary": "Senior tradesperson who supports the supervisor and coordinates small teams or specific tasks.",
+          "typical_experience": "Experienced tradesperson trusted to lead others.",
+          "progresses_to": [
+            "Site Supervisor"
+          ],
+          "related_roles": [
+            "Qualified Electrician",
+            "Qualified Plumber",
+            "Qualified Tiler"
+          ]
+        },
+        {
+          "title": "Site Supervisor",
+          "summary": "Manages day-to-day site operations, safety and quality for specific areas of work or smaller projects.",
+          "typical_experience": "Several years in a trade plus leadership experience.",
+          "progresses_to": [
+            "Site Manager",
+            "Construction Manager"
+          ],
+          "related_roles": [
+            "Waterproofing Supervisor",
+            "Plumbing Supervisor",
+            "Senior Electrician",
+            "Project Coordinator"
+          ]
+        },
+        {
+          "title": "Senior Site Supervisor / General Foreperson",
+          "summary": "Oversees multiple work fronts and coordinates several crews and subcontractors.",
+          "typical_experience": "Extensive supervisory experience across different types of projects.",
+          "progresses_to": [
+            "Site Manager"
+          ],
+          "related_roles": [
+            "Site Manager",
+            "Construction Manager"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Construction Manager",
+        "Project Manager",
+        "Waterproofer",
+        "Tiler",
+        "Plumber",
+        "Electrician",
+        "Crane Operator",
+        "Heavy Vehicle Operator"
+      ]
+    }
+  ]
+}

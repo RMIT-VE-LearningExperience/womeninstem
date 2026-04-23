@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Explorer</title>
+
+    <!-- Prevent caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="careers-explorer.css?v=2.5.1">
+</head>
+<body>
+    <!-- View Toggle (Desktop Only) -->
+    <div class="view-toggle">
+        <button class="toggle-btn active" data-view="floating">Floating View</button>
+        <button class="toggle-btn" data-view="cards">Card View</button>
+        <button class="toggle-btn" data-view="stack">Stack View</button>
+    </div>
+
+    <!-- Pause Button (Floating View Only) -->
+    <button class="pause-btn" id="pauseBtn"></button>
+
+    <!-- Video Legend (Floating View Only) -->
+    <div class="video-legend" id="videoLegend">
+        <div class="video-legend-icon"></div>
+        <div class="video-legend-text">Video</div>
+    </div>
+
+    <!-- Floating View -->
+    <div class="floating-view active" id="floatingView">
+        <div class="bg-media" aria-hidden="true">
+            <video class="bg-video" autoplay muted loop playsinline poster="images/background.jpg">
+                <source src="images/background.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="explore-center" id="exploreCenter">
+            <div class="explore-text">Explore</div>
+        </div>
+        <div id="floatingCareersContainer"></div>
+    </div>
+
+    <!-- Card View -->
+    <div class="card-view" id="cardView">
+        <div class="header">
+            <h1>career <span>explorer</span></h1>
+        </div>
+
+        <div class="filters-container">
+            <div class="search-container">
+                <input type="text" id="careerSearch" class="search-input" placeholder="Search careers by name..." autocomplete="off" />
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group" style="flex: 2;">
+                    <label class="filter-label">Salary Range</label>
+                    <div class="salary-range-display" id="salaryRangeDisplay">$40k - $200k</div>
+                    <div class="range-slider-container">
+                        <input type="range" id="salaryMin" class="range-slider range-min" min="40" max="200" value="40" step="10">
+                        <input type="range" id="salaryMax" class="range-slider range-max" min="40" max="200" value="200" step="10">
+                        <div class="range-track"></div>
+                        <div class="range-fill" id="rangeFill"></div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <button class="clear-filters" id="clearFilters">Clear All Filters</button>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group" style="flex: none; width: 100%;">
+                    <label class="filter-label">Filter by Skill Category</label>
+                    <div class="skills-filter" id="skillsFilterContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stack-view" id="stackView">
+            <div class="stack-hint">Swipe left or right to see the next career</div>
+            <div class="stack-container" id="stackContainer"></div>
+            <div class="stack-progress" id="stackProgress"></div>
+        </div>
+
+        <div class="careers-grid" id="careersGrid"></div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <div class="no-results-icon">🔍</div>
+            <p>No careers match your filters. Try adjusting your criteria.</p>
+        </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="info-panel" id="infoPanel">
+        <div class="panel-header">
+            <button class="close-btn" id="closeBtn">×</button>
+            <h2 id="careerTitle"></h2>
+            <div class="salary" id="careerSalary"></div>
+        </div>
+        <div class="panel-content">
+            <div class="video-container" id="videoContainer" style="display: none;"></div>
+
+            <div class="section">
+                <div class="section-title">Overview</div>
+                <p class="overview-text" id="careerOverview"></p>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Core Skills</div>
+                <div class="skills-container" id="coreSkills"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Core Education</div>
+                <ul class="education-list" id="coreEducation"></ul>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Career Levels</div>
+                <div class="levels-container" id="careerLevels"></div>
+            </div>
+
+            <div class="section" id="relatedRolesSection" style="display: none;">
+                <div class="section-title">Related Career Pathways</div>
+                <div class="related-roles-container" id="relatedRoles"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Panel -->
+    <div class="comparison-panel" id="comparisonPanel">
+        <div class="comparison-container">
+            <div class="comparison-header">
+                <h2>Career Comparison</h2>
+                <button class="close-comparison-btn" id="closeComparisonBtn">×</button>
+            </div>
+            <div class="comparison-content" id="comparisonContent">
+                <!-- Content will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Button -->
+    <a href="index.html" class="home-button" aria-label="Return to home page">
+        <span class="home-icon">🏠</span>
+        <span class="home-text">Home</span>
+    </a>
+
+    <script src="careers-explorer.js?v=2.5.0"></script>
+</body>
+</html>

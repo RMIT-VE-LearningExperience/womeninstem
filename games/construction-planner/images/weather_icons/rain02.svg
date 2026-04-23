@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 578 561" class="rain-icon">
+  <defs>
+    <style>
+      .st0 { fill: #fff; }
+      .st1 { fill: #88d9ea; }
+      .st2 { fill: #dbf2f4; }
+
+      /* Keep everything safely inside the frame */
+      .rain-clip { }
+
+      /* Rain animation: fall + reset, stays within clipped area */
+      .rain g {
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+
+      .dropA { animation: fallA 1.15s linear infinite; }
+      .dropB { animation: fallB 0.95s linear infinite; }
+      .dropC { animation: fallC 1.05s linear infinite; }
+      .dropD { animation: fallD 1.25s linear infinite; }
+      .dropE { animation: fallE 1.10s linear infinite; }
+
+      @keyframes fallA { 0% { transform: translateY(-18px); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(18px); opacity: 0.15; } }
+      @keyframes fallB { 0% { transform: translateY(-14px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0.15; } }
+      @keyframes fallC { 0% { transform: translateY(-16px); opacity: 0; } 18% { opacity: 1; } 100% { transform: translateY(16px); opacity: 0.15; } }
+      @keyframes fallD { 0% { transform: translateY(-20px); opacity: 0; } 12% { opacity: 1; } 100% { transform: translateY(20px); opacity: 0.12; } }
+      @keyframes fallE { 0% { transform: translateY(-15px); opacity: 0; } 16% { opacity: 1; } 100% { transform: translateY(15px); opacity: 0.15; } }
+
+      @media (prefers-reduced-motion: reduce) {
+        .dropA, .dropB, .dropC, .dropD, .dropE { animation: none; }
+      }
+    </style>
+
+    <!-- Clip area for rain only (keeps motion inside the frame) -->
+    <!-- Starts just below the cloud and ends above the bottom edge -->
+    <clipPath id="rainClip">
+      <rect x="0" y="330" width="578" height="231" rx="0" ry="0" />
+    </clipPath>
+  </defs>
+
+  <!-- Cloud (static) -->
+  <path class="st0" d="M578,250.8c0-54.7-40.2-100.1-92.7-108.1C479.2,62.9,412.5,0,331.2,0s-123.2,42-145,101c-5-.8-10.2-1.2-15.5-1.2-49.7,0-90.5,38-95,86.5C32.9,192.1,0,228.8,0,273.2s34,82.3,77.8,87.2h.8c3,.3,401.2,0,401.2,0,55.2-5.5,98.2-53,98.2-109.7h0Z"/>
+  <path class="st2" d="M485.3,142.7C479.2,62.9,412.5,0,331.2,0s-28.3,2-41.5,5.7v354.9c84.7,0,166.9-.1,186-.1,2.8,0,5.5-.1,8.2-.5,53.2-7.4,94.1-54,94.1-109.2s-40.2-100.1-92.7-108.1h0Z"/>
+
+  <!-- Rain (animated, clipped) -->
+  <g class="rain" clip-path="url(#rainClip)">
+    <g class="dropA">
+      <path class="st1" d="M239.1,509.4l-23.6-41.5c-1.9-3.4-6.9-3.4-8.9,0l-23.6,41.5c-.7,1.1-1.4,2.3-2,3.5h0c-2.3,4.7-3.5,10-3.4,15.6.5,17.7,14.9,32.2,32.7,32.6,18.8.4,34.2-14.7,34.2-33.4s-2-13-5.4-18.2h0,0Z"/>
+    </g>
+
+    <g class="dropB">
+      <path class="st1" d="M297.9,427.3l-15.9-28c-1.3-2.3-4.7-2.3-6,0l-15.9,28c-.5.8-.9,1.5-1.3,2.4h0c-1.6,3.2-2.4,6.7-2.3,10.5.3,12,10.1,21.7,22,22,12.7.3,23.1-9.9,23.1-22.6s-1.3-8.8-3.6-12.3h0Z"/>
+    </g>
+
+    <g class="dropC">
+      <path class="st1" d="M356.9,521.9l-15.9-28c-1.3-2.3-4.7-2.3-6,0l-15.9,28c-.5.8-.9,1.5-1.3,2.3h0c-1.6,3.2-2.4,6.7-2.3,10.5.3,12,10.1,21.7,22,22,12.7.3,23.1-9.9,23.1-22.6s-1.3-8.8-3.6-12.3h0Z"/>
+    </g>
+
+    <g class="dropD">
+      <path class="st1" d="M150.6,438.6l-28.6-50.2c-2.4-4.1-8.4-4.1-10.7,0l-28.6,50.2c-.9,1.4-1.7,2.8-2.4,4.2h0c-2.8,5.7-4.3,12.1-4.1,18.9.6,21.5,18.1,39,39.6,39.4,22.8.5,41.4-17.8,41.4-40.5s-2.4-15.7-6.5-22h0Z"/>
+    </g>
+
+    <g class="dropE">
+      <path class="st1" d="M472.7,443.8l-28.6-50.2c-2.4-4.1-8.4-4.1-10.7,0l-28.6,50.2c-.9,1.4-1.7,2.8-2.4,4.2h0c-2.8,5.7-4.3,12.1-4.1,18.9.5,21.5,18.1,39,39.6,39.4,22.8.5,41.4-17.8,41.4-40.5s-2.4-15.7-6.5-22h0Z"/>
+    </g>
+  </g>
+</svg>

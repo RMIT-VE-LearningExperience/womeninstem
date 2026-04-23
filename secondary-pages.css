@@ -1,0 +1,784 @@
+:root {
+    --navy: #234a87;
+    --navy-strong: #1f4888;
+    --paper: #eef0f2;
+    --yellow: #efc738;
+    --ink: #1f4888;
+    --ink-soft: #5f7191;
+    --salmon-soft: #f1d0cb;
+    --salmon: #e67a63;
+    --chip-tech: #7ea67e;
+    --chip-lead: #e46f5b;
+    --chip-comm: #659bb0;
+    --chip-safe: #e8c66c;
+    --chip-physical: #e39f58;
+    --chip-analytical: #a978b5;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body.page-secondary {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: radial-gradient(1200px 500px at 50% 0%, rgba(90, 119, 170, 0.35), transparent 70%), var(--navy);
+    color: var(--ink);
+    padding: 104px 28px 64px;
+}
+
+.menu-btn {
+    position: relative;
+    margin: 26px 26px 0 auto;
+    z-index: 11;
+    width: 68px;
+    height: 68px;
+    border: none;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.menu-btn img {
+    width: 68px;
+    height: 68px;
+    display: block;
+}
+
+/* About page keeps menu pinned in the top-right corner */
+body.page-secondary.about-page .menu-btn {
+    position: fixed;
+    top: 26px;
+    right: 26px;
+    margin: 0;
+    width: 68px;
+    height: 68px;
+}
+
+/* Mini games page keeps menu pinned in the same top-right spot */
+body.page-secondary.mini-games-page .menu-btn {
+    position: fixed;
+    top: 26px;
+    right: 26px;
+    margin: 0;
+    width: 68px;
+    height: 68px;
+}
+
+/* Credits page keeps menu pinned in the same top-right spot */
+body.page-secondary.credits-page .menu-btn {
+    position: fixed;
+    top: 26px;
+    right: 26px;
+    margin: 0;
+    width: 68px;
+    height: 68px;
+}
+
+.page-corner-logo {
+    position: absolute;
+    top: 26px;
+    left: 26px;
+    z-index: 11;
+    width: auto;
+    height: 60px;
+    object-fit: contain;
+    display: block;
+}
+
+.page-shell {
+    max-width: 1320px;
+    margin: 0 auto;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 6px solid var(--navy-strong);
+    background: var(--paper);
+}
+
+.page-topbar {
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: linear-gradient(
+        to right,
+        var(--salmon-soft) 0,
+        var(--salmon-soft) calc(100% - 168px),
+        #ecb2a8 calc(100% - 168px),
+        #ecb2a8 calc(100% - 112px),
+        #e39a8b calc(100% - 112px),
+        #e39a8b calc(100% - 56px),
+        #de8b7a calc(100% - 56px),
+        #de8b7a 100%
+    );
+}
+
+.page-top-icon {
+    width: 56px;
+    height: 56px;
+    color: var(--salmon);
+}
+
+.page-top-icon-image {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+
+.about-topbar {
+    background: linear-gradient(
+        to right,
+        #d8cce6 0,
+        #d8cce6 calc(100% - 168px),
+        #c9b6db calc(100% - 168px),
+        #c9b6db calc(100% - 112px),
+        #bda4d3 calc(100% - 112px),
+        #bda4d3 calc(100% - 56px),
+        #ad92c9 calc(100% - 56px),
+        #ad92c9 100%
+    );
+}
+
+.about-top-icon {
+    color: var(--chip-analytical);
+}
+
+.about-main {
+    background: #f3f4f5;
+}
+
+.about-intro {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(340px, 1fr);
+    gap: 40px;
+    padding: 48px 42px 40px;
+    align-items: center;
+}
+
+.about-intro-copy h1 {
+    margin: 0;
+    color: var(--ink);
+    text-transform: uppercase;
+    font-size: clamp(36px, 4.2vw, 68px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 900;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+.about-intro-copy p {
+    margin: 22px 0 0;
+    color: #3b4f73;
+    font-size: clamp(17px, 1.3vw, 25px);
+    line-height: 1.42;
+    font-weight: 500;
+    max-width: 720px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.about-intro-copy p.about-lead {
+    margin-top: 18px;
+    color: var(--ink);
+    font-size: clamp(23px, 2.1vw, 36px);
+    line-height: 1.3;
+    font-weight: 800;
+}
+
+.about-intro-image {
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 300px;
+    background: #d7dce2;
+}
+
+.about-intro-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.about-quote {
+    background: var(--yellow);
+    padding: 46px 36px;
+}
+
+.about-quote p {
+    margin: 0 auto;
+    max-width: 1100px;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-size: clamp(26px, 2.6vw, 52px);
+    font-weight: 800;
+    line-height: 1.25;
+    position: relative;
+    padding: 0 72px;
+}
+
+.about-quote p::before,
+.about-quote p::after {
+    position: absolute;
+    color: var(--ink);
+    font-size: 1.45em;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.about-quote p::before {
+    content: '\201C';
+    left: 0;
+    top: -0.14em;
+}
+
+.about-quote p::after {
+    content: '\201D';
+    right: 0;
+    bottom: -0.14em;
+}
+
+.about-sections {
+    padding: 44px 42px 58px;
+}
+
+.about-section-block + .about-section-block {
+    margin-top: 42px;
+}
+
+.about-section-block h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(30px, 2.3vw, 42px);
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.about-section-block p {
+    margin: 16px 0 0;
+    color: #3b4f73;
+    font-size: clamp(17px, 1.25vw, 24px);
+    line-height: 1.5;
+}
+
+.about-section-block ul {
+    margin: 16px 0 0;
+    padding-left: 24px;
+    color: #3b4f73;
+}
+
+.about-section-block li {
+    font-size: clamp(17px, 1.22vw, 23px);
+    line-height: 1.48;
+}
+
+.about-section-block li + li {
+    margin-top: 8px;
+}
+
+.page-hero {
+    padding: 48px 22px 30px;
+    text-align: center;
+    background: #f3f4f5;
+}
+
+.page-hero h1 {
+    margin: 0;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-size: clamp(40px, 6vw, 78px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 900;
+    hyphens: auto;
+    overflow-wrap: break-word;
+}
+
+.hero-colors {
+    margin: 26px auto 30px;
+    display: flex;
+    width: min(100%, 420px);
+    gap: clamp(4px, 1vw, 6px);
+    justify-content: center;
+}
+
+.hero-colors span {
+    flex: 1 1 0;
+    max-width: 54px;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    border-radius: 6px;
+}
+
+.page-hero p {
+    margin: 0 auto;
+    max-width: 920px;
+    color: var(--ink);
+    font-size: clamp(24px, 2.4vw, 48px);
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.page-hero p.sub {
+    margin-top: 20px;
+    font-weight: 500;
+    font-size: clamp(19px, 1.85vw, 34px);
+    line-height: 1.35;
+}
+
+.page-band {
+    background: var(--yellow);
+    padding: 38px 28px 158px 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.band-chip {
+    min-height: 52px;
+    border-radius: 26px;
+    background: #f3f4f5;
+    color: #6f87b6;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.15;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.band-chip a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.page-main {
+    padding: 0 22px 38px;
+    background: transparent;
+    margin-top: -110px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Mini-games uses a normal flow so cards don't overlap intro copy */
+body.page-secondary.mini-games-page .page-main {
+    margin-top: 0;
+    padding-top: 22px;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+    align-items: start;
+}
+
+.content-card {
+    background: #f8f9fb;
+    border-radius: 16px;
+    padding: 24px;
+    color: var(--ink);
+}
+
+.content-card h2,
+.content-card h3 {
+    margin: 0 0 10px;
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 800;
+}
+
+.content-card p {
+    margin: 0;
+    color: #3b4f73;
+    font-size: 19px;
+    line-height: 1.45;
+}
+
+.content-card + .content-card p {
+    margin-top: 8px;
+}
+
+.content-card ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.content-card li {
+    position: relative;
+    padding-left: 18px;
+    color: #3b4f73;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.content-card li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--chip-analytical);
+}
+
+.content-card.wide {
+    grid-column: span 2;
+}
+
+.partners-row {
+    margin-top: 14px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.partner-logo {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.partner-logo img {
+    height: 44px;
+    width: auto;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    align-items: stretch;
+}
+
+.game-card {
+    text-decoration: none;
+    color: var(--ink);
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f8f9fb;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.2s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+}
+
+.game-card.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.game-preview {
+    background: var(--chip-tech);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+}
+
+.game-preview > img,
+.game-preview > .game-preview-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+}
+
+.game-preview img {
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.game-preview-placeholder {
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c2c0c5;
+}
+
+.game-body {
+    padding: 20px 18px;
+    background: color-mix(in srgb, var(--game-color, var(--chip-tech)) 25%, white);
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+}
+
+.game-title {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.05;
+}
+
+.game-description {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.25;
+    color: #3b4f73;
+    min-height: 0;
+    flex: 1 1 auto;
+    padding-bottom: 20px;
+}
+
+.game-status {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 16px;
+    font-weight: 900;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background: var(--yellow);
+    color: var(--ink);
+}
+
+.credit-block {
+    background: #f8f9fb;
+    border-radius: 16px;
+    padding: 22px;
+}
+
+.credit-block h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    line-height: 1.15;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+}
+
+.credit-block p {
+    margin: 0;
+    color: #3b4f73;
+    font-size: 18px;
+    line-height: 1.45;
+}
+
+.credit-block p + p {
+    margin-top: 8px;
+}
+
+.page-footer {
+    padding: 32px 24px;
+    background: #193E75;
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    align-items: center;
+    color: #fff;
+    flex-wrap: wrap;
+    font-weight: 600;
+}
+
+.page-footer-divider {
+    width: 2px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.6);
+    flex: 0 0 auto;
+}
+
+.page-footer img {
+    height: 44px;
+    width: auto;
+}
+
+@media (max-width: 1024px) {
+    .games-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body.page-secondary {
+        padding: 88px 14px 22px;
+    }
+
+    .menu-btn {
+        margin: 14px 14px 0 auto;
+    }
+
+    body.page-secondary.about-page .menu-btn {
+        top: 14px;
+        right: 14px;
+        margin: 0;
+    }
+
+    body.page-secondary.mini-games-page .menu-btn {
+        top: 14px;
+        right: 14px;
+        margin: 0;
+    }
+
+    body.page-secondary.credits-page .menu-btn {
+        top: 14px;
+        right: 14px;
+        margin: 0;
+    }
+
+    .page-corner-logo {
+        top: 14px;
+        left: 14px;
+    }
+
+    .page-hero p {
+        font-size: clamp(16px, 2.7vw, 28px);
+    }
+
+    .page-hero p.sub {
+        font-size: clamp(14px, 2.2vw, 23px);
+    }
+
+    .page-band {
+        grid-template-columns: 1fr;
+    }
+
+    .band-chip {
+        font-size: 22px;
+    }
+
+    .page-main {
+        margin-top: -78px;
+    }
+
+    body.page-secondary.mini-games-page .page-main {
+        margin-top: 0;
+        padding-top: 18px;
+    }
+
+    .about-intro {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 34px 22px;
+    }
+
+    .about-intro-copy h1 {
+        font-size: clamp(34px, 8vw, 58px);
+    }
+
+    .about-intro-copy p.about-lead {
+        font-size: clamp(20px, 4.2vw, 30px);
+    }
+
+    .about-intro-copy p {
+        font-size: clamp(16px, 2.5vw, 21px);
+    }
+
+    .about-intro-image {
+        min-height: 240px;
+    }
+
+    .about-quote {
+        padding: 34px 18px;
+    }
+
+    .about-quote p {
+        padding: 0 56px;
+        font-size: clamp(23px, 4.3vw, 36px);
+    }
+
+    .about-sections {
+        padding: 34px 22px 44px;
+    }
+
+    .about-section-block h2 {
+        font-size: clamp(28px, 4.8vw, 36px);
+    }
+
+    .about-section-block p,
+    .about-section-block li {
+        font-size: clamp(16px, 2.5vw, 20px);
+    }
+
+    .content-card h2,
+    .content-card h3 {
+        font-size: 22px;
+    }
+
+    .content-card p,
+    .content-card li {
+        font-size: 18px;
+    }
+
+    .game-title {
+        font-size: 28px;
+    }
+
+    .game-description {
+        font-size: 19px;
+    }
+}
+
+@media (max-width: 640px) {
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    body.page-secondary.about-page .menu-btn {
+        top: 12px;
+        right: 12px;
+        margin: 0;
+        width: 68px;
+        height: 68px;
+    }
+
+    body.page-secondary.mini-games-page .menu-btn {
+        top: 12px;
+        right: 12px;
+        margin: 0;
+        width: 68px;
+        height: 68px;
+    }
+
+    body.page-secondary.credits-page .menu-btn {
+        top: 12px;
+        right: 12px;
+        margin: 0;
+        width: 68px;
+        height: 68px;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-card.wide {
+        grid-column: span 1;
+    }
+
+    .page-footer-divider {
+        display: none;
+    }
+
+    .about-quote p {
+        padding: 0 34px;
+    }
+
+    .about-quote p::before,
+    .about-quote p::after {
+        font-size: 1.1em;
+    }
+}

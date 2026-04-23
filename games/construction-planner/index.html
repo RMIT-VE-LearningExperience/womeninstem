@@ -1,0 +1,4264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Crew Planner</title>
+
+<!-- Open Graph / Social Media Meta Tags -->
+<meta property="og:title" content="Crew Planner - Construction Game">
+<meta property="og:description" content="Schedule workers in the right order to complete a construction project on time.">
+<meta property="og:image" content="../../images/minigames_thumnails/crewplanner.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Crew Planner - Construction Game">
+<meta name="twitter:description" content="Schedule workers in the right order to complete a construction project on time.">
+<meta name="twitter:image" content="../../images/minigames_thumnails/crewplanner.png">
+
+<!-- Hotjar Tracking Code for WIS - Construction game -->
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:6646133,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; -webkit-user-drag: none; }
+  img { -webkit-user-drag: none; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #d9dde1;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .app {
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+    background: #DAD8D8;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .main{
+  display:flex;
+  flex:1;
+  flex-direction:column;
+}
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 20px 12px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    font-weight: 900;
+    color: #1a2744;
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-menu {
+    position: relative;
+    top: auto;
+    right: auto;
+  }
+
+  .help-menu-btn svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .help-menu-btn .help-mark {
+    fill: #193E75;
+  }
+.sidebar-help {
+  margin-right: 10px;
+}
+  .help-menu-btn {
+    background: #F5C942 !important;
+    border-radius: 50%;
+  }
+
+  /* Desktop title (hidden on mobile) */
+  .desktop-title {
+    display: none;
+  }
+
+  /* Grid */
+  .grid-wrapper {
+    padding: 0 12px;
+    flex: 1;
+  }
+
+  .time-header {
+    display: grid;
+    grid-template-columns: 68px 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 6px;
+    padding: 0 2px;
+  }
+
+  .time-header span:first-child { display: block; }
+
+  .time-label {
+    background: #193E75;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  .schedule-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .day-row {
+    display: grid;
+    grid-template-columns: 68px 1fr 1fr 1fr;
+    gap: 6px;
+    align-items: stretch;
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      justify-content: flex-start;
+    }
+
+    .app {
+      width: 100%;
+      max-width: none;
+      /*padding-right: 360px;*/
+      overflow: hidden;
+    }
+
+    .header {
+      display: none;
+    }
+
+    .main {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 0;
+    }
+.sidebar {
+      width: 180px;
+      flex-shrink: 0;
+      background-color: #193E75;
+    }
+    .desktop-title {
+      display: block;
+      font-size: 28px;
+      font-weight: 900;
+      color: #1a2744;
+      line-height: 1.05;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+    }
+
+    .grid-wrapper {
+      flex: 1;
+      padding: 24px 32px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      min-width: 0;
+    }
+
+    /* Keep the grid nicely centred on wide screens */
+    .time-header,
+    .schedule-grid {
+      width: 100%;
+      max-width: 980px;
+      margin: 0;
+    }
+    .schedule-grid { overflow: visible; }
+
+    .time-header {
+      grid-template-columns: 140px repeat(5, minmax(72px, 1fr));
+      margin-bottom: 18px;
+    }
+
+    .time-label {
+      aspect-ratio: auto;
+      padding: 8px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .day-row {
+      grid-template-columns: 140px repeat(5, minmax(72px, 1fr));
+    }
+
+    .day-label {
+      font-size: 13px;
+      min-height: auto;
+      padding: 0;
+      aspect-ratio: auto;
+      min-width: 140px;
+    }
+
+    .cell {
+      aspect-ratio: 1 / 1;
+      min-height: auto;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 180px;
+      padding: 0;
+      background: #193E75;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      overflow: visible;
+      z-index: 50;
+    }
+
+    .worker-source {
+      width: 90%;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0;
+      flex: 1;
+      margin: 0;
+      padding: 10px 12px 10px 0;
+      overflow: visible;
+    }
+
+    .worker-avatar {
+      width: 120px;
+      height: 120px;
+      margin: 0 0 0 -60px;
+      flex: 0 0 auto;
+      z-index: 2;
+    }
+
+    .worker-tube {
+      flex: 1 1 auto;
+      align-self: stretch;
+      height: auto;
+      padding-top: 0;
+      margin: 0;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      width: calc(100% + 200px);
+      margin-left: -200px;
+    }
+
+    .worker-label {
+      font-size: 11px;
+      margin-top: 0;
+    }
+
+    .progress-track {
+      position: static;
+      margin-top: 10px;
+    }
+
+    .slots-count {
+      position: static;
+      margin-top: 6px;
+    }
+
+    .worker-source.idle-bob {
+      animation: idle-slide 3.2s ease-in-out infinite;
+    }
+
+    @keyframes idle-slide {
+      0%, 65%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-10px); }
+      30% { transform: translateX(0); }
+    }
+  }
+
+  @media (max-width: 1279px) {
+
+    .day-label {
+      aspect-ratio: auto;
+      min-height: 80px;
+    }
+
+    .cell {
+      aspect-ratio: auto;
+      min-height: 80px;
+    }
+    .cell .weather-icon {
+      width: 40px;
+      height: 40px;
+      max-width: 40px;
+      max-height: 40px;
+    }
+  }
+
+  .day-label {
+    background: #193E75;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    min-height: 80px;
+    letter-spacing: 0.3px;
+  }
+
+  .cell {
+    background: #ffffff;
+    border-radius: 12px;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 2.5px dashed #c0c6ce;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .cell:hover {
+    border-color: #3b82f6;
+    background: #dbeafe;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+  }
+
+  .cell:focus-visible,
+  .worker-source:focus-visible,
+  .remove-btn:focus-visible {
+    outline: 4px solid #2563eb;
+    outline-offset: 3px;
+  }
+
+  .worker-source.keyboard-selected .worker-avatar {
+    box-shadow: 0 0 0 5px #ffffff, 0 0 0 9px #2563eb;
+  }
+
+  .cell.drag-over {
+    border-color: #3b82f6;
+    background: #dbeafe;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+  }
+
+  .cell.drag-over-invalid {
+    border-color: #ef4444;
+    background: #fee2e2;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.2);
+  }
+
+  .cell.setting-cell {
+    background: #fef3c7;
+    border: 2.5px solid #f59e0b;
+  }
+
+  .cell.setting-cell .setting-label {
+    font-size: 9px;
+    font-weight: 800;
+    color: #92400e;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .cell.setting-cell .setting-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .cell .weather-icon {
+    width: 70px;
+    height: 70px;
+    max-width: 70px;
+    max-height: 70px;
+    flex-shrink: 0;
+    background-color: #193E75;
+    padding: 8px;
+    border-radius: 6px;  
+    position: absolute;
+    right: -4px;    
+    bottom: -4px;
+  }
+
+  .cell .weather-icon.small {
+    width: 40px;
+    height: 40px;
+    opacity: 1;
+  }
+
+
+ @media (min-width: 267px) and (max-width: 1279px) {
+.bottom-bar{
+ padding-left: 85px;
+ padding-right: 12px;
+padding-bottom: 60px;
+}
+.worker-avatar {
+  width: 90px !important;
+    height: 90px !important;
+}
+ .cell .weather-icon {
+      width: 40px;
+      height: 40px;
+      max-width: 40px;
+      max-height: 40px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .cell .weather-icon {
+      width: 40px;
+      height: 40px;
+      max-width: 40px;
+      max-height: 40px;
+    }
+  
+  }
+
+  .cell .worker-in-cell {
+    width: 80%;
+    height: auto;
+    border-radius: 50%;
+    border: 2.5px solid #1a2744;
+    cursor: grab;
+    transition: transform 0.15s;
+    position: relative;
+    z-index: 2;
+  }
+  .cell .worker-in-cell img { width: 100%; height: 100%; border-radius: 50%; display: block; }
+
+  .cell .worker-in-cell:active { cursor: grabbing; transform: none; }
+
+  .cell .remove-btn {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 18px;
+    height: 18px;
+    background: #22c55e;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .cell:hover .remove-btn,
+  .cell .remove-btn:focus { opacity: 1; }
+
+  /* Bottom bar */
+  .bottom-bar {
+   
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    margin-top: 10px;
+    min-height: 140px;
+  }
+
+  /* Worker sources */
+  .worker-source {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: grab;
+    transition: transform 0.15s, opacity 0.2s;
+    position: relative;
+    flex: 1;
+  }
+
+  .worker-source:active { cursor: grabbing; }
+  .worker-source.completed { opacity: 0.45; cursor: default; }
+
+  .worker-source.idle-bob {
+    animation: idle-bob 3.2s ease-in-out infinite;
+  }
+
+  .worker-source.idle-bob:nth-child(2) { animation-delay: 0s; }
+  .worker-source.idle-bob:nth-child(3) { animation-delay: 0.15s; }
+  .worker-source.idle-bob:nth-child(4) { animation-delay: 0.3s; }
+
+  .sidebar-menu {
+    display: none;
+  }
+
+  .menu-btn {
+    width: 62px;
+    height: 62px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: none;
+  }
+
+  .menu-btn span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    border-radius: 999px;
+    background: #1f4888;
+  }
+
+  @media (min-width: 1024px) {
+    .header-actions {
+      display: none;
+    }
+
+    .sidebar-menu {
+      display: flex;
+      justify-content: flex-end;
+      padding: 14px 14px 0;
+              margin-bottom: 90px;
+
+    }
+
+    .sidebar-menu .menu-btn {
+      position: relative;
+      top: auto;
+      right: auto;
+      z-index: 60;
+      
+    }
+  }
+
+  @keyframes idle-bob {
+    0%, 65%, 100% { transform: translateY(0); }
+    15% { transform: translateY(-10px); }
+    30% { transform: translateY(0); }
+  }
+
+  .worker-tube {
+    width: 100%;
+    height: 140px;
+    border-radius: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 36px;
+    overflow: hidden;
+    margin-top: -50px;
+    z-index: 1;
+    margin-bottom: -60px;
+  }
+
+  .worker-tube::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background: linear-gradient(to top, rgba(169, 33, 33, 0.12), transparent);
+  }
+
+  .worker-source[data-role="crane"] .worker-tube { background: #E39F58; }
+  .worker-source[data-role="concreter"] .worker-tube { background: #E46F5B; }
+  .worker-source[data-role="carpenter"] .worker-tube { background: #E8C66C; }
+
+  .worker-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #193E75;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+  
+  }
+
+  .worker-avatar svg { width: 100%; height: 100%; }
+  .worker-avatar img { width: 100%; height: 100%; border-radius: 50%; display: block; -webkit-user-drag: none; user-drag: none; }
+
+  .worker-label {
+    font-size: 9px;
+    font-weight: 800;
+    color: #193e75;
+    text-align: center;
+    margin-top: 20px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Progress bar on worker tube */
+  .progress-track {
+    width: 52px;
+    height: 6px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 3px;
+    margin-top: 6px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 55px;
+    z-index: 1;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.35s ease;
+    
+  }
+
+  .slots-count {
+    font-size: 8px;
+    font-weight: 800;
+    color: #193E75; 
+    margin-top: 2px;
+    position: absolute;
+    bottom: 43px;
+    z-index: 1;
+    
+  }
+
+  @media (min-width: 1024px) {
+    .bottom-bar .worker-source {
+      flex: 1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0;
+      margin: 0;
+    }
+    
+    .bottom-bar .worker-avatar {
+      width: 132px;
+      height: 132px;
+      margin: 0 -200px 0 0;
+      right: 140px;
+      flex: 0 0 auto;
+      z-index: 2;
+    }
+
+    .bottom-bar .worker-tube {
+      flex: 1 1 auto;
+      align-self: stretch;
+      height: auto;
+      padding-top: 0;
+      margin: 0;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      margin-right: -24px;
+    }
+
+    .bottom-bar .worker-label {
+      font-size: 16px;
+      margin-top: 0;
+    }
+
+    .bottom-bar .progress-track {
+      position: static;
+      margin-top: 10px;
+    }
+
+    .bottom-bar .slots-count {
+      position: static;
+      margin-top: 6px;
+      font-size: 12px;;
+    }
+
+    .worker-source.idle-bob {
+      animation: idle-slide 3.2s ease-in-out infinite;
+    }
+  }
+
+  /* Drag ghost */
+  .drag-ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 3px solid #1a2744;
+    opacity: 0.92;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    display: none;
+  }
+  .drag-ghost img { width: 100%; height: 100%; border-radius: 50%; display: block; }
+
+  /* Stretchy band SVG */
+  .band-svg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9998;
+    display: none;
+  }
+
+  .band-svg path { filter: none; }
+
+  /* Tube jiggle on snap-back */
+  @keyframes tube-jiggle {
+    0%   { transform: scaleY(0.85) scaleX(1.08); }
+    30%  { transform: scaleY(1.1) scaleX(0.94); }
+    50%  { transform: scaleY(0.95) scaleX(1.03); }
+    70%  { transform: scaleY(1.03) scaleX(0.98); }
+    100% { transform: scaleY(1) scaleX(1); }
+  }
+
+  .tube-jiggle {
+    animation: tube-jiggle-x 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transform-origin: center center;
+  }
+
+  @media (max-width: 1023px) {
+    .tube-jiggle {
+      animation: tube-jiggle 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      transform-origin: bottom center;
+    }
+
+  }
+
+  @keyframes tube-jiggle-x {
+    0%   { transform: translateX(0); }
+    30%  { transform: translateX(-6px); }
+    50%  { transform: translateX(4px); }
+    70%  { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+  }
+
+  /* Avatar pop-out when dragging */
+  .worker-source.dragging .worker-avatar {
+    opacity: 0;
+    transform: none;
+    transition: opacity 0.15s;
+    bottom: -20px;
+  }
+
+  .worker-source .worker-avatar {
+    transition: opacity 0.25s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Feedback modal */
+  .feedback-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(25,62,117,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 150;
+    padding: 20px;
+  }
+
+  .feedback-overlay.active { display: flex; }
+
+  .feedback-popup {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 24px 140px;
+    width: 80vw;
+    max-width: 400px;
+    height: 80vh;
+    text-align: left;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+  }
+
+  .feedback-avatar { position: relative; height: 0; }
+
+  .feedback-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #193E75;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .feedback-title {
+    font-size: 18px;
+    font-weight: 900;
+    color: #e11d2e;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .feedback-msg {
+    font-size: 14px;
+    color: #111827;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    font-weight: 800;
+  }
+
+  .feedback-hint {
+    font-size: 14px;
+    color: #1f2937;
+    line-height: 1.5;
+  }
+
+  .feedback-character {
+    position: fixed;
+    bottom: -50px;
+    width: 320px;
+    height: auto;
+    pointer-events: none;
+  }
+
+  .weather-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(25,62,117,0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 170;
+    padding: 20px;
+  }
+
+  .weather-popup-overlay.active { display: flex; }
+
+  .weather-popup {
+    width: min(360px, 92vw);
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+    box-shadow: 0 14px 36px rgba(0,0,0,0.28);
+    position: relative;
+  }
+
+  .weather-popup-close {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    line-height: 1;
+    color: #1a2744;
+    cursor: pointer;
+  }
+
+  .weather-popup-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: #1a2744;
+    margin-bottom: 10px;
+  }
+
+  .weather-popup-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .weather-popup-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background: #193E75;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .weather-popup-icon img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+  }
+
+  .weather-popup-text {
+    font-size: 14px;
+    line-height: 1.35;
+    color: #1a2744;
+    font-weight: 600;
+  }
+
+  .weather-hover-tip {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 180;
+    background: #1a2744;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.25;
+    padding: 8px 10px;
+    border-radius: 8px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+    max-width: 220px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+  }
+
+  .weather-hover-tip.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Success overlay */
+  .success-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,39,68,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 24px;
+  }
+
+  .success-overlay.active { display: flex; }
+
+  .success-card {
+    background: white;
+    border-radius: 24px;
+    padding: 36px 28px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  }
+
+  .success-icon {
+    font-size: 56px;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  .success-card h2 {
+    color: #1a2744;
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+
+  .success-card p {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .success-card button {
+    background: #f5c542;
+    color: #1a2744;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+
+  .success-card button:active { transform: scale(0.95); }
+
+  /* Help Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 24px 24px;
+    width: 90vw;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+
+  .modal h2 {
+    color: #193E75;
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #193E75;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .slide-container {
+    min-height: 250px;
+    position: relative;
+  }
+
+  .slide {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .slide.active {
+    display: block;
+  }
+
+  .slide p {
+    color: #1a2744;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .slide ul, .slide ol {
+    margin-left: 20px;
+    color: #1a2744;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .slide li {
+    margin-bottom: 8px;
+  }
+
+  .weather-list {
+    list-style: none;
+    margin-left: 0;
+  }
+
+  .weather-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .weather-list .weather-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  .modal-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    gap: 12px;
+  }
+
+  .slide-dots {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .slide-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d1d5db;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 0;
+    padding: 0;
+  }
+
+  .slide-dot.active {
+    background: #193E75;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .modal-btn {
+    background: #e5e7eb;
+    color: #1a2744;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .modal-btn:hover {
+    background: #d1d5db;
+  }
+
+  .modal-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .modal-btn-primary {
+    background: #193E75;
+    color: white;
+  }
+
+  .modal-btn-primary:hover {
+    background: #142d5a;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Reset button */
+  .reset-btn {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    width: 42px;
+    height: 42px;
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, background 0.15s;
+  }
+
+  .reset-btn:hover { background: rgba(255,255,255,0.2); }
+  .reset-btn:active { transform: scale(0.9); }
+  .reset-btn svg { width: 20px; height: 20px; fill: white; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: #1a2744;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    z-index: 300;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Welcome overlay */
+  .welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: #193e75de;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+    padding: 32px 20px;
+  }
+
+  /* Mobile landscape orientation notice (Crew Planner only) */
+  .orientation-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(25, 62, 117, 0.88);
+    z-index: 460;
+    text-align: center;
+  }
+
+  .orientation-overlay.active {
+    display: flex;
+  }
+
+  .orientation-card {
+    width: min(420px, 100%);
+    background: #f3f4f5;
+    border-radius: 16px;
+    padding: 24px 20px;
+    border: 3px solid #1f4888;
+    color: #193E75;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
+  }
+
+  .orientation-icon {
+    font-size: 34px;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .orientation-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .orientation-text {
+    margin: 10px 0 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .welcome-card {
+    background: #efefef;
+    border-radius: 16px;
+    height: 80%;
+    width: 100%;
+    max-width: 400px;
+    padding: 0;
+    position: relative;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+    overflow: hidden;
+  }
+
+  .welcome-role-slides {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .welcome-role-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .welcome-role-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .welcome-intro-body {
+    position: absolute;
+    inset: 0;
+    padding: 56px 28px 140px;
+    color: #1a2744;
+    z-index: 2;
+  }
+
+  .welcome-intro-title {
+    font-size: 48px;
+    font-weight: 900;
+    color: #224987;
+    text-align: center;
+    line-height: 0.95;
+    letter-spacing: 0.4px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .welcome-intro-text {
+    font-size: 16px;
+    line-height: 1.35;
+    margin-bottom: 14px;
+  }
+
+  .welcome-intro-manager {
+    position: fixed;
+    right: 6px;
+    bottom: -8px;
+    width: 52vw;
+    max-width: 250px;
+    height: auto;
+    pointer-events: none;
+    z-index: 402;
+  }
+
+  .welcome-role-header {
+    height: 150px;
+    background: #e26f5b;
+  }
+
+  .welcome-role-header.crane { background: #e79f57; }
+  .welcome-role-header.concreter { background: #e26f5b; }
+  .welcome-role-header.carpenter { background: #e8c66c; }
+
+  .welcome-role-avatar-wrap {
+    position: absolute;
+    left: 50%;
+    top: 42px;
+    transform: translateX(-50%);
+    width: 166px;
+    height: 166px;
+    border-radius: 50%;
+    background: #f4f4f4;
+    border: 5px solid #224987;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .welcome-role-avatar {
+    width: 186px;
+    height: 186px;
+    object-fit: contain;
+  }
+
+  .welcome-role-body {
+    position: absolute;
+    inset: 0;
+    padding: 236px 18px 108px;
+    color: #1a2744;
+  }
+
+  .welcome-role-title {
+    font-size: 30px;
+    font-weight: 900;
+    color: #224987;
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .welcome-role-desc {
+    font-size: 16px;
+    line-height: 1.35;
+    margin-bottom: 18px;
+  }
+
+  .welcome-blockers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #111;
+  }
+
+  .welcome-blockers .cross {
+    color: #e63946;
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  .welcome-blocker-icons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .welcome-blocker-icons .icon-tile {
+    width: 78px;
+    height: 78px;
+    border-radius: 8px;
+    background: #224987;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .welcome-blocker-icons .icon-tile img {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+  }
+
+  .welcome-clear {
+    margin-top: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #2b7a2b;
+  }
+
+  .welcome-next {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    background: #3BA53B;
+    color: white;
+    border: none;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 21px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    z-index: 3;
+  }
+
+  .welcome-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 40px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 3;
+  }
+
+  .welcome-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d1d5db;
+    transition: all 0.2s;
+  }
+
+  .welcome-dot.active {
+    background: #224987;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  .onboarding-role-highlight {
+    position: relative;
+    z-index: 430 !important;
+  }
+
+  .onboarding-role-highlight .worker-avatar {
+    z-index: 431 !important;
+    position: relative;
+  }
+
+  .onboarding-drop-highlight {
+    position: relative;
+    z-index: 430 !important;
+  }
+
+  .onboarding-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgba(7, 17, 37, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+  }
+
+  .onboarding-backdrop.show {
+    opacity: 1;
+  }
+
+  .onboarding-focus-ring {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border: 4px solid rgba(160, 194, 255, 0.98);
+    border-radius: 18px;
+    pointer-events: none;
+    z-index: 435;
+    opacity: 0;
+    transition: left 0.16s ease, top 0.16s ease, width 0.16s ease, height 0.16s ease, opacity 0.16s ease;
+    box-shadow: 0 0 0 10px rgba(93, 139, 219, 0.22);
+    animation: onboarding-pulse 1.2s ease-in-out infinite;
+  }
+
+  .onboarding-focus-ring.show {
+    opacity: 1;
+  }
+
+  .onboarding-hint {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 440;
+    pointer-events: none;
+    background: #1a2744;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.25;
+    padding: 9px 13px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+    max-width: min(260px, calc(100vw - 24px));
+    text-align: center;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .onboarding-hint.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes onboarding-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+
+  @media (max-width: 1023px) {
+    .welcome-intro-body {
+      padding: 44px 22px 136px;
+    }
+
+    .welcome-intro-title {
+      font-size: 42px;
+      margin-bottom: 20px;
+    }
+
+    .welcome-intro-text {
+      font-size: 14px;
+    }
+
+    .welcome-intro-manager {
+      right: 2px;
+      bottom: -10px;
+      width: 40vw;
+      max-width: 280px;
+    }
+
+    .welcome-role-header {
+      height: 128px;
+    }
+
+    .welcome-role-avatar-wrap {
+      top: 35px;
+      width: 144px;
+      height: 144px;
+    }
+
+    .welcome-role-avatar {
+      width: 150px;
+      height: 150px;
+    }
+
+    .welcome-role-body {
+      padding: 212px 18px 110px;
+    }
+
+    .welcome-role-title {
+      font-size: 30px;
+    }
+
+    .welcome-role-desc {
+      font-size: 14px;
+    }
+
+    .welcome-next {
+      width: 76px;
+      height: 76px;
+      font-size: 19px;
+    }
+
+    .welcome-blocker-icons .icon-tile {
+      width: 72px;
+      height: 72px;
+    }
+  }
+
+  @keyframes confetti-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(80px) rotate(360deg); opacity: 0; }
+  }
+
+  /* ===================================
+     PORTRAIT MOBILE / TABLET VIEWPORT FIT
+     Constrain the game to the viewport
+     height so nothing is cropped.
+     =================================== */
+  @media (max-width: 1023px) and (orientation: portrait) {
+    .app {
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 12px 16px 6px;
+    }
+
+    .grid-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .time-header {
+      margin-bottom: 4px;
+    }
+
+    .time-label {
+      padding: 15px 4px;
+    }
+
+    .schedule-grid {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .day-row {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .day-label,
+    .cell {
+      min-height: 0;
+    }
+
+    .bottom-bar {
+      min-height: 0;
+      margin-top: 6px;
+      padding-bottom: 24px;
+      padding-left: 12px;
+    }
+
+    .worker-avatar {
+      width: 72px !important;
+      height: 72px !important;
+    }
+
+    .worker-tube {
+      height: 100px;
+      margin-top: -36px;
+      margin-bottom: -40px;
+    }
+  }
+
+  /* ===================================
+     LANDSCAPE LAYOUT (phones & tablets)
+     Switch to horizontal desktop-style
+     layout with sidebar on the right.
+     =================================== */
+  @media (orientation: landscape) and (min-width: 640px) and (max-width: 1023px) {
+    body {
+      justify-content: flex-start;
+    }
+
+    .app {
+      max-width: none;
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .header {
+      display: none;
+    }
+
+    .main {
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    .sidebar {
+      width: 150px;
+      flex-shrink: 0;
+      background-color: #193E75;
+      overflow: visible;
+    }
+
+    /* Hide title on landscape phones to maximise grid space */
+    .desktop-title {
+      display: none;
+    }
+
+    .grid-wrapper {
+      flex: 1;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .time-header,
+    .schedule-grid {
+      width: 100%;
+    }
+
+    .schedule-grid {
+      flex: 1;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .time-header {
+      grid-template-columns: 64px 1fr 1fr 1fr;
+      margin-bottom: 4px;
+    }
+
+    .time-label {
+      padding: 4px;
+      font-size: 10px;
+    }
+
+    .day-row {
+      grid-template-columns: 64px 1fr 1fr 1fr;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .day-label {
+      font-size: 11px;
+      min-height: 0;
+    }
+
+    .cell {
+      min-height: 0;
+    }
+
+    .cell .weather-icon {
+      width: 32px;
+      height: 32px;
+      max-width: 32px;
+      max-height: 32px;
+    }
+
+    .bottom-bar {
+      position: static;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      background: #193E75;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      overflow: hidden;
+      z-index: 50;
+      margin-top: 0;
+      min-height: auto;
+    }
+
+    .worker-source {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0;
+      flex: 1;
+      margin: 0;
+      padding: 4px 0 4px 6px;
+      overflow: visible;
+    }
+
+    .worker-avatar {
+      width: 60px !important;
+      height: 60px !important;
+      margin: 0 -24px 0 0 !important;
+      flex: 0 0 auto;
+      z-index: 2;
+    }
+
+    .worker-tube {
+      flex: 1 1 auto;
+      align-self: stretch;
+      height: auto;
+      padding-top: 0;
+      margin: 0;
+      margin-bottom: 0;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      margin-right: -6px;
+    }
+
+    .worker-label {
+      font-size: 9px;
+      margin-top: 0;
+    }
+
+    .progress-track {
+      position: static;
+      margin-top: 4px;
+    }
+
+    .slots-count {
+      position: static;
+      margin-top: 2px;
+      font-size: 8px;
+    }
+
+    .worker-source.idle-bob {
+      animation: idle-slide 3.2s ease-in-out infinite;
+    }
+  }
+
+  /* Show title on wider landscape tablets */
+  @media (orientation: landscape) and (min-width: 800px) and (max-width: 1023px) {
+    .desktop-title {
+      display: block;
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a2744;
+      line-height: 1.05;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+  }
+
+  @media (min-width: 966px) and (max-width: 1023px) {
+    .header {
+      display: flex;
+    }
+
+    .header-actions {
+      display: flex;
+    }
+
+    .sidebar-menu {
+      display: none;
+    }
+  }
+
+  @media (max-width: 965px) {
+    .header {
+      display: flex;
+    }
+
+    .header-actions {
+      display: flex;
+    }
+
+    .sidebar-menu {
+      display: none;
+    }
+  }
+</style>
+<link rel="stylesheet" href="../../nav.css?v=1.1.6">
+</head>
+<body>
+<nav class="nav-drawer" id="navDrawer">
+  <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
+  <a href="../../index.html" class="nav-link nav-link-home"><span class="nav-link-label">Home</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/home.svg" alt=""></span></a>
+  <a href="../../about.html" class="nav-link nav-link-about"><span class="nav-link-label">About</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/about.svg" alt=""></span></a>
+  <a href="../../career-explorer.html" class="nav-link nav-link-career"><span class="nav-link-label">Career Explorer</span><span class="nav-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.5 7a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm0 0V4m0 13v3m7-9h3m-3.5-5.5l2.2-2.2M4.8 18.2l2.2-2.2M3 11h3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 14l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span></a>
+  <a href="../../explore-stories.html" class="nav-link nav-link-videos"><span class="nav-link-label">Video Stories</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/videos.svg" alt=""></span></a>
+  <a href="../../mini-games.html" class="nav-link nav-link-games active"><span class="nav-link-label">Mini Games</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/minigame.svg" alt=""></span></a>
+  <a href="https://www.menti.com/al3j6nyu9ebk" class="nav-link nav-link-survey" target="_blank" rel="noopener noreferrer"><span class="nav-link-label">Survey</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/survey.svg" alt=""></span></a>
+  <a href="../../credits.html" class="nav-link nav-link-credits"><span class="nav-link-label">Credits</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/credits.svg" alt=""></span></a>
+
+</nav>
+<div class="nav-scrim" id="navScrim"></div>
+<div class="welcome-overlay" id="welcomeOverlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" aria-describedby="welcomeDesc" aria-hidden="false">
+  <div class="welcome-card">
+    <div class="welcome-role-slides">
+      <div class="welcome-role-slide active" data-role-slide="0">
+        <div class="welcome-intro-body">
+          <div class="welcome-intro-title" id="welcomeTitle">WELCOME TO<br>CREW PLANNER!</div>
+          <p class="welcome-intro-text" id="welcomeDesc">
+            You're in charge of scheduling trades for a construction project.
+          </p>
+          <p class="welcome-intro-text">
+            Schedule the Crane Operator, Concreter, and Carpenter to complete the job on time while working around the weather.
+          </p>
+        </div>
+        <img class="welcome-intro-manager" src="images/character_coins/manager.svg" alt="" aria-hidden="true">
+      </div>
+
+      <div class="welcome-role-slide" data-role-slide="1">
+        <div class="welcome-role-header crane"></div>
+        <div class="welcome-role-avatar-wrap">
+          <img class="welcome-role-avatar" src="images/character_coins/craneoperator_coin.svg" alt="Crane Operator">
+        </div>
+        <div class="welcome-role-body">
+          <div class="welcome-role-title">CRANE OPERATOR</div>
+          <p class="welcome-role-desc">
+            I lift and move heavy materials safely around site to support each stage of construction.
+          </p>
+          <div class="welcome-blockers"><span class="cross">✕</span><span>Task blockers</span></div>
+          <div class="welcome-blocker-icons">
+            <div class="icon-tile"><img src="images/weather_icons/wind01.svg" alt="Windy"></div>
+            <div class="icon-tile"><img src="images/weather_icons/thunder02.svg" alt="Storms"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-role-slide" data-role-slide="2">
+        <div class="welcome-role-header concreter"></div>
+        <div class="welcome-role-avatar-wrap">
+          <img class="welcome-role-avatar" src="images/character_coins/concreter_coin.svg" alt="Concreter">
+        </div>
+        <div class="welcome-role-body">
+          <div class="welcome-role-title">CONCRETER</div>
+          <p class="welcome-role-desc">
+            I prepare, pour, and finish concrete to form strong foundations and slabs on site.
+          </p>
+          <div class="welcome-blockers"><span class="cross">✕</span><span>Task blockers</span></div>
+          <div class="welcome-blocker-icons">
+            <div class="icon-tile"><img src="images/weather_icons/thunder02.svg" alt="Storms"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-role-slide" data-role-slide="3">
+        <div class="welcome-role-header carpenter"></div>
+        <div class="welcome-role-avatar-wrap">
+          <img class="welcome-role-avatar" src="images/character_coins/carpenter_coin.svg" alt="Carpenter">
+        </div>
+        <div class="welcome-role-body">
+          <div class="welcome-role-title">CARPENTER</div>
+          <p class="welcome-role-desc">
+            I build and install timber structures once concrete has set and the site is ready for fit-out.
+          </p>
+          <div class="welcome-clear">No weather blockers for this role.</div>
+        </div>
+      </div>
+    </div>
+    <button class="welcome-next" id="welcomeNextBtn" data-initial-focus onclick="nextWelcomeSlide()">NEXT</button>
+    <div class="welcome-dots" id="welcomeDots"></div>
+  </div>
+</div>
+<div class="orientation-overlay" id="orientationOverlay" role="dialog" aria-modal="true" aria-labelledby="orientationTitle" aria-describedby="orientationText" aria-hidden="true">
+  <div class="orientation-card" role="status" aria-live="polite">
+    <div class="orientation-icon" aria-hidden="true">📱</div>
+    <h2 class="orientation-title" id="orientationTitle">Portrait Mode Preferred</h2>
+    <p class="orientation-text" id="orientationText">For the best Crew Planner experience, rotate your device to portrait mode.</p>
+  </div>
+</div>
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>CREW<br>PLANNER</h1>
+    <div class="header-actions">
+      <button class="menu-btn help-menu-btn header-help" aria-label="Help" title="Help" onclick="showHelp()">
+        <svg viewBox="0 0 50.9 84.5" xmlns="http://www.w3.org/2000/svg">
+          <path class="help-mark" d="M49.2,15.3c-1.2-3-3-5.7-5.3-8-3.3-3.3-9.2-7.3-18.5-7.3s-6.6.5-9.5,1.6c-2.7,1-5.2,2.5-7.4,4.4C4.9,9.1,2.1,13.4.4,18.3c-1.2,3.4.6,7.1,4,8.3s7.1-.6,8.3-4c.7-2,2-4.7,4.4-6.8,2.3-1.9,5-2.9,8.5-2.9s7,1.2,9.3,3.5c2.2,2.3,3.2,5.2,3.2,7.1,0,3.2-1,5-1.8,6.1-1.2,1.7-3,3.2-5,4.9-2.6,2.1-5.5,4.5-7.6,8-3,4.8-4.6,9.7-4.6,14.5s2.9,6.5,6.5,6.5,6.5-2.9,6.5-6.5.5-4.1,2.6-7.5c1.1-1.7,2.9-3.2,5-4.9,4.8-4,11.3-9.4,11.4-20.8,0-2.7-.6-5.6-1.7-8.4h0Z"/>
+          <path class="help-mark" d="M32.6,77c0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2s0-.1,0-.2c0,0,0-.1,0-.2,0-.1,0-.2,0-.3,0-.1,0-.2,0-.3,0-.1,0-.2-.1-.3s0-.2-.1-.3c0-.1,0-.2-.1-.3,0-.1,0-.2-.2-.3,0,0-.1-.2-.2-.3,0,0-.1-.2-.2-.3,0,0,0,0,0-.1,0,0,0,0,0-.1,0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1-.1,0,0,0,0-.1-.1,0,0,0,0-.1-.1,0,0,0,0-.1-.1s0,0-.1-.1,0,0-.1-.1c0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1,0s0,0-.2,0c0,0-.2-.1-.3-.2,0,0-.2-.1-.3-.2,0,0-.2-.1-.3-.2-.1,0-.2,0-.3-.1s-.2,0-.3-.1-.2,0-.3-.1-.2,0-.3,0c-.1,0-.2,0-.3,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0s-.1,0-.2,0c0,0-.1,0-.2,0s-.1,0-.2,0h-.7c0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0s-.1,0-.2,0c0,0-.1,0-.2,0-.1,0-.2,0-.3,0s-.2,0-.3,0-.2,0-.3.1-.2,0-.3.1c-.1,0-.2,0-.3.1-.1,0-.2,0-.3.2,0,0-.2.1-.3.2,0,0-.2.1-.3.2,0,0,0,0-.1,0,0,0,0,0-.1,0,0,0,0,0-.1.1s0,0-.1.1,0,0-.1.1c0,0,0,0-.1.1s0,0-.1.1,0,0-.1.1,0,0-.1.1c0,0,0,0-.1.1,0,0,0,0-.1.1,0,0,0,0-.1.1,0,0,0,0-.1.1s0,0-.1.1c0,0,0,0,0,.1s0,0,0,.1c0,0-.1.2-.2.3,0,0-.1.2-.2.3,0,0-.1.2-.2.3,0,.1,0,.2-.1.3s0,.2-.1.3,0,.2-.1.3,0,.2,0,.3c0,.1,0,.2,0,.3,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2s0,.1,0,.2c0,0,0,.1,0,.2,0,0,0,.1,0,.2v.7c0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2s0,.1,0,.2c0,0,0,.1,0,.2,0,.1,0,.2,0,.3,0,.1,0,.2,0,.3,0,.1,0,.2.1.3s0,.2.1.3,0,.2.1.3c0,.1,0,.2.2.3s.1.2.2.3c0,0,.1.2.2.3,0,0,0,0,0,.2,0,0,0,0,0,.1,0,0,0,0,.1.1s0,0,.1.1,0,0,.1.1,0,0,.1.1c0,0,0,0,.1.1,0,0,0,0,.1.1s0,0,.1.1c0,0,0,0,.1.1s0,0,.1.1,0,0,.1.1c0,0,0,0,.1.1s0,0,.1.1c0,0,0,0,.1,0s0,0,.1,0c0,0,.2.1.3.2,0,0,.2.1.3.2,0,0,.2.1.3.2.1,0,.2,0,.3.1s.2,0,.3.1.2,0,.3.1.2,0,.3,0c.1,0,.2,0,.3,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0s.1,0,.2,0c0,0,.1,0,.2,0,0,0,.1,0,.2,0h.7c0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0s.1,0,.2,0c0,0,.1,0,.2,0,.1,0,.2,0,.3,0s.2,0,.3,0,.2,0,.3-.1.2,0,.3-.1c.1,0,.2,0,.3-.1.1,0,.2,0,.3-.2,0,0,.2-.1.3-.2,0,0,.2-.1.3-.2,0,0,0,0,.2,0,0,0,0,0,.1,0,0,0,0,0,.1-.1s0,0,.1-.1,0,0,.1-.1c0,0,0,0,.1-.1s0,0,.1-.1,0,0,.1-.1,0,0,.1-.1c0,0,0,0,.1-.1,0,0,0,0,.1-.1,0,0,0,0,.1-.1,0,0,0,0,.1-.1s0,0,.1-.1c0,0,0,0,0-.1s0,0,0-.2c0,0,.1-.2.2-.3,0,0,.1-.2.2-.3,0,0,.1-.2.2-.3,0-.1,0-.2.1-.3,0-.1,0-.2.1-.3s0-.2.1-.3,0-.2,0-.3c0-.1,0-.2,0-.3,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2s0-.1,0-.2c0,0,0-.1,0-.2,0,0,0-.1,0-.2v-.7h0Z"/>
+        </svg>
+      </button>
+      <button class="menu-btn header-menu" id="menuBtnHeader" aria-label="Open menu" title="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+<div class="main">
+  <!-- Grid -->
+  <div class="grid-wrapper">
+    <h1 class="desktop-title">CREW<br>PLANNER</h1>
+    <div class="time-header">
+      <span></span>
+      <div class="time-label">7AM-11AM</div>
+      <div class="time-label">11AM-2PM</div>
+      <div class="time-label">2PM-6PM</div>
+    </div>
+    <div class="schedule-grid" id="scheduleGrid"></div>
+  </div>
+
+  <!-- Bottom Worker Bar -->
+  <div class="sidebar"> <div class="bottom-bar">
+    <div class="sidebar-menu">
+      <button class="menu-btn help-menu-btn sidebar-help" aria-label="Help" title="Help" onclick="showHelp()">
+        <svg viewBox="0 0 50.9 84.5" xmlns="http://www.w3.org/2000/svg">
+          <path class="help-mark" d="M49.2,15.3c-1.2-3-3-5.7-5.3-8-3.3-3.3-9.2-7.3-18.5-7.3s-6.6.5-9.5,1.6c-2.7,1-5.2,2.5-7.4,4.4C4.9,9.1,2.1,13.4.4,18.3c-1.2,3.4.6,7.1,4,8.3s7.1-.6,8.3-4c.7-2,2-4.7,4.4-6.8,2.3-1.9,5-2.9,8.5-2.9s7,1.2,9.3,3.5c2.2,2.3,3.2,5.2,3.2,7.1,0,3.2-1,5-1.8,6.1-1.2,1.7-3,3.2-5,4.9-2.6,2.1-5.5,4.5-7.6,8-3,4.8-4.6,9.7-4.6,14.5s2.9,6.5,6.5,6.5,6.5-2.9,6.5-6.5.5-4.1,2.6-7.5c1.1-1.7,2.9-3.2,5-4.9,4.8-4,11.3-9.4,11.4-20.8,0-2.7-.6-5.6-1.7-8.4h0Z"/>
+          <path class="help-mark" d="M32.6,77c0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2s0-.1,0-.2c0,0,0-.1,0-.2,0-.1,0-.2,0-.3,0-.1,0-.2,0-.3,0-.1,0-.2-.1-.3s0-.2-.1-.3c0-.1,0-.2-.1-.3,0-.1,0-.2-.2-.3,0,0-.1-.2-.2-.3,0,0-.1-.2-.2-.3,0,0,0,0,0-.1,0,0,0,0,0-.1,0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1-.1,0,0,0,0-.1-.1,0,0,0,0-.1-.1,0,0,0,0-.1-.1s0,0-.1-.1,0,0-.1-.1c0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1,0s0,0-.2,0c0,0-.2-.1-.3-.2,0,0-.2-.1-.3-.2,0,0-.2-.1-.3-.2-.1,0-.2,0-.3-.1s-.2,0-.3-.1-.2,0-.3-.1-.2,0-.3,0c-.1,0-.2,0-.3,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0s-.1,0-.2,0c0,0-.1,0-.2,0s-.1,0-.2,0h-.7c0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0s-.1,0-.2,0c0,0-.1,0-.2,0-.1,0-.2,0-.3,0s-.2,0-.3,0-.2,0-.3.1-.2,0-.3.1c-.1,0-.2,0-.3.1-.1,0-.2,0-.3.2,0,0-.2.1-.3.2,0,0-.2.1-.3.2,0,0,0,0-.1,0,0,0,0,0-.1,0,0,0,0,0-.1.1s0,0-.1.1,0,0-.1.1c0,0,0,0-.1.1s0,0-.1.1,0,0-.1.1,0,0-.1.1c0,0,0,0-.1.1,0,0,0,0-.1.1,0,0,0,0-.1.1,0,0,0,0-.1.1s0,0-.1.1c0,0,0,0,0,.1s0,0,0,.1c0,0-.1.2-.2.3,0,0-.1.2-.2.3,0,0-.1.2-.2.3,0,.1,0,.2-.1.3s0,.2-.1.3,0,.2-.1.3,0,.2,0,.3c0,.1,0,.2,0,.3,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2s0,.1,0,.2c0,0,0,.1,0,.2,0,0,0,.1,0,.2v.7c0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2s0,.1,0,.2c0,0,0,.1,0,.2,0,.1,0,.2,0,.3,0,.1,0,.2,0,.3,0,.1,0,.2.1.3s0,.2.1.3,0,.2.1.3c0,.1,0,.2.2.3s.1.2.2.3c0,0,.1.2.2.3,0,0,0,0,0,.2,0,0,0,0,0,.1,0,0,0,0,.1.1s0,0,.1.1,0,0,.1.1,0,0,.1.1c0,0,0,0,.1.1,0,0,0,0,.1.1s0,0,.1.1c0,0,0,0,.1.1s0,0,.1.1,0,0,.1.1c0,0,0,0,.1.1s0,0,.1.1c0,0,0,0,.1,0s0,0,.1,0c0,0,.2.1.3.2,0,0,.2.1.3.2,0,0,.2.1.3.2.1,0,.2,0,.3.1s.2,0,.3.1.2,0,.3.1.2,0,.3,0c.1,0,.2,0,.3,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0s.1,0,.2,0c0,0,.1,0,.2,0,0,0,.1,0,.2,0h.7c0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0s.1,0,.2,0c0,0,.1,0,.2,0,.1,0,.2,0,.3,0s.2,0,.3,0,.2,0,.3-.1.2,0,.3-.1c.1,0,.2,0,.3-.1.1,0,.2,0,.3-.2,0,0,.2-.1.3-.2,0,0,.2-.1.3-.2,0,0,0,0,.2,0,0,0,0,0,.1,0,0,0,0,0,.1-.1s0,0,.1-.1,0,0,.1-.1c0,0,0,0,.1-.1s0,0,.1-.1,0,0,.1-.1,0,0,.1-.1c0,0,0,0,.1-.1,0,0,0,0,.1-.1,0,0,0,0,.1-.1,0,0,0,0,.1-.1s0,0,.1-.1c0,0,0,0,0-.1s0,0,0-.2c0,0,.1-.2.2-.3,0,0,.1-.2.2-.3,0,0,.1-.2.2-.3,0-.1,0-.2.1-.3,0-.1,0-.2.1-.3s0-.2.1-.3,0-.2,0-.3c0-.1,0-.2,0-.3,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2s0-.1,0-.2c0,0,0-.1,0-.2,0,0,0-.1,0-.2v-.7h0Z"/>
+        </svg>
+      </button>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu" title="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div class="worker-source" draggable="true" data-role="crane" id="src-crane">
+      <div class="worker-avatar" id="avatar-crane"></div>
+      <div class="worker-tube">
+        <div class="worker-label">Crane<br>Operator</div>
+        <div class="progress-track"><div class="progress-fill" id="progress-crane"></div></div>
+        <div class="slots-count" id="count-crane">0 / 3</div>
+      </div>
+    </div>
+
+    <div class="worker-source" draggable="true" data-role="concreter" id="src-concreter">
+      <div class="worker-avatar" id="avatar-concreter"></div>
+      <div class="worker-tube">
+        <div class="worker-label">Concreter</div>
+        <div class="progress-track"><div class="progress-fill" id="progress-concreter"></div></div>
+        <div class="slots-count" id="count-concreter">0 / 3</div>
+      </div>
+    </div>
+
+    <div class="worker-source" draggable="true" data-role="carpenter" id="src-carpenter">
+      <div class="worker-avatar" id="avatar-carpenter"></div>
+      <div class="worker-tube">
+        <div class="worker-label">Carpenter</div>
+        <div class="progress-track"><div class="progress-fill" id="progress-carpenter"></div></div>
+        <div class="slots-count" id="count-carpenter">0 / 3</div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="feedback-overlay" id="feedbackOverlay" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle" aria-describedby="feedbackMsg feedbackHint" aria-hidden="true">
+  <div class="feedback-popup" id="feedbackPopup">
+    <button class="feedback-close" data-initial-focus aria-label="Close" onclick="closeFeedback()">×</button>
+    <div class="feedback-title" id="feedbackTitle">ATTENTION!</div>
+    <div class="feedback-avatar" id="feedbackAvatar"></div>
+    <div class="feedback-msg" id="feedbackMsg"></div>
+    <div class="feedback-hint" id="feedbackHint"></div>
+  </div>
+</div>
+
+<div class="weather-popup-overlay" id="weatherPopupOverlay" role="dialog" aria-modal="true" aria-labelledby="weatherPopupTitle" aria-describedby="weatherPopupText" aria-hidden="true">
+  <div class="weather-popup" id="weatherPopup">
+    <button class="weather-popup-close" data-initial-focus aria-label="Close weather info" onclick="closeWeatherPopup()">×</button>
+    <div class="weather-popup-title" id="weatherPopupTitle">Weather info</div>
+    <div class="weather-popup-body">
+      <div class="weather-popup-icon" id="weatherPopupIcon"></div>
+      <div class="weather-popup-text" id="weatherPopupText"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Help Modal -->
+<div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle" aria-describedby="helpSlideText" aria-hidden="true">
+  <div class="modal">
+    <h2 id="helpModalTitle">Game Rules</h2>
+    <div class="visually-hidden" id="helpSlideText" aria-live="polite"></div>
+    <div class="slide-container">
+      <div class="slide active" data-slide="0">
+        <p><strong>Your Goal:</strong> Schedule the Crane Operator, Concreter, and Carpenter to complete the construction project on time.</p>
+        <p>Each worker has specific tasks and requirements that must be followed.</p>
+      </div>
+      <div class="slide" data-slide="1">
+        <p><strong>Weather Matters:</strong></p>
+        <ul class="weather-list">
+          <li><img class="weather-icon small" src="images/weather_icons/thunder02.svg" alt="Storms"> Storms - Crane Operator & Concreter cannot work</li>
+          <li><img class="weather-icon small" src="images/weather_icons/wind01.svg" alt="Windy"> Windy - Crane Operator cannot work</li>
+        </ul>
+      </div>
+      <div class="slide" data-slide="2">
+        <p><strong>Work Order:</strong></p>
+        <ol>
+          <li>🏗️ Crane Operator must work first</li>
+          <li>🧱 Concreter works after the Crane Operator</li>
+          <li>🔨 Carpenter works last, after concrete sets (needs 1 day)</li>
+        </ol>
+      </div>
+      <div class="slide" data-slide="3">
+        <p><strong>How to Play:</strong></p>
+        <p>Select workers from the bottom bar, then place them in schedule slots that match the weather and work order requirements. You can do this with drag and drop, or with keyboard navigation using Enter or Space.</p>
+        <p>Each worker needs to fill all 3 of their slots to complete their work.</p>
+      </div>
+    </div>
+    <div class="modal-nav">
+      <button class="modal-btn" id="prevSlide">← Back</button>
+      <div class="slide-dots" id="slideDots"></div>
+      <button class="modal-btn modal-btn-primary" id="nextSlide" data-initial-focus>Next →</button>
+    </div>
+    <button class="modal-close" onclick="closeHelp()">×</button>
+  </div>
+</div>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay" role="dialog" aria-modal="true" aria-labelledby="successTitle" aria-describedby="successDesc" aria-hidden="true">
+  <div class="success-card">
+    <div class="success-icon">🎉</div>
+    <h2 id="successTitle">Great Job!</h2>
+    <p id="successDesc">You've successfully planned the crew schedule! All workers are assigned, the work order is correct, and the weather is safe.</p>
+    <button data-initial-focus onclick="closeSuccess(); resetGame();">Play Again</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="visually-hidden" id="onboardingStatus" role="status" aria-live="polite"></div>
+
+<!-- Drag ghost -->
+<div class="drag-ghost" id="dragGhost"></div>
+
+<!-- Stretchy band SVG overlay -->
+<svg class="band-svg" id="bandSvg" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bandGrad" x1="0" y1="0" x2="0" y2="1" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" id="bandStop0" stop-color="#e8845a" stop-opacity="1"/>
+      <stop offset="25%" id="bandStop1" stop-color="#e8845a" stop-opacity="0.75"/>
+      <stop offset="50%" id="bandStop2" stop-color="#f3b07f" stop-opacity="0.5"/>
+      <stop offset="75%" id="bandStop3" stop-color="#f7c9a4" stop-opacity="0"/>
+      <stop offset="100%" id="bandStop4" stop-color="#f7c9a4" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+  <path id="bandPath" d="" fill="url(#bandGrad)"/>
+</svg>
+
+<script>
+// ============================================================
+//  DATA
+// ============================================================
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const dayIndex = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4 };
+const dayFromIndex = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const slotLabels = ['7AM-11AM', '11AM-2PM', '2PM-6PM'];
+const slotNames = ['morning', 'midday', 'afternoon'];
+
+// Weather per cell
+const weatherData = {
+  'Mon-0': 'partly-cloudy', 'Mon-1': 'partly-cloudy', 'Mon-2': 'windy',
+  'Tue-0': 'cloudy',        'Tue-1': 'thunder',       'Tue-2': 'thunder',
+  'Wed-0': 'sunny',         'Wed-1': 'cloudy',        'Wed-2': 'cloudy',
+  'Thu-0': 'partly-cloudy', 'Thu-1': 'sunny',         'Thu-2': 'night',
+  'Fri-0': 'sunny',         'Fri-1': 'partly-cloudy', 'Fri-2': 'night'
+};
+
+// Worker definitions (matching the reference game logic)
+const workers = {
+  crane: {
+    name: 'Crane Operator',
+    blockedWeather: ['windy', 'thunder'],
+    slotsNeeded: 3
+  },
+  concreter: {
+    name: 'Concreter',
+    blockedWeather: ['windy', 'thunder'],
+    slotsNeeded: 3,
+    needsFullDay: true
+  },
+  carpenter: {
+    name: 'Carpenter',
+    blockedWeather: [],
+    slotsNeeded: 3
+  }
+};
+
+const weatherNames = {
+  'windy': 'high winds',
+  'thunder': 'storms',
+  'night': 'nighttime'
+};
+
+const weatherMeta = {
+  'sunny': { label: 'Sunny', src: 'images/weather_icons/sunny02.svg' },
+  'partly-cloudy': { label: 'Partly cloudy', src: 'images/weather_icons/partlycloudy02.svg' },
+  'cloudy': { label: 'Cloudy', src: 'images/weather_icons/cloudy01.svg' },
+  'thunder': { label: 'Storms', src: 'images/weather_icons/thunder02.svg' },
+  'windy': { label: 'Windy', src: 'images/weather_icons/wind01.svg' },
+  'night': { label: 'Night', src: 'images/weather_icons/moon.svg' }
+};
+
+const weatherDescriptions = {
+  'sunny': 'Sunny: Good conditions for all roles.',
+  'partly-cloudy': 'Partly cloudy: Good conditions for all roles.',
+  'cloudy': 'Cloudy: Good conditions for all roles.',
+  'thunder': 'Storms: Crane Operator and Concreter cannot work.',
+  'windy': 'High winds: Crane Operator and Concreter cannot work.',
+  'night': 'Evening conditions: Work can continue if other constraints are met.'
+};
+
+const roleColors = {
+  crane: '#E39F58',
+  concreter: '#E46F5B',
+  carpenter: '#E8C66C'
+};
+
+// ============================================================
+//  GAME STATE
+// ============================================================
+const gameState = {
+  schedule: {},        // 'Day-Slot' -> workerType
+  craneSlotsUsed: 0,
+  concreterSlotsUsed: 0,
+  carpenterSlotsUsed: 0,
+  concreteDay: null,   // day name where concrete is poured
+  settingDay: null     // day name where concrete sets (day after pour)
+};
+
+let keyboardSelectedRole = null;
+
+// ============================================================
+//  SVG ICONS (same as before)
+// ============================================================
+function weatherSVG(type) {
+  const meta = weatherMeta[type];
+  if (!meta) return '';
+  const tip = weatherDescriptions[type] || meta.label;
+  return `<img class="weather-icon" src="${meta.src}" alt="" aria-hidden="true" title="${tip}" data-weather="${type}">`;
+}
+
+function weatherPopupIconSVG(type) {
+  const meta = weatherMeta[type];
+  if (!meta) return '';
+  return `<img src="${meta.src}" alt="" aria-hidden="true">`;
+}
+
+function workerSVG(role) {
+  const avatars = {
+    'crane': `<img src="images/character_coins/craneoperator_coin.svg" alt="" aria-hidden="true">`,
+    'concreter': `<img src="images/character_coins/concreter_coin.svg" alt="" aria-hidden="true">`,
+    'carpenter': `<img src="images/character_coins/carpenter_coin.svg" alt="" aria-hidden="true">`
+  };
+  return avatars[role] || '';
+}
+
+// ============================================================
+//  BUILD GRID
+// ============================================================
+function buildGrid() {
+  const grid = document.getElementById('scheduleGrid');
+  const header = document.querySelector('.time-header');
+  const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+
+  grid.innerHTML = '';
+  header.innerHTML = '<span></span>';
+
+  if (isDesktop) {
+    // Desktop: days in header row, time in first column
+    days.forEach(day => {
+      const el = document.createElement('div');
+      el.className = 'time-label';
+      el.textContent = day;
+      header.appendChild(el);
+    });
+
+    slotLabels.forEach((label, si) => {
+      const row = document.createElement('div');
+      row.className = 'day-row';
+      row.innerHTML = `<div class="day-label">${label}</div>`;
+      days.forEach(day => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.day = day;
+        cell.dataset.slot = si;
+        const key = `${day}-${si}`;
+        cell.innerHTML = weatherSVG(weatherData[key]);
+        setupCellAccessibility(cell);
+        row.appendChild(cell);
+      });
+      grid.appendChild(row);
+    });
+    return;
+  }
+
+  // Mobile/Tablet: time in header row, days in first column
+  slotLabels.forEach(label => {
+    const el = document.createElement('div');
+    el.className = 'time-label';
+    el.textContent = label;
+    header.appendChild(el);
+  });
+
+  days.forEach(day => {
+    const row = document.createElement('div');
+    row.className = 'day-row';
+    row.innerHTML = `<div class="day-label">${day}</div>`;
+    for (let si = 0; si < 3; si++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.day = day;
+      cell.dataset.slot = si;
+      const key = `${day}-${si}`;
+      cell.innerHTML = weatherSVG(weatherData[key]);
+      setupCellAccessibility(cell);
+      row.appendChild(cell);
+    }
+    grid.appendChild(row);
+  });
+}
+
+function setAvatars() {
+  document.getElementById('avatar-crane').innerHTML = workerSVG('crane');
+  document.getElementById('avatar-concreter').innerHTML = workerSVG('concreter');
+  document.getElementById('avatar-carpenter').innerHTML = workerSVG('carpenter');
+}
+
+// ============================================================
+//  PROGRESS & UI UPDATES
+// ============================================================
+function updateProgress(role) {
+  const count = role === 'crane' ? gameState.craneSlotsUsed :
+                role === 'concreter' ? gameState.concreterSlotsUsed :
+                gameState.carpenterSlotsUsed;
+  const pct = (count / 3) * 100;
+
+  document.getElementById(`progress-${role}`).style.width = pct + '%';
+  document.getElementById(`count-${role}`).textContent = `${count} / 3`;
+
+  const src = document.getElementById(`src-${role}`);
+  if (count >= 3) {
+    src.classList.add('completed');
+    src.setAttribute('draggable', 'false');
+    src.setAttribute('aria-disabled', 'true');
+  } else {
+    src.classList.remove('completed');
+    src.setAttribute('draggable', 'true');
+    src.setAttribute('aria-disabled', 'false');
+  }
+  updateWorkerAccessibility(role);
+}
+
+function updateAllProgress() {
+  updateProgress('crane');
+  updateProgress('concreter');
+  updateProgress('carpenter');
+}
+
+// ============================================================
+//  FEEDBACK SYSTEM
+// ============================================================
+function showFeedback(role, message, hint) {
+  const w = workers[role];
+  const popup = document.getElementById('feedbackPopup');
+  popup.style.setProperty('--role-color', roleColors[role]);
+  const roleImg = role === 'crane' ? 'craneoperator.svg' : `${role}.svg`;
+  document.getElementById('feedbackAvatar').innerHTML = `<img class="feedback-character" src="images/character_coins/${roleImg}" alt="" aria-hidden="true">`;
+  document.getElementById('feedbackMsg').textContent = message;
+  document.getElementById('feedbackHint').textContent = hint || '';
+  document.getElementById('feedbackOverlay').classList.add('active');
+  document.getElementById('feedbackOverlay').setAttribute('aria-hidden', 'false');
+  updatePopupFocusState();
+}
+
+function closeFeedback() {
+  document.getElementById('feedbackOverlay').classList.remove('active');
+  document.getElementById('feedbackOverlay').setAttribute('aria-hidden', 'true');
+  updatePopupFocusState();
+}
+
+document.getElementById('feedbackOverlay').addEventListener('click', e => {
+  if (e.target.id === 'feedbackOverlay') closeFeedback();
+});
+
+function closeWeatherPopup() {
+  document.getElementById('weatherPopupOverlay').classList.remove('active');
+  document.getElementById('weatherPopupOverlay').setAttribute('aria-hidden', 'true');
+  updatePopupFocusState();
+}
+
+function showWeatherPopup(type, day, slot) {
+  const titleEl = document.getElementById('weatherPopupTitle');
+  const iconEl = document.getElementById('weatherPopupIcon');
+  const textEl = document.getElementById('weatherPopupText');
+  const meta = weatherMeta[type];
+  const label = meta ? meta.label : 'Weather';
+  titleEl.textContent = `${day} ${slotLabels[slot]} • ${label}`;
+  iconEl.innerHTML = weatherPopupIconSVG(type);
+  textEl.textContent = weatherDescriptions[type] || `${label} conditions.`;
+  document.getElementById('weatherPopupOverlay').classList.add('active');
+  document.getElementById('weatherPopupOverlay').setAttribute('aria-hidden', 'false');
+  updatePopupFocusState();
+}
+
+function isCoarsePointer() {
+  return window.matchMedia('(hover: none), (pointer: coarse)').matches;
+}
+
+function ensureWeatherHoverTip() {
+  let el = document.getElementById('weatherHoverTip');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'weatherHoverTip';
+    el.className = 'weather-hover-tip';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function hideWeatherHoverTip() {
+  const el = document.getElementById('weatherHoverTip');
+  if (el) el.classList.remove('show');
+}
+
+function showWeatherHoverTip(type, x, y) {
+  if (isCoarsePointer()) return;
+  const text = weatherDescriptions[type];
+  if (!text) return;
+  const tip = ensureWeatherHoverTip();
+  tip.textContent = text;
+  const margin = 10;
+  const maxLeft = window.innerWidth - tip.offsetWidth - margin;
+  const left = Math.max(margin, Math.min(x + 12, maxLeft));
+  let top = y - tip.offsetHeight - 14;
+  if (top < margin) top = y + 16;
+  tip.style.left = `${left}px`;
+  tip.style.top = `${top}px`;
+  tip.classList.add('show');
+}
+
+function weatherTypeFromEventTarget(target) {
+  const cell = target?.closest?.('.cell');
+  if (!cell) return null;
+  const key = `${cell.dataset.day}-${cell.dataset.slot}`;
+  const type = weatherData[key];
+  if (!type) return null;
+  return { cell, type };
+}
+
+document.getElementById('weatherPopupOverlay').addEventListener('click', e => {
+  if (e.target.id === 'weatherPopupOverlay') closeWeatherPopup();
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+const popupIds = ['feedbackOverlay', 'weatherPopupOverlay', 'helpModal', 'successOverlay', 'welcomeOverlay'];
+let activePopup = null;
+let lastFocusedBeforePopup = null;
+
+function isPopupVisible(el) {
+  if (!el) return false;
+  const style = window.getComputedStyle(el);
+  return style.display !== 'none' && style.visibility !== 'hidden' && !el.hasAttribute('hidden');
+}
+
+function getActivePopup() {
+  return popupIds
+    .map(id => document.getElementById(id))
+    .find(el => isPopupVisible(el) && el.getAttribute('aria-hidden') !== 'true') || null;
+}
+
+function inertElement(el, inert, options = {}) {
+  if (!el) return;
+  el.inert = inert;
+  if (inert) {
+    if (!el.hasAttribute('data-popup-aria-hidden')) {
+      el.setAttribute('data-popup-aria-hidden', el.getAttribute('aria-hidden') || '');
+    }
+    el.setAttribute('aria-hidden', 'true');
+    return;
+  }
+  if (el.hasAttribute('data-popup-aria-hidden')) {
+    const previous = el.getAttribute('data-popup-aria-hidden');
+    if (!options.keepCurrentAriaHidden) {
+      if (previous) el.setAttribute('aria-hidden', previous);
+      else el.removeAttribute('aria-hidden');
+    }
+    el.removeAttribute('data-popup-aria-hidden');
+  }
+}
+
+function getFocusableElements(container) {
+  if (!container) return [];
+  const selector = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])'
+  ].join(',');
+  return [...container.querySelectorAll(selector)]
+    .filter(el => !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+}
+
+function setPageInertForPopup(popup) {
+  [...document.body.children].forEach(child => {
+    const shouldInert = !!popup && child !== popup;
+    if (shouldInert) {
+      inertElement(child, true);
+    } else if (child.hasAttribute('data-popup-aria-hidden')) {
+      inertElement(child, false, { keepCurrentAriaHidden: child === popup });
+    } else if (!popup) {
+      child.inert = false;
+    }
+  });
+}
+
+function setOnboardingIsolation(active) {
+  ['navDrawer', 'navScrim', 'welcomeOverlay', 'orientationOverlay', 'helpModal', 'feedbackOverlay', 'weatherPopupOverlay', 'successOverlay'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) inertElement(el, active);
+  });
+}
+
+function focusPopup(popup) {
+  const currentInside = popup.contains(document.activeElement);
+  if (currentInside) return;
+  const preferred = popup.querySelector('[data-initial-focus]');
+  const focusables = getFocusableElements(popup);
+  const target = preferred || focusables[0] || popup;
+  if (!target.hasAttribute('tabindex') && target === popup) target.setAttribute('tabindex', '-1');
+  target.focus({ preventScroll: true });
+}
+
+function updatePopupFocusState() {
+  const popup = getActivePopup();
+  if (popup && popup !== activePopup) {
+    lastFocusedBeforePopup = document.activeElement;
+  }
+  activePopup = popup;
+  setPageInertForPopup(activePopup);
+  if (activePopup) {
+    window.setTimeout(() => focusPopup(activePopup), 0);
+  } else if (lastFocusedBeforePopup && typeof lastFocusedBeforePopup.focus === 'function' && document.contains(lastFocusedBeforePopup)) {
+    lastFocusedBeforePopup.focus({ preventScroll: true });
+    lastFocusedBeforePopup = null;
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (!activePopup) return;
+
+  if (e.key === 'Escape') {
+    if (activePopup.id === 'feedbackOverlay') closeFeedback();
+    else if (activePopup.id === 'weatherPopupOverlay') closeWeatherPopup();
+    else if (activePopup.id === 'helpModal') closeHelp();
+    return;
+  }
+
+  if (e.key !== 'Tab') return;
+
+  const focusables = getFocusableElements(activePopup);
+  if (!focusables.length) {
+    e.preventDefault();
+    activePopup.focus({ preventScroll: true });
+    return;
+  }
+
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+});
+
+function countForRole(role) {
+  return role === 'crane' ? gameState.craneSlotsUsed :
+         role === 'concreter' ? gameState.concreterSlotsUsed :
+         gameState.carpenterSlotsUsed;
+}
+
+function slotAccessibleName(cell) {
+  const day = cell.dataset.day;
+  const slot = parseInt(cell.dataset.slot, 10);
+  const key = `${day}-${slot}`;
+  const weather = weatherData[key];
+  const weatherLabel = weatherMeta[weather]?.label || 'weather unknown';
+  const assigned = gameState.schedule[key];
+  if (assigned === 'setting') {
+    return `${day}, ${slotLabels[slot]}, concrete setting day. Unavailable.`;
+  }
+  if (assigned) {
+    return `${day}, ${slotLabels[slot]}, ${weatherLabel}. Assigned to ${workers[assigned].name}. Press Enter to move this worker, or Delete to remove.`;
+  }
+  if (keyboardSelectedRole) {
+    return `${day}, ${slotLabels[slot]}, ${weatherLabel}, empty. Press Enter to place ${workers[keyboardSelectedRole].name}.`;
+  }
+  return `${day}, ${slotLabels[slot]}, ${weatherLabel}, empty. Select a worker first, then press Enter here to place them.`;
+}
+
+function setupCellAccessibility(cell) {
+  cell.setAttribute('role', 'button');
+  cell.setAttribute('tabindex', '0');
+  cell.setAttribute('aria-describedby', 'onboardingStatus');
+  if (!cell.dataset.keyboardReady) {
+    cell.addEventListener('keydown', handleCellKeydown);
+    cell.dataset.keyboardReady = 'true';
+  }
+  updateCellAccessibility(cell);
+}
+
+function updateCellAccessibility(cell) {
+  if (!cell) return;
+  cell.setAttribute('aria-label', slotAccessibleName(cell));
+  const occupied = gameState.schedule[`${cell.dataset.day}-${cell.dataset.slot}`];
+  cell.setAttribute('aria-disabled', occupied === 'setting' ? 'true' : 'false');
+}
+
+function updateAllCellAccessibility() {
+  document.querySelectorAll('.cell').forEach(updateCellAccessibility);
+}
+
+function updateWorkerAccessibility(role) {
+  const src = document.getElementById(`src-${role}`);
+  if (!src) return;
+  const count = countForRole(role);
+  const selected = keyboardSelectedRole === role;
+  src.setAttribute('role', 'button');
+  src.setAttribute('tabindex', '0');
+  src.setAttribute('aria-pressed', selected ? 'true' : 'false');
+  src.setAttribute('aria-describedby', 'onboardingStatus');
+  src.classList.toggle('keyboard-selected', selected);
+  const state = count >= 3 ? 'complete' : `${count} of 3 shifts assigned`;
+  const selectedText = selected ? ' Selected.' : '';
+  src.setAttribute('aria-label', `${workers[role].name}. ${state}.${selectedText} Press Enter to select this worker.`);
+}
+
+function updateAllWorkerAccessibility() {
+  Object.keys(workers).forEach(updateWorkerAccessibility);
+}
+
+function selectKeyboardRole(role) {
+  if (!canDragRole(role)) {
+    showToast(`${workers[role].name} already has 3 shifts assigned.`);
+    return;
+  }
+  keyboardSelectedRole = role;
+  stopIdleAnimation();
+  if (onboarding.step === 1 && role === onboarding.role) advanceOnboardingToDrop(true);
+  updateAllWorkerAccessibility();
+  updateAllCellAccessibility();
+  showToast(`${workers[role].name} selected. Choose a schedule slot.`);
+}
+
+function clearKeyboardSelection() {
+  if (!keyboardSelectedRole) return;
+  keyboardSelectedRole = null;
+  updateAllWorkerAccessibility();
+  updateAllCellAccessibility();
+  showToast('Worker selection cleared.');
+}
+
+function handleWorkerKeydown(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    selectKeyboardRole(e.currentTarget.dataset.role);
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    clearKeyboardSelection();
+  }
+}
+
+function handleCellKeydown(e) {
+  const cell = e.currentTarget;
+  const key = `${cell.dataset.day}-${cell.dataset.slot}`;
+  const assigned = gameState.schedule[key];
+
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    clearKeyboardSelection();
+    return;
+  }
+
+  if ((e.key === 'Delete' || e.key === 'Backspace') && assigned && assigned !== 'setting') {
+    e.preventDefault();
+    removeWorker(assigned, cell);
+    return;
+  }
+
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  e.preventDefault();
+
+  if (assigned === 'setting') {
+    showToast('Concrete is setting in this slot.');
+    return;
+  }
+
+  if (assigned) {
+    removeWorker(assigned, cell);
+    keyboardSelectedRole = assigned;
+    updateAllWorkerAccessibility();
+    updateAllCellAccessibility();
+    showToast(`${workers[assigned].name} selected. Choose a new slot.`);
+    return;
+  }
+
+  if (!keyboardSelectedRole) {
+    showToast('Select a worker first.');
+    return;
+  }
+
+  const placed = attemptPlacement(keyboardSelectedRole, cell.dataset.day, parseInt(cell.dataset.slot, 10), cell);
+  if (placed && !canDragRole(keyboardSelectedRole)) {
+    keyboardSelectedRole = null;
+  }
+  updateAllWorkerAccessibility();
+  updateAllCellAccessibility();
+}
+
+// ============================================================
+//  HELPER FUNCTIONS (from reference game logic)
+// ============================================================
+
+// Find days where concreter can work a full day (all 3 slots: good weather + empty)
+function findValidConcreteDays(extraOccupied = {}) {
+  const validDays = [];
+  const blockers = workers.concreter.blockedWeather;
+
+  for (let di = 0; di < 4; di++) { // Max day index 3 (Thu) because need next day for setting
+    const day = dayFromIndex[di];
+    const nextDay = dayFromIndex[di + 1];
+    let valid = true;
+
+    // Check all 3 slots have good weather and are free
+    for (let s = 0; s < 3; s++) {
+      const key = `${day}-${s}`;
+      const w = weatherData[key];
+      if (blockers.includes(w) || gameState.schedule[key] || extraOccupied[key]) {
+        valid = false;
+        break;
+      }
+    }
+
+    // Check next day is free for setting
+    if (valid) {
+      for (let s = 0; s < 3; s++) {
+        const key = `${nextDay}-${s}`;
+        if (gameState.schedule[key] || extraOccupied[key]) {
+          valid = false;
+          break;
+        }
+      }
+    }
+
+    if (valid) validDays.push(di);
+  }
+  return validDays;
+}
+
+// Count available crane slots before a given day index
+function countAvailableCraneSlotsBeforeDay(beforeDayIdx) {
+  let count = 0;
+  const blockers = workers.crane.blockedWeather;
+  for (let di = 0; di < beforeDayIdx; di++) {
+    const day = dayFromIndex[di];
+    for (let s = 0; s < 3; s++) {
+      const key = `${day}-${s}`;
+      if (!gameState.schedule[key] && !blockers.includes(weatherData[key])) {
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
+// Count placed crane slots before a given day index
+function countPlacedCraneSlotsBeforeDay(beforeDayIdx) {
+  let count = 0;
+  for (let di = 0; di < beforeDayIdx; di++) {
+    const day = dayFromIndex[di];
+    for (let s = 0; s < 3; s++) {
+      if (gameState.schedule[`${day}-${s}`] === 'crane') count++;
+    }
+  }
+  return count;
+}
+
+// Find valid concrete days that finish before carpenter starts
+function findValidConcreteDaysBeforeDay(beforeDayIdx) {
+  const validDays = [];
+  const blockers = workers.concreter.blockedWeather;
+  const maxConcreteDayIdx = beforeDayIdx - 2; // Need pour day + setting day before carpenter
+
+  for (let di = 0; di <= Math.min(maxConcreteDayIdx, 3); di++) {
+    const day = dayFromIndex[di];
+    const nextDay = dayFromIndex[di + 1];
+    let valid = true;
+
+    for (let s = 0; s < 3; s++) {
+      const key = `${day}-${s}`;
+      if (blockers.includes(weatherData[key]) || gameState.schedule[key]) {
+        valid = false;
+        break;
+      }
+    }
+
+    if (valid) {
+      for (let s = 0; s < 3; s++) {
+        if (gameState.schedule[`${nextDay}-${s}`]) { valid = false; break; }
+      }
+    }
+
+    if (valid) {
+      const craneAvail = countAvailableCraneSlotsBeforeDay(di) + countPlacedCraneSlotsBeforeDay(di);
+      if (craneAvail < 3) valid = false;
+    }
+
+    if (valid) validDays.push(di);
+  }
+  return validDays;
+}
+
+// Count available carpenter slots after a given day index
+function countCarpenterSlotsAfterDay(afterDayIdx, extraOccupied = {}) {
+  let count = 0;
+  for (let di = afterDayIdx + 1; di < 5; di++) {
+    const day = dayFromIndex[di];
+    for (let s = 0; s < 3; s++) {
+      const key = `${day}-${s}`;
+      // Count slots already assigned to carpenter OR still available
+      if (gameState.schedule[key] === 'carpenter' || (!gameState.schedule[key] && !extraOccupied[key])) count++;
+    }
+  }
+  return count;
+}
+
+// ============================================================
+//  PLACEMENT LOGIC
+// ============================================================
+function attemptPlacement(role, day, slotNum, cellEl) {
+  const worker = workers[role];
+  const di = dayIndex[day];
+  const slotKey = `${day}-${slotNum}`;
+  const weather = weatherData[slotKey];
+
+  // --- Already occupied? ---
+  if (gameState.schedule[slotKey]) {
+    showFeedback(role, "This slot is already taken! Choose an empty slot.");
+    return false;
+  }
+
+  // --- Worker already done? ---
+  const used = role === 'crane' ? gameState.craneSlotsUsed :
+               role === 'concreter' ? gameState.concreterSlotsUsed :
+               gameState.carpenterSlotsUsed;
+  if (used >= 3) {
+    showFeedback(role, "I've already completed my 3 shifts!");
+    return false;
+  }
+
+  // --- Weather check ---
+  if (worker.blockedWeather.includes(weather)) {
+    showFeedback(role,
+      `I can't work in ${weatherNames[weather]}! It's too dangerous. Find me a slot with better weather.`,
+      `Weather blockers include wind and storms.`
+    );
+    return false;
+  }
+
+  // ============================
+  //  CONCRETER SPECIAL RULES
+  // ============================
+  if (role === 'concreter') {
+    // Must stay on the same day once started
+    if (gameState.concreteDay !== null && day !== gameState.concreteDay) {
+      showFeedback(role,
+        `I already started on ${gameState.concreteDay}. I need the other slots on that same day.`,
+        "Concreter needs all 3 slots on one day."
+      );
+      return false;
+    }
+
+    // Check all 3 slots on this day are free of other workers
+    for (let s = 0; s < 3; s++) {
+      const key = `${day}-${s}`;
+      if (gameState.schedule[key] && gameState.schedule[key] !== 'concreter') {
+        showFeedback(role,
+          `I can't work on ${day} — the ${slotNames[s]} slot is already taken! I need all 3 slots free.`,
+          "Concreter needs a full day to pour."
+        );
+        return false;
+      }
+    }
+
+    // Check all 3 slots have good weather
+    for (let s = 0; s < 3; s++) {
+      const key = `${day}-${s}`;
+      const w = weatherData[key];
+      if (worker.blockedWeather.includes(w)) {
+        showFeedback(role,
+          `I can't work on ${day} — there's ${weatherNames[w]} in the ${slotNames[s]}! I need good weather all day.`,
+          "Concreter needs safe weather all day."
+        );
+        return false;
+      }
+    }
+
+    // Need next day for setting
+    if (di >= 4) {
+      showFeedback(role,
+        "I can't pour on Friday — there's no day after for the concrete to set!",
+        "Concrete needs one full day to set after pouring."
+      );
+      return false;
+    }
+
+    const nextDay = dayFromIndex[di + 1];
+
+    // Check setting day is free
+    for (let s = 0; s < 3; s++) {
+      const key = `${nextDay}-${s}`;
+      if (gameState.schedule[key]) {
+        showFeedback(role,
+          `I can't pour on ${day} — the concrete needs ${nextDay} to set, but the ${slotNames[s]} slot is already taken!`,
+          "No one can work the day after concrete is poured."
+        );
+        return false;
+      }
+    }
+
+    // Check enough crane slots exist before this day
+    const craneAvail = countAvailableCraneSlotsBeforeDay(di) + countPlacedCraneSlotsBeforeDay(di);
+    if (craneAvail < 3) {
+      showFeedback(role,
+        `There aren't enough slots before ${day} for the Crane Operator to finish!`,
+        "Work Order: Crane Operator → Concreter → Carpenter"
+      );
+      return false;
+    }
+
+    // Ensure no crane slots are scheduled on/after the concrete day
+    for (const [key, val] of Object.entries(gameState.schedule)) {
+      if (val !== 'crane') continue;
+      const [d] = key.split('-');
+      if (dayIndex[d] >= di) {
+        showFeedback(role,
+          `The Crane Operator must finish before ${day}. Move any crane slots after that day.`,
+          "Work Order: Crane Operator → Concreter → Carpenter"
+        );
+        return false;
+      }
+    }
+
+    // Ensure no carpenter slots are scheduled on/before the setting day
+    const settingIdx = di + 1;
+    for (const [key, val] of Object.entries(gameState.schedule)) {
+      if (val !== 'carpenter') continue;
+      const [d] = key.split('-');
+      if (dayIndex[d] <= settingIdx) {
+        showFeedback(role,
+          `The Carpenter must start after the concrete sets on ${dayFromIndex[settingIdx]}.`,
+          "Carpenter starts after the concrete has set."
+        );
+        return false;
+      }
+    }
+
+    // Check enough carpenter slots after setting day
+    if (gameState.carpenterSlotsUsed < 3) {
+      const carpSlots = countCarpenterSlotsAfterDay(di + 1);
+      if (carpSlots < 3) {
+        showFeedback(role,
+          `If I pour on ${day}, there won't be enough slots left for the Carpenter after it sets on ${nextDay}!`,
+          "Work Order: Crane → Concreter (full day + setting) → Carpenter (3 slots)"
+        );
+        return false;
+      }
+    }
+
+    // --- PLACE SINGLE SLOT ---
+    if (gameState.concreteDay === null) gameState.concreteDay = day;
+    gameState.schedule[slotKey] = 'concreter';
+    addWorkerToCell(cellEl, 'concreter');
+    gameState.concreterSlotsUsed++;
+
+    // If all 3 concreter slots are placed, mark setting day
+    if (gameState.concreterSlotsUsed >= 3) {
+      gameState.settingDay = nextDay;
+      for (let s = 0; s < 3; s++) {
+        gameState.schedule[`${nextDay}-${s}`] = 'setting';
+        const target = document.querySelector(`.cell[data-day="${nextDay}"][data-slot="${s}"]`);
+        markAsSettingCell(target);
+      }
+      showToast(`${workers.concreter.name} booked for ${day}!`);
+    } else {
+      showToast(`${workers.concreter.name} assigned to ${day} ${slotLabels[slotNum]}!`);
+    }
+
+    updateAllProgress();
+    checkCompletion();
+    lastPlacementAt = Date.now();
+    return true;
+  }
+
+  // ============================
+  //  CRANE RULES
+  // ============================
+  if (role === 'crane') {
+    // If concrete is placed, crane must be before concrete day
+    if (gameState.concreteDay !== null) {
+      if (di >= dayIndex[gameState.concreteDay]) {
+        showFeedback(role,
+          `I need to finish before ${gameState.concreteDay} when the Concreter starts!`,
+          "Work Order: Crane Operator → Concreter → Carpenter"
+        );
+        return false;
+      }
+    }
+
+    // If concrete not placed, check this doesn't block concrete + carpenter
+    if (gameState.concreteDay === null) {
+      const simulated = { [slotKey]: 'crane' };
+      const validCDays = findValidConcreteDays(simulated);
+      if (validCDays.length === 0) {
+        showFeedback(role,
+          "If I work here, there won't be a full day left for the Concreter!",
+          "Concreter needs a full day with good weather + the next day for setting."
+        );
+        return false;
+      }
+
+      const earliest = Math.min(...validCDays);
+      const carpSlots = countCarpenterSlotsAfterDay(earliest + 1, simulated);
+      if (carpSlots < 3) {
+        showFeedback(role,
+          "If I work here, there won't be enough slots for the Carpenter!",
+          "Work Order: Crane → Concreter (full day + setting) → Carpenter (3 slots)"
+        );
+        return false;
+      }
+    }
+  }
+
+  // ============================
+  //  CARPENTER RULES
+  // ============================
+  if (role === 'carpenter') {
+    if (gameState.settingDay !== null) {
+      if (di <= dayIndex[gameState.settingDay]) {
+        showFeedback(role,
+          `I can't work on ${day} — the concrete is still setting! I need to work after ${gameState.settingDay}.`,
+          "Concrete needs a full day to set before Carpenter can start."
+        );
+        return false;
+      }
+    } else if (gameState.concreteDay !== null) {
+      const pendingSetIdx = dayIndex[gameState.concreteDay] + 1;
+      if (di <= pendingSetIdx) {
+        showFeedback(role,
+          `I can't work on ${day} — the concrete day is ${gameState.concreteDay} and it needs the next day to set.`,
+          "Carpenter starts after the concrete has set."
+        );
+        return false;
+      }
+    } else {
+      // Concrete not placed yet — check room for it
+      const validDays = findValidConcreteDaysBeforeDay(di);
+      if (validDays.length === 0) {
+        showFeedback(role,
+          `If I work on ${day}, there won't be room for the Concreter to pour and let concrete set before I start!`,
+          "Work Order: Crane → Concreter (full day + setting) → Carpenter"
+        );
+        return false;
+      }
+    }
+  }
+
+  // ============================
+  //  NORMAL PLACEMENT (crane / carpenter)
+  // ============================
+  gameState.schedule[slotKey] = role;
+  addWorkerToCell(cellEl, role);
+
+  if (role === 'crane') gameState.craneSlotsUsed++;
+  else if (role === 'carpenter') gameState.carpenterSlotsUsed++;
+
+  updateAllProgress();
+  showToast(`${workers[role].name} assigned to ${day} ${slotLabels[slotNum]}!`);
+  maybeFinishOnboarding(role, day, slotNum);
+  checkCompletion();
+  lastPlacementAt = Date.now();
+  return true;
+}
+
+// ============================================================
+//  CELL RENDERING
+// ============================================================
+function addWorkerToCell(cell, role) {
+  // Clear existing weather
+  cell.innerHTML = '';
+
+  const img = document.createElement('div');
+  img.className = 'worker-in-cell';
+  img.dataset.role = role;
+  img.innerHTML = workerSVG(role);
+  img.setAttribute('draggable', 'false');
+  img.style.background = roleColors[role];
+  img.style.borderColor = '#1a2744';
+
+  // Weather icon (small, below worker)
+  const day = cell.dataset.day;
+  const slot = cell.dataset.slot;
+  const wKey = `${day}-${slot}`;
+  const weatherSmall = document.createElement('div');
+  weatherSmall.innerHTML = weatherSVG(weatherData[wKey]);
+  const imgEl = weatherSmall.querySelector('img');
+  if (imgEl) imgEl.classList.add('small');
+
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'remove-btn';
+  removeBtn.innerHTML = '✕';
+  removeBtn.setAttribute('aria-label', `Remove ${workers[role].name} from ${day} ${slotLabels[slot]}`);
+  removeBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    removeWorker(role, cell);
+  });
+
+  cell.appendChild(removeBtn);
+  cell.appendChild(img);
+  cell.appendChild(weatherSmall);
+  cell.style.borderStyle = 'solid';
+  cell.style.borderColor = '#22c55e';
+  cell.style.background = roleColors[role] + '18';
+  updateCellAccessibility(cell);
+}
+
+function markAsSettingCell(cell) {
+  cell.innerHTML = `
+    <div class="setting-icon">⏳</div>
+    <div class="setting-label">Concrete<br>Setting</div>
+  `;
+  cell.classList.add('setting-cell');
+  cell.style.borderStyle = 'solid';
+  updateCellAccessibility(cell);
+}
+
+function resetCellAppearance(cell) {
+  const day = cell.dataset.day;
+  const slot = cell.dataset.slot;
+  cell.innerHTML = weatherSVG(weatherData[`${day}-${slot}`]);
+  cell.className = 'cell';
+  cell.style.borderStyle = '';
+  cell.style.borderColor = '';
+  cell.style.background = '';
+  cell.dataset.day = day;
+  cell.dataset.slot = slot;
+  setupCellAccessibility(cell);
+}
+
+// ============================================================
+//  REMOVE WORKER
+// ============================================================
+function removeWorker(role, cell) {
+  // Concreter: remove full day + setting day
+  if (role === 'concreter') {
+    const pourDay = gameState.concreteDay;
+    const setDay = gameState.settingDay;
+
+    if (pourDay) {
+      for (let s = 0; s < 3; s++) {
+        delete gameState.schedule[`${pourDay}-${s}`];
+        const c = document.querySelector(`.cell[data-day="${pourDay}"][data-slot="${s}"]`);
+        if (c) resetCellAppearance(c);
+      }
+    }
+
+    if (setDay) {
+      for (let s = 0; s < 3; s++) {
+        delete gameState.schedule[`${setDay}-${s}`];
+        const c = document.querySelector(`.cell[data-day="${setDay}"][data-slot="${s}"]`);
+        if (c) resetCellAppearance(c);
+      }
+    }
+
+    gameState.concreterSlotsUsed = 0;
+    gameState.concreteDay = null;
+    gameState.settingDay = null;
+    updateAllProgress();
+    updateAllCellAccessibility();
+    showToast('Concreter removed — full day cleared.');
+    return;
+  }
+
+  // Crane or Carpenter: remove single slot
+  const day = cell.dataset.day;
+  const slot = cell.dataset.slot;
+  const key = `${day}-${slot}`;
+  delete gameState.schedule[key];
+  resetCellAppearance(cell);
+
+  if (role === 'crane') gameState.craneSlotsUsed--;
+  else if (role === 'carpenter') gameState.carpenterSlotsUsed--;
+
+  updateAllProgress();
+  updateAllCellAccessibility();
+  showToast(`${workers[role].name} removed from ${day}.`);
+}
+
+// ============================================================
+//  WIN CONDITION
+// ============================================================
+function checkCompletion() {
+  if (gameState.craneSlotsUsed >= 3 &&
+      gameState.concreterSlotsUsed >= 3 &&
+      gameState.carpenterSlotsUsed >= 3) {
+
+    // Verify: all crane before concrete, all carpenter after setting
+    const cdi = dayIndex[gameState.concreteDay];
+    const sdi = dayIndex[gameState.settingDay];
+    let valid = true;
+
+    for (const [key, val] of Object.entries(gameState.schedule)) {
+      const [d] = key.split('-');
+      const di = dayIndex[d];
+      if (val === 'crane' && di >= cdi) valid = false;
+      if (val === 'carpenter' && di <= sdi) valid = false;
+    }
+
+    if (valid) {
+      setTimeout(() => {
+        showSuccess();
+      }, 600);
+    }
+  }
+}
+
+function showSuccess() {
+  document.getElementById('successOverlay').classList.add('active');
+  document.getElementById('successOverlay').setAttribute('aria-hidden', 'false');
+  updatePopupFocusState();
+}
+
+function closeSuccess() {
+  document.getElementById('successOverlay').classList.remove('active');
+  document.getElementById('successOverlay').setAttribute('aria-hidden', 'true');
+  updatePopupFocusState();
+}
+
+// ============================================================
+//  DRAG & DROP (touch + mouse) + STRETCHY BAND
+// ============================================================
+let dragRole = null;
+let dragSource = null;
+let ghostEl = null;
+let touchDragging = false;
+let touchRole = null;
+let touchSourceCell = null;
+let lastPlacementAt = 0;
+let dragOffset = { x: 0, y: 0 };
+let idleTimer = null;
+let idleActive = false;
+
+function startIdleTimer() {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    if (idleActive) return;
+    idleActive = true;
+    document.querySelectorAll('.worker-source').forEach(el => el.classList.add('idle-bob'));
+  }, 3000);
+}
+
+function stopIdleAnimation() {
+  if (!idleActive) return;
+  idleActive = false;
+  document.querySelectorAll('.worker-source').forEach(el => el.classList.remove('idle-bob'));
+  clearTimeout(idleTimer);
+}
+
+// --- Band state ---
+let bandAnchor = null;   // {x, y, width} center-top of the tube
+let bandSourceEl = null;  // the worker-source element being dragged from
+let bandAnimFrame = null;
+let lastGhostX = 0, lastGhostY = 0;
+
+function lightenHex(hex, amount) {
+  const clean = hex.replace('#', '');
+  const num = parseInt(clean, 16);
+  const r = Math.min(255, ((num >> 16) & 0xff) + amount);
+  const g = Math.min(255, ((num >> 8) & 0xff) + amount);
+  const b = Math.min(255, (num & 0xff) + amount);
+  return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`;
+}
+
+// --- Band rendering ---
+function showBand(role, sourceEl) {
+  if (bandAnimFrame) { cancelAnimationFrame(bandAnimFrame); bandAnimFrame = null; }
+
+  const tubeEl = sourceEl.querySelector('.worker-tube');
+  const avatarEl = sourceEl.querySelector('.worker-avatar');
+  const tubeRect = tubeEl.getBoundingClientRect();
+  const avatarRect = avatarEl.getBoundingClientRect();
+  const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+
+  // Anchor at tube edge: top-center on mobile, 100px left of tube right edge on desktop
+  bandAnchor = isDesktop
+    ? { x: tubeRect.right - 240, y: tubeRect.top + tubeRect.height / 2, width: tubeRect.height }
+    : { x: tubeRect.left + tubeRect.width / 2, y: avatarRect.bottom - 35, width: tubeRect.width };
+  bandSourceEl = sourceEl;
+
+  // Set gradient colors to match role tube (lighter near the avatar)
+  const color = roleColors[role];
+  document.getElementById('bandStop0').setAttribute('stop-color', color);
+  document.getElementById('bandStop1').setAttribute('stop-color', color);
+  document.getElementById('bandStop2').setAttribute('stop-color', lightenHex(color, 40));
+  document.getElementById('bandStop3').setAttribute('stop-color', lightenHex(color, 70));
+  document.getElementById('bandStop4').setAttribute('stop-color', lightenHex(color, 70));
+  document.getElementById('bandStop0').setAttribute('stop-opacity', '1');
+  document.getElementById('bandStop1').setAttribute('stop-opacity', '1');
+  document.getElementById('bandStop2').setAttribute('stop-opacity', '0.5');
+  document.getElementById('bandStop3').setAttribute('stop-opacity', '0.5');
+  document.getElementById('bandStop4').setAttribute('stop-opacity', '0');
+
+  const grad = document.getElementById('bandGrad');
+  grad.setAttribute('x1', bandAnchor.x);
+  grad.setAttribute('y1', bandAnchor.y);
+  grad.setAttribute('x2', bandAnchor.x);
+  grad.setAttribute('y2', bandAnchor.y - 200);
+
+  sourceEl.classList.add('dragging');
+  document.getElementById('bandSvg').style.display = 'block';
+}
+
+function updateBand(tx, ty) {
+  if (!bandAnchor) return;
+
+  const ax = bandAnchor.x;
+  const ay = bandAnchor.y;
+  const hw = bandAnchor.width * 0.5; // half-width at base
+  const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+
+  const dx = tx - ax;
+  const dy = ty - ay;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist < 2) {
+    document.getElementById('bandPath').setAttribute('d', '');
+    return;
+  }
+
+  // --- Cubic bezier spine: P0 → P1 → P2 → P3 ---
+  const p0 = { x: ax, y: ay };
+
+  // P1: forces a straight exit from the base before curving
+  // Mobile: upward from tube; Desktop: leftward toward grid
+  const straightLen = Math.min(80, dist * 0.4);
+  const p1 = isDesktop
+    ? { x: ax - straightLen * 2.5, y: ay }
+    : { x: ax, y: ay - straightLen * 2.5 };
+
+  // P3: target (cursor / drag ghost)
+  const p3 = { x: tx, y: ty };
+
+  // P2: ensures smooth arrival — pulls back from target toward anchor
+  const dirX = dx / dist;
+  const dirY = dy / dist;
+  const pullBack = Math.min(dist * 0.4, 120);
+  const p2 = { x: tx - dirX * pullBack, y: ty - dirY * pullBack };
+
+  // --- Sample spine, offset perpendicular for left/right edges ---
+  const steps = 30;
+  const leftEdge = [];
+  const rightEdge = [];
+
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const mt = 1 - t;
+
+    // Cubic bezier point
+    const ptx = mt*mt*mt*p0.x + 3*mt*mt*t*p1.x + 3*mt*t*t*p2.x + t*t*t*p3.x;
+    const pty = mt*mt*mt*p0.y + 3*mt*mt*t*p1.y + 3*mt*t*t*p2.y + t*t*t*p3.y;
+
+    // Tangent (first derivative)
+    const tanX = 3*mt*mt*(p1.x-p0.x) + 6*mt*t*(p2.x-p1.x) + 3*t*t*(p3.x-p2.x);
+    const tanY = 3*mt*mt*(p1.y-p0.y) + 6*mt*t*(p2.y-p1.y) + 3*t*t*(p3.y-p2.y);
+    const tanLen = Math.sqrt(tanX*tanX + tanY*tanY) || 1;
+
+    // Perpendicular normal
+    const nx = -tanY / tanLen;
+    const ny = tanX / tanLen;
+
+    // Taper: full width at base, narrows to 70% at target
+    const w = hw * (1 - t * 0.3);
+
+    leftEdge.push({ x: ptx + nx * w, y: pty + ny * w });
+    rightEdge.push({ x: ptx - nx * w, y: pty - ny * w });
+  }
+
+  // --- Build SVG path from sampled edges ---
+  let d = `M${leftEdge[0].x.toFixed(1)},${leftEdge[0].y.toFixed(1)}`;
+  for (let i = 1; i < leftEdge.length; i++) {
+    d += ` L${leftEdge[i].x.toFixed(1)},${leftEdge[i].y.toFixed(1)}`;
+  }
+  for (let i = rightEdge.length - 1; i >= 0; i--) {
+    d += ` L${rightEdge[i].x.toFixed(1)},${rightEdge[i].y.toFixed(1)}`;
+  }
+  d += ' Z';
+
+  document.getElementById('bandPath').setAttribute('d', d);
+
+  // Update gradient direction (lighter toward cursor)
+  const grad = document.getElementById('bandGrad');
+  grad.setAttribute('x1', ax.toFixed(0));
+  grad.setAttribute('y1', ay.toFixed(0));
+  grad.setAttribute('x2', tx.toFixed(0));
+  grad.setAttribute('y2', ty.toFixed(0));
+}
+
+function hideBand(animate = true) {
+  if (!bandAnchor) {
+    document.getElementById('bandSvg').style.display = 'none';
+    if (bandSourceEl) { bandSourceEl.classList.remove('dragging'); bandSourceEl = null; }
+    return;
+  }
+
+  if (!animate) {
+    document.getElementById('bandSvg').style.display = 'none';
+    document.getElementById('bandPath').setAttribute('d', '');
+    if (bandSourceEl) { bandSourceEl.classList.remove('dragging'); bandSourceEl = null; }
+    bandAnchor = null;
+    return;
+  }
+
+  // Animate snap-back to anchor
+  const startX = lastGhostX;
+  const startY = lastGhostY;
+  const endX = bandAnchor.x;
+  const endY = bandAnchor.y;
+  const srcEl = bandSourceEl;
+  const duration = 380;
+  const startTime = performance.now();
+
+  function animateSnap(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(elapsed / duration, 1);
+
+    // Elastic ease-out
+    const p = 1 - Math.pow(1 - t, 3);
+    const bounce = t < 1 ? Math.sin(t * Math.PI * 2.2) * Math.pow(1 - t, 2) * 0.15 : 0;
+    const ease = p + bounce;
+
+    const cx = startX + (endX - startX) * ease;
+    const cy = startY + (endY - startY) * ease;
+
+    updateBand(cx, cy);
+
+    if (t < 1) {
+      bandAnimFrame = requestAnimationFrame(animateSnap);
+    } else {
+      document.getElementById('bandSvg').style.display = 'none';
+      document.getElementById('bandPath').setAttribute('d', '');
+      bandAnchor = null;
+
+      // Jiggle the tube on snap
+      if (srcEl) {
+        srcEl.classList.remove('dragging');
+        const tube = srcEl.querySelector('.worker-tube');
+        if (tube) {
+          tube.classList.remove('tube-jiggle');
+          void tube.offsetWidth; // force reflow
+          tube.classList.add('tube-jiggle');
+          tube.addEventListener('animationend', () => tube.classList.remove('tube-jiggle'), { once: true });
+        }
+        bandSourceEl = null;
+      }
+    }
+  }
+
+  bandAnimFrame = requestAnimationFrame(animateSnap);
+}
+
+// --- Ghost (circle) ---
+function createGhost(role, x, y, sourceEl, centerEl) {
+  if (bandAnimFrame) { cancelAnimationFrame(bandAnimFrame); bandAnimFrame = null; }
+  ghostEl = document.getElementById('dragGhost');
+  ghostEl.style.background = roleColors[role];
+  ghostEl.innerHTML = workerSVG(role);
+  ghostEl.style.display = 'block';
+  const el = centerEl || sourceEl?.querySelector?.('.worker-avatar') || sourceEl;
+  if (el) {
+    const rect = el.getBoundingClientRect();
+    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+    const size = isDesktop ? 132 : rect.width;
+    ghostEl.style.width = size + 'px';
+    ghostEl.style.height = size + 'px';
+    dragOffset = {
+      x: rect.left + rect.width / 2 - x,
+      y: rect.top + rect.height / 2 - y
+    };
+  } else {
+    dragOffset = { x: 0, y: 0 };
+  }
+  moveGhost(x, y);
+
+  // Start band if dragging from a source worker
+  if (sourceEl) {
+    showBand(role, sourceEl);
+    updateBand(x, y);
+  }
+}
+
+function moveGhost(x, y) {
+  const cx = x + dragOffset.x;
+  const cy = y + dragOffset.y;
+  if (ghostEl) {
+    ghostEl.style.left = cx + 'px';
+    ghostEl.style.top = cy + 'px';
+  }
+  lastGhostX = cx;
+  lastGhostY = cy;
+  updateBand(cx, cy);
+}
+
+function hideGhost(animateBand = true) {
+  if (ghostEl) ghostEl.style.display = 'none';
+  hideBand(animateBand);
+  dragOffset = { x: 0, y: 0 };
+}
+
+function canDragRole(role) {
+  const used = role === 'crane' ? gameState.craneSlotsUsed :
+               role === 'concreter' ? gameState.concreterSlotsUsed :
+               gameState.carpenterSlotsUsed;
+  return used < 3;
+}
+
+// ============================================================
+//  ONBOARDING
+// ============================================================
+const onboarding = {
+  role: 'crane',
+  targetDay: 'Mon',
+  targetSlot: 0,
+  step: 0
+};
+let onboardingFocusRaf = null;
+
+function clearOnboardingHighlights() {
+  document.querySelectorAll('.onboarding-role-highlight').forEach(el => el.classList.remove('onboarding-role-highlight'));
+  document.querySelectorAll('.onboarding-drop-highlight').forEach(el => el.classList.remove('onboarding-drop-highlight'));
+}
+
+function ensureOnboardingHint() {
+  let el = document.getElementById('onboardingHint');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'onboardingHint';
+    el.className = 'onboarding-hint';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function ensureOnboardingBackdrop() {
+  let el = document.getElementById('onboardingBackdrop');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'onboardingBackdrop';
+    el.className = 'onboarding-backdrop';
+    // Add click handler to exit onboarding when clicking the backdrop
+    el.addEventListener('click', function(e) {
+      if (onboarding.step > 0) {
+        finishOnboarding();
+      }
+    });
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function showOnboardingBackdrop() {
+  const backdrop = ensureOnboardingBackdrop();
+  backdrop.classList.add('show');
+  backdrop.style.pointerEvents = 'auto';
+}
+
+function hideOnboardingBackdrop() {
+  const el = document.getElementById('onboardingBackdrop');
+  if (el) {
+    el.classList.remove('show');
+    el.style.pointerEvents = 'none';
+  }
+}
+
+function ensureOnboardingFocusRing() {
+  let el = document.getElementById('onboardingFocusRing');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'onboardingFocusRing';
+    el.className = 'onboarding-focus-ring';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function showOnboardingFocusRing(rect, options = {}) {
+  if (!rect) return;
+  const ring = ensureOnboardingFocusRing();
+  const pad = options.pad ?? 6;
+  const radius = options.radius ?? 18;
+  const borderColor = options.borderColor || 'rgba(160, 194, 255, 0.98)';
+  const glowColor = options.glowColor || 'rgba(93, 139, 219, 0.22)';
+  ring.style.left = `${Math.max(4, rect.left - pad)}px`;
+  ring.style.top = `${Math.max(4, rect.top - pad)}px`;
+  ring.style.width = `${Math.max(20, rect.width + pad * 2)}px`;
+  ring.style.height = `${Math.max(20, rect.height + pad * 2)}px`;
+  ring.style.borderRadius = `${radius}px`;
+  ring.style.borderColor = borderColor;
+  ring.style.boxShadow = `0 0 0 10px ${glowColor}`;
+  ring.classList.add('show');
+}
+
+function hideOnboardingFocusRing() {
+  const ring = document.getElementById('onboardingFocusRing');
+  if (ring) ring.classList.remove('show');
+}
+
+function getRoleAvatarRect(roleEl) {
+  if (!roleEl) return null;
+  const avatar = roleEl.querySelector('.worker-avatar');
+  const target = avatar || roleEl;
+  const r = target.getBoundingClientRect();
+  return { left: r.left, top: r.top, width: r.width, height: r.height };
+}
+
+function stopOnboardingFocusTracking() {
+  if (onboardingFocusRaf !== null) {
+    cancelAnimationFrame(onboardingFocusRaf);
+    onboardingFocusRaf = null;
+  }
+}
+
+function onboardingRoleHintText() {
+  return 'Press Enter to select me, or drag me';
+}
+
+function onboardingDropHintText() {
+  return 'Press Enter to place me here';
+}
+
+function trackOnboardingFocus() {
+  if (onboarding.step === 0) {
+    stopOnboardingFocusTracking();
+    return;
+  }
+
+  if (onboarding.step === 1) {
+    const roleEl = document.getElementById(`src-${onboarding.role}`);
+    if (roleEl) {
+      const avatarEl = roleEl.querySelector('.worker-avatar');
+      showOnboardingFocusRing(getRoleAvatarRect(roleEl), {
+        pad: 8,
+        radius: 999,
+        borderColor: 'rgba(160, 194, 255, 0.98)',
+        glowColor: 'rgba(93, 139, 219, 0.22)'
+      });
+      placeOnboardingHint(avatarEl || roleEl, onboardingRoleHintText());
+    }
+  } else if (onboarding.step === 2) {
+    const cell = document.querySelector(`.cell[data-day="${onboarding.targetDay}"][data-slot="${onboarding.targetSlot}"]`);
+    if (cell) {
+      showOnboardingFocusRing(cell.getBoundingClientRect(), {
+        pad: 4,
+        radius: 14,
+        borderColor: 'rgba(102, 217, 102, 0.98)',
+        glowColor: 'rgba(102, 217, 102, 0.18)'
+      });
+      placeOnboardingHint(cell, onboardingDropHintText());
+    }
+  }
+
+  onboardingFocusRaf = requestAnimationFrame(trackOnboardingFocus);
+}
+
+function startOnboardingFocusTracking() {
+  stopOnboardingFocusTracking();
+  onboardingFocusRaf = requestAnimationFrame(trackOnboardingFocus);
+}
+
+function hideOnboardingHint() {
+  const el = document.getElementById('onboardingHint');
+  if (el) el.classList.remove('show');
+}
+
+function placeOnboardingHint(targetEl, text) {
+  if (!targetEl) return;
+  const hint = ensureOnboardingHint();
+  hint.textContent = text;
+  hint.setAttribute('role', 'status');
+  hint.setAttribute('aria-live', 'polite');
+  hint.classList.add('show');
+  const status = document.getElementById('onboardingStatus');
+  if (status) status.textContent = text;
+  const rect = targetEl.getBoundingClientRect();
+  const gap = 12;
+  const maxLeft = window.innerWidth - hint.offsetWidth - 8;
+  const left = Math.max(8, Math.min(rect.left + rect.width / 2 - hint.offsetWidth / 2, maxLeft));
+  let top = rect.top - hint.offsetHeight - gap;
+  if (top < 8) top = rect.bottom + gap;
+  hint.style.left = `${left}px`;
+  hint.style.top = `${top}px`;
+}
+
+function startOnboarding() {
+  if (onboarding.step !== 0) return;
+  clearOnboardingHighlights();
+  const roleEl = document.getElementById(`src-${onboarding.role}`);
+  if (!roleEl) return;
+  const avatarEl = roleEl.querySelector('.worker-avatar');
+  showOnboardingBackdrop();
+  setOnboardingIsolation(true);
+  onboarding.step = 1;
+  roleEl.classList.add('onboarding-role-highlight');
+  showOnboardingFocusRing(getRoleAvatarRect(roleEl), {
+    pad: 8,
+    radius: 999,
+    borderColor: 'rgba(160, 194, 255, 0.98)',
+    glowColor: 'rgba(93, 139, 219, 0.22)'
+  });
+  placeOnboardingHint(avatarEl || roleEl, onboardingRoleHintText());
+  roleEl.focus({ preventScroll: true });
+  startOnboardingFocusTracking();
+}
+
+function advanceOnboardingToDrop(focusTarget = true) {
+  if (onboarding.step !== 1) return;
+  clearOnboardingHighlights();
+  showOnboardingBackdrop();
+  const targetCell = document.querySelector(`.cell[data-day="${onboarding.targetDay}"][data-slot="${onboarding.targetSlot}"]`);
+  if (!targetCell) {
+    finishOnboarding();
+    return;
+  }
+  onboarding.step = 2;
+  targetCell.classList.add('onboarding-drop-highlight');
+  showOnboardingFocusRing(targetCell.getBoundingClientRect(), {
+    pad: 4,
+    radius: 14,
+    borderColor: 'rgba(102, 217, 102, 0.98)',
+    glowColor: 'rgba(102, 217, 102, 0.18)'
+  });
+  placeOnboardingHint(targetCell, onboardingDropHintText());
+  if (focusTarget) targetCell.focus({ preventScroll: true });
+  startOnboardingFocusTracking();
+}
+
+function maybeFinishOnboarding(role, day, slotNum) {
+  if (onboarding.step !== 2) return;
+  if (role === onboarding.role && day === onboarding.targetDay && slotNum === onboarding.targetSlot) {
+    finishOnboarding();
+  }
+}
+
+function refreshOnboarding() {
+  if (onboarding.step === 1) {
+    const roleEl = document.getElementById(`src-${onboarding.role}`);
+    if (!roleEl) return;
+    const avatarEl = roleEl.querySelector('.worker-avatar');
+    roleEl.classList.add('onboarding-role-highlight');
+    showOnboardingFocusRing(getRoleAvatarRect(roleEl), {
+      pad: 8,
+      radius: 999,
+      borderColor: 'rgba(160, 194, 255, 0.98)',
+      glowColor: 'rgba(93, 139, 219, 0.22)'
+    });
+    placeOnboardingHint(avatarEl || roleEl, onboardingRoleHintText());
+    return;
+  }
+  if (onboarding.step === 2) {
+    const cell = document.querySelector(`.cell[data-day="${onboarding.targetDay}"][data-slot="${onboarding.targetSlot}"]`);
+    if (!cell) return;
+    cell.classList.add('onboarding-drop-highlight');
+    showOnboardingFocusRing(cell.getBoundingClientRect(), {
+      pad: 4,
+      radius: 14,
+      borderColor: 'rgba(102, 217, 102, 0.98)',
+      glowColor: 'rgba(102, 217, 102, 0.18)'
+    });
+    placeOnboardingHint(cell, onboardingDropHintText());
+  }
+}
+
+function finishOnboarding() {
+  onboarding.step = 0;
+  clearOnboardingHighlights();
+  hideOnboardingHint();
+  hideOnboardingBackdrop();
+  setOnboardingIsolation(false);
+  hideOnboardingFocusRing();
+  stopOnboardingFocusTracking();
+  const status = document.getElementById('onboardingStatus');
+  if (status) status.textContent = '';
+  // Start idle animation after onboarding is complete
+  startIdleTimer();
+}
+
+// --- Prevent ALL native HTML5 drag (eliminates browser ghost) ---
+document.querySelectorAll('.worker-source').forEach(src => {
+  src.setAttribute('draggable', 'false');
+  src.setAttribute('role', 'button');
+  src.setAttribute('tabindex', '0');
+  src.querySelectorAll('img').forEach(img => img.setAttribute('draggable', 'false'));
+  src.addEventListener('dragstart', e => e.preventDefault());
+  src.addEventListener('keydown', handleWorkerKeydown);
+});
+
+// --- Mouse: drag from source (pure mousedown/move/up, no native ghost) ---
+let mouseDragging = false;
+let mouseRole = null;
+
+document.querySelectorAll('.worker-source').forEach(src => {
+  src.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    const role = src.dataset.role;
+    if (!canDragRole(role)) return;
+    if (onboarding.step === 1 && role === onboarding.role) advanceOnboardingToDrop(false);
+    stopIdleAnimation();
+    e.preventDefault();
+    mouseDragging = true;
+    mouseRole = role;
+    createGhost(role, e.clientX, e.clientY, src);
+  });
+});
+
+// --- Mouse: drag from placed cell (no band) ---
+document.addEventListener('mousedown', e => {
+  if (mouseDragging) return;
+  const wcell = e.target.closest('.worker-in-cell');
+  if (!wcell) return;
+  if (e.button !== 0) return;
+  stopIdleAnimation();
+  e.preventDefault();
+  const cell = wcell.closest('.cell');
+  const role = wcell.dataset.role;
+  mouseDragging = true;
+  mouseRole = role;
+  removeWorker(role, cell);
+  createGhost(role, e.clientX, e.clientY, null, wcell);
+});
+
+// --- Mouse move ---
+document.addEventListener('mousemove', e => {
+  if (!mouseDragging) return;
+  e.preventDefault();
+  moveGhost(e.clientX, e.clientY);
+  document.querySelectorAll('.cell').forEach(c => {
+    c.classList.remove('drag-over');
+    c.classList.remove('drag-over-invalid');
+  });
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const cell = el?.closest?.('.cell');
+  if (cell) {
+    const key = `${cell.dataset.day}-${cell.dataset.slot}`;
+    if (gameState.schedule[key]) {
+      cell.classList.add('drag-over-invalid');
+    } else {
+      cell.classList.add('drag-over');
+    }
+  }
+});
+
+// --- Mouse up ---
+document.addEventListener('mouseup', e => {
+  if (!mouseDragging) return;
+  mouseDragging = false;
+  hideGhost(true);
+  document.querySelectorAll('.cell').forEach(c => {
+    c.classList.remove('drag-over');
+    c.classList.remove('drag-over-invalid');
+  });
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const cell = el?.closest?.('.cell');
+  if (cell && mouseRole) {
+    attemptPlacement(mouseRole, cell.dataset.day, parseInt(cell.dataset.slot), cell);
+  }
+  mouseRole = null;
+});
+
+// --- Touch: drag from source ---
+document.querySelectorAll('.worker-source').forEach(src => {
+  src.addEventListener('touchstart', e => {
+    stopIdleAnimation();
+    const role = src.dataset.role;
+    if (!canDragRole(role)) return;
+    if (onboarding.step === 1 && role === onboarding.role) advanceOnboardingToDrop(false);
+    e.preventDefault();
+    touchDragging = true;
+    touchRole = role;
+    touchSourceCell = null;
+    const t = e.touches[0];
+    createGhost(role, t.clientX, t.clientY, src);
+  }, { passive: false });
+});
+
+// --- Touch: drag from placed cell (no band) ---
+document.addEventListener('touchstart', e => {
+  const wcell = e.target.closest('.worker-in-cell');
+  if (!wcell) return;
+  stopIdleAnimation();
+  e.preventDefault();
+  const cell = wcell.closest('.cell');
+  const role = wcell.dataset.role;
+  touchDragging = true;
+  touchRole = role;
+  touchSourceCell = { day: cell.dataset.day, slot: cell.dataset.slot };
+  removeWorker(role, cell);
+  const t = e.touches[0];
+  createGhost(role, t.clientX, t.clientY, null, wcell);
+}, { passive: false });
+
+// --- Touch move ---
+document.addEventListener('touchmove', e => {
+  if (!touchDragging) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  moveGhost(t.clientX, t.clientY);
+  document.querySelectorAll('.cell').forEach(c => {
+    c.classList.remove('drag-over');
+    c.classList.remove('drag-over-invalid');
+  });
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const cell = el?.closest?.('.cell');
+  if (cell) {
+    const key = `${cell.dataset.day}-${cell.dataset.slot}`;
+    if (gameState.schedule[key]) {
+      cell.classList.add('drag-over-invalid');
+    } else {
+      cell.classList.add('drag-over');
+    }
+  }
+}, { passive: false });
+
+// --- Touch end ---
+document.addEventListener('touchend', e => {
+  if (!touchDragging) return;
+  touchDragging = false;
+  hideGhost(true);
+  document.querySelectorAll('.cell').forEach(c => {
+    c.classList.remove('drag-over');
+    c.classList.remove('drag-over-invalid');
+  });
+  const t = e.changedTouches[0];
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const cell = el?.closest?.('.cell');
+  if (cell && touchRole) {
+    attemptPlacement(touchRole, cell.dataset.day, parseInt(cell.dataset.slot), cell);
+  }
+  touchRole = null;
+  touchSourceCell = null;
+});
+
+document.getElementById('scheduleGrid').addEventListener('click', e => {
+  if (!isCoarsePointer()) return;
+  if (Date.now() - lastPlacementAt < 400) return;
+  if (mouseDragging || touchDragging) return;
+  if (e.target.closest('.remove-btn') || e.target.closest('.worker-in-cell')) return;
+
+  const found = weatherTypeFromEventTarget(e.target);
+  if (!found) return;
+  const { cell, type } = found;
+  showWeatherPopup(type, cell.dataset.day, parseInt(cell.dataset.slot, 10));
+});
+
+document.getElementById('scheduleGrid').addEventListener('touchend', e => {
+  if (!isCoarsePointer()) return;
+  if (Date.now() - lastPlacementAt < 400) return;
+  if (mouseDragging || touchDragging) return;
+  if (e.target.closest('.remove-btn') || e.target.closest('.worker-in-cell')) return;
+
+  const found = weatherTypeFromEventTarget(e.target);
+  if (!found) return;
+  const { cell, type } = found;
+  showWeatherPopup(type, cell.dataset.day, parseInt(cell.dataset.slot, 10));
+}, { passive: true });
+
+document.getElementById('scheduleGrid').addEventListener('mouseover', e => {
+  const icon = e.target.closest('.weather-icon');
+  if (!icon) return;
+  const type = icon.dataset.weather;
+  showWeatherHoverTip(type, e.clientX, e.clientY);
+});
+
+document.getElementById('scheduleGrid').addEventListener('mousemove', e => {
+  const icon = e.target.closest('.weather-icon');
+  if (!icon) return;
+  const type = icon.dataset.weather;
+  showWeatherHoverTip(type, e.clientX, e.clientY);
+});
+
+document.getElementById('scheduleGrid').addEventListener('mouseout', e => {
+  if (!e.target.closest('.weather-icon')) return;
+  hideWeatherHoverTip();
+});
+
+// ============================================================
+//  RESET
+// ============================================================
+function resetGame() {
+  gameState.schedule = {};
+  gameState.craneSlotsUsed = 0;
+  gameState.concreterSlotsUsed = 0;
+  gameState.carpenterSlotsUsed = 0;
+  gameState.concreteDay = null;
+  gameState.settingDay = null;
+
+  document.querySelectorAll('.cell').forEach(cell => resetCellAppearance(cell));
+  keyboardSelectedRole = null;
+  updateAllProgress();
+  updateAllWorkerAccessibility();
+  updateAllCellAccessibility();
+  closeSuccess();
+  showToast('Schedule cleared!');
+}
+
+// ============================================================
+//  WELCOME
+// ============================================================
+let welcomeSlideIndex = 0;
+const totalWelcomeSlides = 4;
+
+function renderWelcomeSlide() {
+  const slides = document.querySelectorAll('.welcome-role-slide');
+  slides.forEach((slide, i) => {
+    slide.classList.toggle('active', i === welcomeSlideIndex);
+    slide.setAttribute('aria-hidden', i === welcomeSlideIndex ? 'false' : 'true');
+  });
+
+  const dots = document.getElementById('welcomeDots');
+  if (dots) {
+    dots.innerHTML = '';
+    for (let i = 0; i < totalWelcomeSlides; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'welcome-dot' + (i === welcomeSlideIndex ? ' active' : '');
+      dots.appendChild(dot);
+    }
+  }
+
+  const nextBtn = document.getElementById('welcomeNextBtn');
+  if (nextBtn) {
+    nextBtn.textContent = welcomeSlideIndex === totalWelcomeSlides - 1 ? 'READY' : 'NEXT';
+  }
+}
+
+function nextWelcomeSlide() {
+  if (welcomeSlideIndex < totalWelcomeSlides - 1) {
+    welcomeSlideIndex += 1;
+    renderWelcomeSlide();
+  } else {
+    closeWelcome();
+  }
+}
+
+function closeWelcome() {
+  document.getElementById('welcomeOverlay').style.display = 'none';
+  document.getElementById('welcomeOverlay').setAttribute('aria-hidden', 'true');
+  welcomeSlideIndex = 0;
+  renderWelcomeSlide();
+  updatePopupFocusState();
+  setTimeout(startOnboarding, 100);
+}
+
+renderWelcomeSlide();
+
+const orientationOverlay = document.getElementById('orientationOverlay');
+
+function isTouchLikeDevice() {
+  return window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+}
+
+function shouldShowOrientationOverlay() {
+  return (
+    isTouchLikeDevice() &&
+    window.matchMedia('(max-width: 1023px)').matches &&
+    window.matchMedia('(orientation: landscape)').matches
+  );
+}
+
+function updateOrientationOverlay() {
+  const show = shouldShowOrientationOverlay();
+  orientationOverlay.classList.toggle('active', show);
+  orientationOverlay.setAttribute('aria-hidden', show ? 'false' : 'true');
+}
+
+// ============================================================
+//  HELP MODAL
+// ============================================================
+let currentSlide = 0;
+const totalSlides = 4;
+
+function showHelp() {
+  goToSlide(0);
+  document.getElementById('helpModal').classList.add('active');
+  document.getElementById('helpModal').setAttribute('aria-hidden', 'false');
+  updatePopupFocusState();
+}
+
+function closeHelp() {
+  document.getElementById('helpModal').classList.remove('active');
+  document.getElementById('helpModal').setAttribute('aria-hidden', 'true');
+  updatePopupFocusState();
+}
+
+function goToSlide(index) {
+  currentSlide = index;
+
+  // Update slides
+  document.querySelectorAll('.slide').forEach((slide, i) => {
+    slide.classList.toggle('active', i === currentSlide);
+    slide.setAttribute('aria-hidden', i === currentSlide ? 'false' : 'true');
+  });
+
+  // Update dots
+  const dotsContainer = document.getElementById('slideDots');
+  dotsContainer.innerHTML = '';
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'slide-dot' + (i === currentSlide ? ' active' : '');
+    dot.setAttribute('aria-label', `Show rules slide ${i + 1} of ${totalSlides}`);
+    dot.setAttribute('aria-current', i === currentSlide ? 'step' : 'false');
+    dot.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  const activeSlide = document.querySelector(`.slide[data-slide="${currentSlide}"]`);
+  const helpSlideText = document.getElementById('helpSlideText');
+  if (activeSlide && helpSlideText) {
+    helpSlideText.textContent = `Slide ${currentSlide + 1} of ${totalSlides}. ${activeSlide.textContent.trim().replace(/\s+/g, ' ')}`;
+  }
+
+  // Update buttons
+  document.getElementById('prevSlide').disabled = currentSlide === 0;
+  const nextBtn = document.getElementById('nextSlide');
+  if (currentSlide === totalSlides - 1) {
+    nextBtn.textContent = 'Got it!';
+    nextBtn.onclick = closeHelp;
+  } else {
+    nextBtn.textContent = 'Next →';
+    nextBtn.onclick = () => goToSlide(currentSlide + 1);
+  }
+}
+
+// Event listeners for help modal
+document.getElementById('prevSlide').addEventListener('click', () => {
+  if (currentSlide > 0) goToSlide(currentSlide - 1);
+});
+
+document.getElementById('helpModal').addEventListener('click', (e) => {
+  if (e.target.id === 'helpModal') closeHelp();
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+buildGrid();
+setAvatars();
+updateAllProgress();
+updateAllWorkerAccessibility();
+updateAllCellAccessibility();
+updatePopupFocusState();
+// startIdleTimer(); // Don't start idle animation until onboarding is complete
+
+let lastDesktop = window.matchMedia('(min-width: 1024px)').matches;
+window.addEventListener('resize', () => {
+  const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+  if (isDesktop !== lastDesktop) {
+    lastDesktop = isDesktop;
+    buildGrid();
+  }
+  refreshOnboarding();
+  updateOrientationOverlay();
+});
+
+window.addEventListener('orientationchange', updateOrientationOverlay);
+updateOrientationOverlay();
+
+const menuBtnHeader = document.getElementById('menuBtnHeader');
+const menuBtnSidebar = document.getElementById('menuBtn');
+if (menuBtnHeader && menuBtnSidebar) {
+  menuBtnHeader.addEventListener('click', () => menuBtnSidebar.click());
+}
+</script>
+<script src="../../nav.js?v=1.0.0"></script>
+</body>
+</html>

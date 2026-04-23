@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Planner Game</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-board">
+            <div class="calendar-section">
+                <div class="calendar-title">CREW<br>PLANNER</div>
+                <div class="calendar-header">
+                    <div></div>
+                    <div class="day-header">Mon</div>
+                    <div class="day-header">Tue</div>
+                    <div class="day-header">Wed</div>
+                    <div class="day-header">Thu</div>
+                    <div class="day-header">Fri</div>
+                </div>
+
+                <div class="calendar-grid">
+                    <!-- Morning Row -->
+                    <div class="time-label">7am-11am</div>
+                    <div class="time-slot" data-day="1" data-slot="0">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="2" data-slot="0">
+                        <div class="weather-icon"><img src="../../images/weather_icons/wind01.svg" alt="Wind" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/wind01.svg" alt="Wind" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">High Winds</div>
+                            <div class="slot-tooltip-desc">Strong gusts expected</div>
+                            
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="3" data-slot="0">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="4" data-slot="0">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="5" data-slot="0">
+                        <div class="weather-icon"><img src="../../images/weather_icons/rain01.svg" alt="Rain" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/rain01.svg" alt="Rain" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Rain</div>
+                            <div class="slot-tooltip-desc">Wet conditions throughout</div>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Midday Row -->
+                    <div class="time-label">11am-14pm</div>
+                    <div class="time-slot" data-day="1" data-slot="1">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="2" data-slot="1">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="3" data-slot="1">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="4" data-slot="1">
+                        <div class="weather-icon"><img src="../../images/weather_icons/thunder01.svg" alt="Thunder" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/thunder01.svg" alt="Thunder" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Thunderstorm</div>
+                            <div class="slot-tooltip-desc">Lightning and heavy rain</div>
+                            
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="5" data-slot="1">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+
+                    <!-- Afternoon Row -->
+                    <div class="time-label">14pm-18pm</div>
+                    <div class="time-slot" data-day="1" data-slot="2">
+                        <div class="weather-icon"><img src="../../images/weather_icons/rain01.svg" alt="Rain" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/rain01.svg" alt="Rain" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Rain</div>
+                            <div class="slot-tooltip-desc">Wet conditions throughout</div>
+                            
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="2" data-slot="2">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="3" data-slot="2">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="4" data-slot="2">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                    <div class="time-slot" data-day="5" data-slot="2">
+                        <div class="weather-icon"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                        <div class="slot-tooltip">
+                            <div class="slot-tooltip-weather"><img src="../../images/weather_icons/sunny01.svg" alt="Sunny" class="weather-svg-icon"></div>
+                            <div class="slot-tooltip-name">Clear Skies</div>
+                            <div class="slot-tooltip-desc">Perfect working conditions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="staff-panel">
+                <div class="staff-header">STAFF</div>
+                <button class="help-btn" onclick="showRules()">HELP</button>
+                <div class="staff-panel-hint">💡 Drag workers here to remove from calendar</div>
+
+            <div class="worker-card" data-worker="crane">
+                <div class="worker-avatar crane-avatar" draggable="true" data-worker="crane">
+                    <img src="../../images/character_coins/craneoperatorcoin01.svg" alt="Crane Operator">
+                </div>
+                <div class="worker-name">CRANE OPERATOR</div>
+                <div class="completed-badge">✓ Done</div>
+                <div class="progress-bar">
+                    <div class="progress-fill crane-progress" id="crane-progress" style="width: 0%"></div>
+                </div>
+                </div>
+
+            <div class="worker-card" data-worker="concrete">
+                <div class="worker-avatar concrete-avatar" draggable="true" data-worker="concrete">
+                    <img src="../../images/character_coins/concretercoin01.svg" alt="Concreter">
+                </div>
+                <div class="worker-name">CONCRETER</div>
+                <div class="completed-badge">✓ Done</div>
+                <div class="progress-bar">
+                    <div class="progress-fill concrete-progress" id="concrete-progress" style="width: 0%"></div>
+                </div>
+                </div>
+
+            <div class="worker-card" data-worker="carpenter">
+                <div class="worker-avatar carpenter-avatar" draggable="true" data-worker="carpenter">
+                    <img src="../../images/character_coins/carpentercoin01.svg" alt="Carpenter">
+                </div>
+                <div class="worker-name">CARPENTER</div>
+                <div class="completed-badge">✓ Done</div>
+                <div class="progress-bar">
+                    <div class="progress-fill carpenter-progress" id="carpenter-progress" style="width: 0%"></div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intro Popup (Simple Welcome) -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="intro-popup">
+            <div class="slide-icon">🏗️</div>
+            <div class="slide-title">Welcome, Construction Manager!</div>
+            <div class="slide-description" style="margin-bottom: 30px;">
+                You're in charge of scheduling tradies for a construction project.<br><br>
+                Your goal: Schedule the <strong>Crane Operator</strong>, <strong>Concreter</strong>, and <strong>Carpenter</strong> to complete the job on time while working around the weather.
+            </div>
+            <button class="nav-btn primary" onclick="startGame()" style="width: 100%;">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Rules Popup (Detailed Carousel) -->
+    <div class="intro-overlay hidden" id="rulesOverlay">
+        <div class="intro-popup">
+            <button class="popup-close" aria-label="Close rules" onclick="closeRules()">×</button>
+            <div class="carousel-container">
+                <!-- Slide 0: Welcome -->
+                <div class="carousel-slide active" data-slide="0">
+                    <div class="slide-icon">🏗️</div>
+                    <div class="slide-title">Construction Planner</div>
+                    <div class="slide-description">Welcome! You're the Construction Manager. Schedule your tradies wisely to complete the project on time.</div>
+                </div>
+
+                <!-- Slide 1: Time Slots -->
+                <div class="carousel-slide" data-slide="1">
+                    <div class="slide-icon">📋</div>
+                    <div class="slide-title">Time Slots</div>
+                    <div class="slide-description">Each trade needs <strong>3 time slots</strong> to complete their work. Drag workers from the staff panel to the calendar.</div>
+                </div>
+
+                <!-- Slide 2: Work Order -->
+                <div class="carousel-slide" data-slide="2">
+                    <div class="slide-icon">🔄</div>
+                    <div class="slide-title">Work Order</div>
+                    <div class="slide-description">Trades must work in order:<br><strong>Crane Operator → Concreter → Carpenter</strong><br>Each trade must finish before the next can start.</div>
+                </div>
+
+                <!-- Slide 3: Concreter Rules -->
+                <div class="carousel-slide" data-slide="3">
+                    <div class="slide-icon">🧱</div>
+                    <div class="slide-title">Concreter Special Rules</div>
+                    <div class="slide-description">The Concreter must work a <strong>full day</strong> (all 3 slots: AM, Midday, PM). The concrete then needs the <strong>next day to set</strong> before the Carpenter can start.</div>
+                </div>
+
+                <!-- Slide 4: Weather -->
+                <div class="carousel-slide" data-slide="4">
+                    <div class="slide-icon"><img src="../../images/weather_icons/partlycloudy01.svg" alt="Partly Cloudy" class="weather-svg-icon"></div>
+                    <div class="slide-title">Weather Conditions</div>
+                    <div class="slide-description">Check the weather! <strong>Crane</strong> can't work in <img src="../../images/weather_icons/wind01.svg" alt="Wind" class="weather-svg-icon"><img src="../../images/weather_icons/rain01.svg" alt="Rain" class="weather-svg-icon"><img src="../../images/weather_icons/thunder01.svg" alt="Thunder" class="weather-svg-icon"><br><strong>Concreter</strong> can't work in <img src="../../images/weather_icons/wind01.svg" alt="Wind" class="weather-svg-icon"><img src="../../images/weather_icons/rain01.svg" alt="Rain" class="weather-svg-icon"><br><strong>Carpenter</strong> works in any weather.</div>
+                </div>
+            </div>
+
+            <div class="carousel-dots">
+                <div class="carousel-dot active" data-dot="0"></div>
+                <div class="carousel-dot" data-dot="1"></div>
+                <div class="carousel-dot" data-dot="2"></div>
+                <div class="carousel-dot" data-dot="3"></div>
+                <div class="carousel-dot" data-dot="4"></div>
+            </div>
+
+            <div class="carousel-nav">
+                <button class="nav-btn" id="prevBtn" onclick="prevSlide()" disabled>Back</button>
+                <button class="nav-btn primary" id="nextBtn" onclick="nextSlide()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Popup -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-popup">
+            <button class="feedback-close-x" aria-label="Close popup" onclick="closeFeedback()">×</button>
+            <div class="feedback-avatar" id="feedbackAvatar">
+                <img src="../../images/character_coins/craneoperatorcoin01.svg" alt="Crane Operator">
+            </div>
+            <div class="feedback-title" id="feedbackTitle">Crane Operator</div>
+            <div class="feedback-message" id="feedbackMessage">Message goes here</div>
+            <button class="feedback-close" onclick="closeFeedback()">Got it!</button>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Project Complete!</div>
+        <div class="success-message">Great job scheduling all the tradies!</div>
+        <button class="reset-btn" onclick="resetGame()">Play Again</button>
+    </div>
+
+    <!-- Comment Overlay -->
+    <div class="comment-overlay" id="commentOverlay">
+        <div class="comment-popup">
+            <div class="comment-header">
+                <div class="comment-title">Feedback & Comments</div>
+                <button class="close-comment" onclick="closeCommentSection()">×</button>
+            </div>
+
+            <div class="comment-tabs">
+                <button class="comment-tab active" onclick="switchTab('submit')">Submit Feedback</button>
+                <button class="comment-tab" onclick="switchTab('view')">View All Feedback</button>
+            </div>
+
+            <!-- Submit Feedback Section -->
+            <div class="comment-section active" id="submitSection">
+                <div id="successMsg" style="display: none;" class="success-message">
+                    Thank you for your feedback! Your input helps improve the game.
+                </div>
+
+                <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                    <div class="form-group">
+                        <label class="form-label">Your Name (Optional)</label>
+                        <input type="text" class="form-input" id="userName" placeholder="Enter your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email (Optional)</label>
+                        <input type="email" class="form-input" id="userEmail" placeholder="your.email@example.com">
+                        <div class="form-hint">We'll only use this to follow up if needed</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Feedback Type *</label>
+                        <select class="form-select" id="feedbackType" required>
+                            <option value="">Select type...</option>
+                            <option value="bug">🐛 Bug Report - Something isn't working</option>
+                            <option value="suggestion">💡 Suggestion - Idea for improvement</option>
+                            <option value="general">💬 General Feedback - Other comments</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your Feedback *</label>
+                        <textarea class="form-textarea" id="feedbackText" required
+                            placeholder="Tell us what's working, what's not working, or share your suggestions..."></textarea>
+                        <div class="form-hint">Be as detailed as possible to help us improve</div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Submit Feedback</button>
+                </form>
+            </div>
+
+            <!-- View Feedback Section -->
+            <div class="comment-section" id="viewSection">
+                <button class="export-btn" onclick="exportFeedback()">📥 Export All Feedback (JSON)</button>
+                <div id="commentsList" class="comments-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Popup -->
+    <div class="role-overlay" id="roleOverlay">
+        <div class="role-popup" id="rolePopup">
+            <button class="role-close" aria-label="Close role popup" onclick="closeRolePopup()">×</button>
+            <div class="role-avatar" id="roleAvatar">
+                <img src="../../images/character_coins/concretercoin01.svg" alt="Concreter">
+            </div>
+            <div class="role-name" id="roleName">CONCRETER</div>
+            <div class="role-content">
+                <div class="role-section-title">Job Description:</div>
+                <div class="role-description" id="roleDescription"></div>
+                <div class="role-section-title">Task Blockers:</div>
+                <div class="role-blockers" id="roleBlockers"></div>
+            </div>
+        </div>
+    </div>
+ 
+
+    <!-- Firebase SDK (compat, works without module/CORS on file://) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIS Career Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- Token Setup Section (shown on first load) -->
+    <div id="token-setup" class="setup-screen">
+        <div class="setup-container">
+            <h1>WIS Career Dashboard</h1>
+            <p class="setup-intro">Manage career data for the WIS Career Explorer</p>
+
+            <div class="setup-instructions">
+                <h2>Setup Instructions</h2>
+                <ol>
+                    <li>Go to <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Tokens</a></li>
+                    <li>Click "Generate new token (classic)"</li>
+                    <li>Note: "WIS Career Dashboard"</li>
+                    <li>Expiration: 90 days (or custom)</li>
+                    <li>Select scope: <strong>✓ repo</strong> (full control)</li>
+                    <li>Click "Generate token" and copy it</li>
+                </ol>
+            </div>
+
+            <div class="token-input-section">
+                <label for="token-input">Paste your GitHub Personal Access Token:</label>
+                <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+                <button id="save-token-btn" class="btn btn-primary">Save Token</button>
+                <p class="token-note">Your token is stored locally in your browser only</p>
+            </div>
+
+            <div id="token-error" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section (shown after login) -->
+    <div id="dashboard" style="display: none;">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>WIS Career Dashboard</h1>
+                <span id="career-count" class="badge"></span>
+            </div>
+            <div class="header-right">
+                <div id="user-info" class="user-info"></div>
+                <button id="logout-btn" class="btn btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Career List Section -->
+            <section id="career-list-section" class="section">
+                <div class="section-header">
+                    <h2>Careers</h2>
+                    <div class="section-actions">
+                        <input type="text" id="search-input" placeholder="Search careers..." class="search-input" />
+                        <button id="add-career-btn" class="btn btn-primary">+ Add New Career</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="careers-table" class="careers-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Salary Range</th>
+                                <th>Work Style</th>
+                                <th>Levels</th>
+                                <th>Skills</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="careers-tbody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="loading-overlay" class="loading-overlay" style="display: none;">
+                    <div class="spinner"></div>
+                    <p id="loading-message">Loading...</p>
+                </div>
+            </section>
+
+            <!-- Edit Panel (slides in from right) -->
+            <aside id="edit-panel" class="edit-panel">
+                <div class="edit-panel-header">
+                    <h2 id="edit-panel-title">Edit Career</h2>
+                    <button id="close-panel-btn" class="btn-close">&times;</button>
+                </div>
+
+                <div class="edit-panel-content">
+                    <form id="career-form">
+                        <!-- Basic Info -->
+                        <div class="form-section">
+                            <h3>Basic Information</h3>
+
+                            <div class="form-group">
+                                <label for="career-name">Career Name *</label>
+                                <input type="text" id="career-name" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="salary-range">Salary Range *</label>
+                                <input type="text" id="salary-range" placeholder="$XX,XXX - $XX,XXX" required />
+                                <small>Format: $XX,XXX - $XX,XXX</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="overview">Overview *</label>
+                                <textarea id="overview" rows="4" required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="work-style">Work Style *</label>
+                                <select id="work-style" required>
+                                    <option value="">Select work style...</option>
+                                    <option value="Analytical-Formal">Analytical-Formal</option>
+                                    <option value="Compliance-Formal">Compliance-Formal</option>
+                                    <option value="HandsOn-Creative">HandsOn-Creative</option>
+                                    <option value="HandsOn-Practical">HandsOn-Practical</option>
+                                    <option value="HandsOn-Structured">HandsOn-Structured</option>
+                                    <option value="HandsOn-Technical">HandsOn-Technical</option>
+                                    <option value="Leadership-Formal">Leadership-Formal</option>
+                                    <option value="Leadership-HandsOn">Leadership-HandsOn</option>
+                                    <option value="Organisational-Hybrid">Organisational-Hybrid</option>
+                                    <option value="Technical-Analytical">Technical-Analytical</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="video-url">YouTube Video URL</label>
+                                <input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=..." />
+                                <small>Optional: Add a YouTube video to showcase this career</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="person-name">Person Name</label>
+                                <input type="text" id="person-name" placeholder="e.g., Sarah Johnson" />
+                                <small>Optional: Name of the person featured in the video</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="person-bio">Person Bio</label>
+                                <textarea id="person-bio" rows="3" placeholder="Brief bio about the person in the video..."></textarea>
+                                <small>Optional: Short biography of the person featured in the video</small>
+                            </div>
+                        </div>
+
+                        <!-- Core Skills -->
+                        <div class="form-section">
+                            <h3>Core Skills *</h3>
+                            <div id="skills-container" class="tag-container"></div>
+                            <input type="text" id="skill-input" placeholder="Type or select from existing skills and press Enter..." class="tag-input" />
+                        </div>
+
+                        <!-- Core Education -->
+                        <div class="form-section">
+                            <h3>Core Education *</h3>
+                            <div id="education-container" class="tag-container"></div>
+                            <input type="text" id="education-input" placeholder="Type or select from existing education and press Enter..." class="tag-input" />
+                        </div>
+
+                        <!-- Related Roles -->
+                        <div class="form-section">
+                            <h3>Related Roles</h3>
+                            <div id="related-roles-container" class="tag-container"></div>
+                            <select id="related-role-select" class="tag-select">
+                                <option value="">Add related role...</option>
+                            </select>
+                        </div>
+
+                        <!-- Career Levels -->
+                        <div class="form-section">
+                            <h3>Career Levels * (minimum 2)</h3>
+                            <div id="levels-container"></div>
+                            <button type="button" id="add-level-btn" class="btn btn-secondary btn-sm">+ Add Level</button>
+                        </div>
+                    </form>
+
+                    <!-- Validation Errors -->
+                    <div id="validation-errors" class="validation-errors" style="display: none;"></div>
+                </div>
+
+                <div class="edit-panel-footer">
+                    <button id="cancel-btn" class="btn btn-secondary">Cancel</button>
+                    <button id="save-btn" class="btn btn-primary">Save to GitHub</button>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
