@@ -2206,6 +2206,7 @@ function closeInfoPanel() {
     const overlay = document.getElementById('infoPanelOverlay');
     if (overlay) overlay.classList.remove('visible');
     closePopupFocusTrap(infoPanel);
+    infoPanel.querySelectorAll('iframe').forEach(f => { f.src = ''; });
     if (selectedCareer) {
         selectedCareer.classList.remove('clicked');
         selectedCareer = null;
