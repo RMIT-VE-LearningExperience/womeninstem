@@ -1,4 +1,4 @@
-console.log('🏗️ Construct Your Career - Landing Page Loaded!');
+console.log('🏗️ Build Your Path - Landing Page Loaded!');
 
 // ===================================
 // NAVIGATION FUNCTIONS

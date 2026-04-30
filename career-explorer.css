@@ -1,5 +1,5 @@
 /* ===================================
-   CAREER EXPLORER - v2 (Construct Your Career branding)
+   CAREER EXPLORER - v2 (Build Your Path branding)
    Navy / Yellow / Inter theme
    =================================== */
 
@@ -770,7 +770,9 @@ body {
 }
 
 .career-card-salary {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
     padding: 4px 12px;
     background: #1a365d;
     color: white;
@@ -778,6 +780,12 @@ body {
     font-size: 12px;
     font-weight: 600;
     margin-bottom: 8px;
+    align-self: flex-start;
+}
+
+.career-card-salary-icon {
+    font-weight: 700;
+    flex-shrink: 0;
 }
 
 .career-card-overview {

@@ -1053,16 +1053,16 @@ function createCareerCard(career, matchingLevels = null) {
     if (hasProfile) {
         const firstName = career.person_name.trim().split(/\s+/)[0];
 
-        const introTitle = document.createElement('div');
-        introTitle.className = 'career-card-title';
-        introTitle.textContent = `Meet ${firstName}!`;
-
         const roleTitle = document.createElement('div');
-        roleTitle.className = 'career-card-role-title';
+        roleTitle.className = 'career-card-title';
         roleTitle.textContent = career.name;
 
-        titleWrap.appendChild(introTitle);
+        const introTitle = document.createElement('div');
+        introTitle.className = 'career-card-role-title';
+        introTitle.textContent = `Meet ${firstName}!`;
+
         titleWrap.appendChild(roleTitle);
+        titleWrap.appendChild(introTitle);
     } else {
         const title = document.createElement('div');
         title.className = 'career-card-title';
@@ -1114,7 +1114,13 @@ function createCareerCard(career, matchingLevels = null) {
     // Salary bar
     const salary = document.createElement('div');
     salary.className = 'career-card-salary';
-    salary.textContent = career.salary_range;
+    const salaryIcon = document.createElement('span');
+    salaryIcon.className = 'career-card-salary-icon';
+    salaryIcon.textContent = '$';
+    const salaryText = document.createElement('span');
+    salaryText.textContent = (career.salary_range || '').replace(/^\$/, '');
+    salary.appendChild(salaryIcon);
+    salary.appendChild(salaryText);
     card.appendChild(salary);
 
     // Category strip at bottom
