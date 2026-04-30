@@ -441,147 +441,108 @@
 
     }
 
-    /* Welcome screen */
+    /* Welcome screen — matches crane-operator style */
     #welcome-screen {
       position: fixed; inset: 0; z-index: 400;
-      background: rgba(25, 62, 117, 0.7);
+      background: #193e75de;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      padding: 32px 20px;
     }
 
-    /* ── Desktop: plumber bottom-right, outside card ── */
     #welcome-plumber {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      height: clamp(300px, 75vh, 650px);
-      width: auto;
+      position: fixed;
+      right: 6px;
+      bottom: -8px;
+      width: 52vw;
+      max-width: 250px;
+      height: auto;
       pointer-events: none;
       z-index: 402;
     }
 
-    /* Card: offset left so plumber on right has room */
     #welcome-container {
       position: relative;
-      max-width: clamp(460px, 50vw, 660px);
-      width: calc(100% - 64px);
+      width: 100%;
+      max-width: 460px;
       z-index: 401;
-      margin-left: 4vw;
-      margin-right: auto;
     }
 
     #welcome-card {
-      background: #fff;
-      border-radius: clamp(14px, 1.5vw, 22px);
+      background: #efefef;
+      border-radius: 16px;
       width: 100%;
       position: relative;
-      padding: clamp(32px, 4vh, 50px) clamp(24px, 3.5vw, 50px) clamp(90px, 12vh, 120px);
+      padding: 56px 28px 120px;
       overflow: hidden;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.25);
     }
 
-    #welcome-back {
-      position: absolute;
-      top: 18px; left: 18px;
-      width: 36px; height: 36px;
-      background: none; border: none;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: #193E75;
-      font-size: 22px;
-      padding: 0;
-    }
-
-    #welcome-close {
-      position: absolute;
-      top: 18px; right: 18px;
-      width: 36px; height: 36px;
-      background: none; border: none;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: #193E75;
-      font-size: 26px;
-      font-weight: 300;
-      padding: 0;
-      line-height: 1;
-    }
+    #welcome-back { display: none; }
+    #welcome-close { display: none; }
 
     #welcome-card h1 {
-      color: #193E75;
-      font-size: clamp(18px, 3vw, 34px);
+      color: #224987;
+      font-size: 48px;
       font-weight: 900;
       text-transform: uppercase;
       text-align: center;
-      letter-spacing: 0.04em;
-      margin-bottom: clamp(16px, 2.5vh, 30px);
-      margin-top: 14px;
+      letter-spacing: 0.4px;
+      line-height: 0.95;
+      margin-bottom: 24px;
     }
 
     #welcome-card .welcome-sub {
-      font-size: clamp(13px, 1.5vw, 17px);
+      font-size: 16px;
       font-weight: 700;
-      color: #111;
-      line-height: 1.5;
-      margin-bottom: clamp(12px, 1.8vh, 20px);
+      color: #1a2744;
+      line-height: 1.35;
+      margin-bottom: 14px;
     }
 
     #welcome-card .welcome-body {
-      font-size: clamp(12px, 1.3vw, 16px);
+      font-size: 16px;
       font-weight: 400;
-      color: #222;
-      line-height: 1.65;
+      color: #1a2744;
+      line-height: 1.35;
     }
 
     #ready-btn {
       position: absolute;
-      bottom: clamp(20px, 3vh, 36px);
-      right: clamp(20px, 2.5vw, 40px);
-      width: clamp(68px, 7vw, 92px);
-      height: clamp(68px, 7vw, 92px);
+      bottom: 24px;
+      left: 24px;
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
-      background: #3CA63C;
+      background: #3BA53B;
       border: none;
       cursor: pointer;
       color: #fff;
-      font-size: clamp(10px, 1vw, 14px);
-      font-weight: 800;
+      font-size: 21px;
+      font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.22);
-      transition: transform 0.1s;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      transition: all 0.15s;
     }
-    #ready-btn:hover { transform: scale(1.06); }
+    #ready-btn:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+    #ready-btn:active { transform: scale(0.95); }
 
-    @media (orientation: portrait) {
-      /* Mobile: plumber bottom-right, card takes full width */
-      #welcome-plumber {
-        right: 0; left: auto;
-        transform: none;
-        height: clamp(180px, 38vh, 320px);
-        bottom: 0;
-      }
-      #welcome-container {
-        width: calc(100% - 32px);
-        max-width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-      }
-      #welcome-card {
-        padding: 36px 22px clamp(140px, 32vh, 200px);
-        border-radius: 16px;
-      }
-      #welcome-card h1 { font-size: clamp(20px, 6vw, 28px); }
-      #welcome-card .welcome-sub { font-size: clamp(13px, 3.5vw, 16px); }
-      #welcome-card .welcome-body { font-size: clamp(12px, 3vw, 15px); }
-      #ready-btn {
-        width: clamp(64px, 16vw, 82px);
-        height: clamp(64px, 16vw, 82px);
-        font-size: clamp(9px, 2.5vw, 12px);
-        bottom: clamp(18px, 4vh, 32px);
-        right: 20px;
-      }
+    @media (max-width: 767px) {
+      #welcome-card h1 { font-size: 40px; }
+      #welcome-card .welcome-sub,
+      #welcome-card .welcome-body { font-size: 14px; }
+      #ready-btn { width: 76px; height: 76px; font-size: 19px; }
+    }
+
+    @media (orientation: landscape) and (max-height: 740px) and (max-width: 980px) {
+      #welcome-screen { padding: 12px; }
+      #welcome-container { max-width: min(940px, 96vw); }
+      #welcome-card { padding: 32px 24px 80px; }
+      #welcome-card h1 { font-size: 32px; margin-bottom: 14px; }
+      #welcome-plumber { max-width: 180px; }
     }
 
     /* Win overlay */
