@@ -444,34 +444,31 @@
     /* Welcome screen */
     #welcome-screen {
       position: fixed; inset: 0; z-index: 400;
-      background: #193E75;
+      background: rgba(25, 62, 117, 0.7);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
     }
 
-    /* ── Desktop: plumber bottom-left, in front of card, scales with vh ── */
+    /* ── Desktop: plumber bottom-right, outside card ── */
     #welcome-plumber {
       position: absolute;
       bottom: 0;
-      left: 0;
+      right: 0;
       height: clamp(300px, 75vh, 650px);
       width: auto;
       pointer-events: none;
       z-index: 402;
     }
 
-    /* Card: pushed right so plumber never covers text.
-       Plumber SVG is square. At 75vh ~= 0.75 * vh.
-       Visible character body ≈ 38% of SVG width from left, so offset = 0.38 * 0.75vh.
-       Use a safe fixed offset via margin-left. */
+    /* Card: offset left so plumber on right has room */
     #welcome-container {
       position: relative;
-      max-width: clamp(460px, 55vw, 700px);
+      max-width: clamp(460px, 50vw, 660px);
       width: calc(100% - 64px);
       z-index: 401;
-      margin-left: auto;
+      margin-left: 4vw;
       margin-right: auto;
     }
 
@@ -558,10 +555,10 @@
     #ready-btn:hover { transform: scale(1.06); }
 
     @media (orientation: portrait) {
-      /* Mobile: plumber centered at bottom, in front of card */
+      /* Mobile: plumber bottom-right, card takes full width */
       #welcome-plumber {
-        left: 50%;
-        transform: translateX(-50%);
+        right: 0; left: auto;
+        transform: none;
         height: clamp(180px, 38vh, 320px);
         bottom: 0;
       }
