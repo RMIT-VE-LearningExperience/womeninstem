@@ -444,7 +444,7 @@
     /* Welcome screen — matches crane-operator style */
     #welcome-screen {
       position: fixed; inset: 0; z-index: 400;
-      background: #193e75de;
+      background: #193e75;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -453,10 +453,11 @@
 
     #welcome-plumber {
       position: fixed;
-      right: 0;
+      right: 6px;
       bottom: -8px;
-      height: clamp(300px, 75vh, 650px);
-      width: auto;
+      width: 52vw;
+      max-width: 250px;
+      height: auto;
       pointer-events: none;
       z-index: 402;
     }
