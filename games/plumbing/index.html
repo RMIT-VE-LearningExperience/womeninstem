@@ -797,10 +797,10 @@
       <rect id="flash-3" x="1342" y="1243" width="175" height="82" rx="8" opacity="0" style="pointer-events:none"/>
 
       <!-- ── Drop zones (stage 1 active by default) ── -->
-      <rect id="zone-1" class="drop-zone" data-stage="1"
+      <rect id="zone-1" class="drop-zone" data-stage="2"
             x="1895" y="1368" width="95" height="382" rx="8"
-            fill="rgba(255,204,0,0.18)" stroke="#ffcc00" stroke-width="10" stroke-dasharray="22,11"/>
-      <rect id="zone-2" class="drop-zone" data-stage="2" style="display:none"
+            fill="rgba(255,204,0,0.18)" stroke="#ffcc00" stroke-width="10" stroke-dasharray="22,11" style="display:none"/>
+      <rect id="zone-2" class="drop-zone" data-stage="1"
             x="1558" y="1208" width="228" height="158" rx="8"
             fill="rgba(255,204,0,0.18)" stroke="#ffcc00" stroke-width="10" stroke-dasharray="22,11"/>
       <rect id="zone-3" class="drop-zone" data-stage="3" style="display:none"
@@ -912,18 +912,18 @@ const STAGES = [
     id: 1,
     label: 'Stage 1 of 3 — Select the correct part',
     choices: [
-      { img: 'images/library options/stage1/copper_pipe.png', label: 'Copper Pipe',  correct: true  },
-      { img: 'images/library options/stage1/lead_pipe.png',   label: 'Lead Pipe',    correct: false },
-      { img: 'images/library options/stage1/plastic_pipe.png',label: 'Plastic Pipe', correct: false }
+      { img: 'images/library options/stage2/water_meter.png',           label: 'Water Meter',           correct: true  },
+      { img: 'images/library options/stage2/gas_meter.png?v=2',          label: 'Gas Meter',             correct: false },
+      { img: 'images/library options/stage2/recycled_water_meter.png',  label: 'Recycled Water Meter',  correct: false }
     ]
   },
   {
     id: 2,
     label: 'Stage 2 of 3 — Select the correct part',
     choices: [
-      { img: 'images/library options/stage2/water_meter.png',           label: 'Water Meter',           correct: true  },
-      { img: 'images/library options/stage2/gas_meter.png?v=2',          label: 'Gas Meter',             correct: false },
-      { img: 'images/library options/stage2/recycled_water_meter.png',  label: 'Recycled Water Meter',  correct: false }
+      { img: 'images/library options/stage1/copper_pipe.png', label: 'Copper Pipe',  correct: true  },
+      { img: 'images/library options/stage1/lead_pipe.png',   label: 'Lead Pipe',    correct: false },
+      { img: 'images/library options/stage1/plastic_pipe.png',label: 'Plastic Pipe', correct: false }
     ]
   },
   {
@@ -939,8 +939,8 @@ const STAGES = [
 
 // ── Tutorial text per stage ───────────────────────────────────────
 const TUTORIAL_TEXT = [
-  'Select the correct pipe material for a cold water supply. Drag it to the highlighted gap in the system.',
   'Identify the correct meter for measuring water flowing into the building. Drag it to the highlighted connection point.',
+  'Select the correct pipe material for a cold water supply. Drag it to the highlighted gap in the system.',
   'Choose the right device to prevent backflow and protect the water supply. Drag it to the highlighted position.'
 ];
 
