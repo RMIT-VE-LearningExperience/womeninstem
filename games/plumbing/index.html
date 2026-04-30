@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Plumbing Game</title>
   <link rel="stylesheet" href="../../nav.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -483,6 +486,7 @@
     #welcome-close { display: none; }
 
     #welcome-card h1 {
+      font-family: 'Inter', sans-serif;
       color: #224987;
       font-size: 48px;
       font-weight: 900;
@@ -494,6 +498,7 @@
     }
 
     #welcome-card .welcome-sub {
+      font-family: 'Inter', sans-serif;
       font-size: 16px;
       font-weight: 700;
       color: #1a2744;
@@ -502,6 +507,7 @@
     }
 
     #welcome-card .welcome-body {
+      font-family: 'Inter', sans-serif;
       font-size: 16px;
       font-weight: 400;
       color: #1a2744;
@@ -519,6 +525,7 @@
       border: none;
       cursor: pointer;
       color: #fff;
+      font-family: 'Inter', sans-serif;
       font-size: 21px;
       font-weight: 900;
       letter-spacing: 0.08em;
@@ -822,7 +829,6 @@
 
 <!-- Welcome screen -->
 <div id="welcome-screen">
-  <img id="welcome-plumber" src="images/plumber.svg" alt="Plumber character">
   <div id="welcome-container">
     <div id="welcome-card">
       <button id="welcome-back" aria-label="Back">&#8617;</button>
@@ -833,6 +839,7 @@
       <button id="ready-btn">READY</button>
     </div>
   </div>
+  <img id="welcome-plumber" src="images/plumber.svg" alt="Plumber character">
 </div>
 
 <!-- Nav drawer -->
