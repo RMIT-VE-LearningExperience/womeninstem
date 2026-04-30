@@ -462,7 +462,7 @@
       max-width: 250px;
       height: auto;
       pointer-events: none;
-      z-index: 402;
+      z-index: 450;
     }
 
     #welcome-container {
@@ -839,8 +839,8 @@
       <button id="ready-btn">READY</button>
     </div>
   </div>
-  <img id="welcome-plumber" src="images/plumber.svg" alt="Plumber character">
 </div>
+<img id="welcome-plumber" src="images/plumber.svg" alt="Plumber character">
 
 <!-- Nav drawer -->
 <nav class="nav-drawer" id="navDrawer">
@@ -1231,12 +1231,12 @@ document.getElementById('gameover-try-btn').addEventListener('click', () => {
 });
 
 // ── Welcome screen ────────────────────────────────────────────────
-document.getElementById('ready-btn').addEventListener('click', () => {
+function dismissWelcome() {
   document.getElementById('welcome-screen').style.display = 'none';
-});
-document.getElementById('welcome-close').addEventListener('click', () => {
-  document.getElementById('welcome-screen').style.display = 'none';
-});
+  document.getElementById('welcome-plumber').style.display = 'none';
+}
+document.getElementById('ready-btn').addEventListener('click', dismissWelcome);
+document.getElementById('welcome-close').addEventListener('click', dismissWelcome);
 
 // Help modal
 document.getElementById('helpBtn').addEventListener('click', () => {
