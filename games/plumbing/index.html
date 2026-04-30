@@ -476,8 +476,9 @@
       background: #efefef;
       border-radius: 16px;
       width: 100%;
+      height: 80vh;
       position: relative;
-      padding: 56px 28px 120px;
+      padding: 56px 28px 28px;
       overflow: hidden;
       box-shadow: 0 18px 50px rgba(0,0,0,0.25);
     }
@@ -547,7 +548,7 @@
     @media (orientation: landscape) and (max-height: 740px) and (max-width: 980px) {
       #welcome-screen { padding: 12px; }
       #welcome-container { max-width: min(940px, 96vw); }
-      #welcome-card { padding: 32px 24px 80px; }
+      #welcome-card { height: auto; max-height: 92vh; padding: 32px 24px 28px; }
       #welcome-card h1 { font-size: 32px; margin-bottom: 14px; }
       #welcome-plumber { max-width: 180px; }
     }
