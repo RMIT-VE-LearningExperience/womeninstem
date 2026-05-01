@@ -1024,8 +1024,8 @@ const STAGES = [
         label: 'Plastic Pipe',
         correct: false,
         feedback: {
-          sub: 'Plastic pipe isn\'t suitable for this cold water supply run under the current site specification.',
-          body: 'Copper is required here for durability, pressure rating, and compliance with the site\'s approved materials schedule.'
+          sub: 'Plastic pipe isn\'t approved for this type of cold water supply connection under the current site specification.',
+          body: 'The material schedule for this installation requires a metal pipe with higher pressure tolerance and durability than plastic can provide.'
         }
       }
     ]
@@ -1040,8 +1040,8 @@ const STAGES = [
         label: 'Brass Valve Assembly',
         correct: false,
         feedback: {
-          sub: 'A brass valve assembly controls flow but provides no protection against backflow.',
-          body: 'Without backflow prevention, contaminated water can be pushed back into the mains — a serious health and compliance risk.'
+          sub: 'A brass valve assembly controls water flow — but it can\'t stop water from reversing direction in the pipe.',
+          body: 'This point in the system needs a specialised device that prevents reverse flow. A valve assembly alone doesn\'t meet that requirement.'
         }
       },
       {
@@ -1049,8 +1049,8 @@ const STAGES = [
         label: 'Pressure Zone Device',
         correct: false,
         feedback: {
-          sub: 'A pressure zone device regulates water pressure — it doesn\'t stop reverse flow.',
-          body: 'Backflow prevention is a separate requirement. A PRV alone leaves the potable water supply unprotected against contamination.'
+          sub: 'A pressure zone device (PRV) reduces water pressure to a safe level — that\'s not what\'s needed at this connection point.',
+          body: 'This location requires a device that stops water flowing backwards into the supply. Regulating pressure and preventing reverse flow are two different functions.'
         }
       }
     ]
