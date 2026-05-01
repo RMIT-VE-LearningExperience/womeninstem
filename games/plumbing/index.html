@@ -142,9 +142,9 @@
       height: clamp(160px, 22vh, 220px);
       background: rgba(25, 62, 117, 0.9);
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-evenly;
-      padding: 8px 0;
+      padding: 16px 0 8px;
       position: relative;
       z-index: 10;
     }
@@ -173,7 +173,7 @@
     .choice-wrap {
       display: flex;
       flex-direction: row;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
       flex-shrink: 0;
     }
@@ -193,9 +193,9 @@
         min-height: 160px;
         flex-direction: row;
         flex-wrap: nowrap;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-evenly;
-        padding: 10px 4px 12px;
+        padding: 14px 4px 12px;
       }
 
       .choice { width: 84px; height: 84px; flex-shrink: 0; }
@@ -205,7 +205,7 @@
         align-items: center;
         gap: 6px;
         flex-shrink: 1;
-        justify-content: center;
+        justify-content: flex-start;
       }
 
       .choice-label {
