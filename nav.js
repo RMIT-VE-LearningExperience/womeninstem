@@ -143,9 +143,21 @@
 
     setDrawerKeyboardState(false);
 
-    menuBtn.addEventListener('click', openNav);
+    menuBtn.addEventListener('click', function() {
+        if (typeof gtag !== 'undefined') gtag('event', 'menu_open', { event_category: 'navigation' });
+        openNav();
+    });
     if (closeBtn) closeBtn.addEventListener('click', closeNav);
     if (scrim) scrim.addEventListener('click', closeNav);
+
+    // Track nav link clicks
+    drawer.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+            var label = link.querySelector('.nav-link-label');
+            var name = label ? label.textContent.trim() : (link.getAttribute('aria-label') || 'unknown');
+            if (typeof gtag !== 'undefined') gtag('event', 'nav_link_click', { event_category: 'navigation', event_label: name });
+        });
+    });
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && drawer.classList.contains('open')) {

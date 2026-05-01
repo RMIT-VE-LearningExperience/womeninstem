@@ -321,6 +321,12 @@ html, body {
         height: 68px;
     }
 
+    .page-corner-logo {
+        top: 14px;
+        left: 14px;
+        height: 68px;
+    }
+
     .hero-subtitle br {
         display: none;
     }
@@ -364,6 +370,12 @@ html, body {
         top: 12px;
         right: 12px;
         width: 68px;
+        height: 68px;
+    }
+
+    .page-corner-logo {
+        top: 12px;
+        left: 12px;
         height: 68px;
     }
 

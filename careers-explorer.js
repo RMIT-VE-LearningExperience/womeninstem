@@ -361,6 +361,7 @@ if (searchToggleBtn && navSearchShell) {
     searchToggleBtn.addEventListener('click', () => {
         const isExpanded = navSearchShell.classList.contains('expanded');
         if (!isExpanded) {
+            gtag('event', 'click', { event_category: 'career_explorer', event_label: 'search_open' });
             setSearchExpanded(true, { focus: true });
             return;
         }
@@ -393,8 +394,10 @@ if (careerSearchInput && navSearchShell) {
 if (cardBtn) {
     cardBtn.addEventListener('click', () => {
         if (currentView === 'floating') {
+            gtag('event', 'click', { event_category: 'career_explorer', event_label: 'view_switch_to_cards' });
             switchView('cards');
         } else if (currentView === 'cards' || currentView === 'stack') {
+            gtag('event', 'click', { event_category: 'career_explorer', event_label: 'view_switch_to_floating' });
             switchView('floating');
         }
     });
@@ -419,6 +422,7 @@ Object.keys(skillCategories).forEach(category => {
     const activateTag = () => {
         const suppressUntil = parseInt(tag.dataset.dragSuppressUntil || '0', 10);
         if (Date.now() < suppressUntil) return;
+        gtag('event', 'filter_category', { event_category: 'career_explorer', event_label: category });
         toggleCategoryFilter(category, tag);
     };
     tag.addEventListener('click', activateTag);
@@ -2153,6 +2157,7 @@ function toggleCategoryFilter(category, element) {
 }
 
 clearFiltersBtn.addEventListener('click', () => {
+    gtag('event', 'click', { event_category: 'career_explorer', event_label: 'clear_all_filters' });
     // Clear search input
     const searchInput = document.getElementById('careerSearch');
     if (searchInput) {
@@ -2176,6 +2181,7 @@ clearFiltersBtn.addEventListener('click', () => {
 if (videoStoriesFilterBtn) {
     videoStoriesFilterBtn.addEventListener('click', () => {
         videoFilterActive = !videoFilterActive;
+        gtag('event', 'click', { event_category: 'career_explorer', event_label: videoFilterActive ? 'video_stories_filter_on' : 'video_stories_filter_off' });
         syncVideoFilterUI();
         filterCareers();
     });
