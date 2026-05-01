@@ -366,17 +366,6 @@
     box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
   }
 
-  .cell:focus-visible,
-  .worker-source:focus-visible,
-  .remove-btn:focus-visible {
-    outline: 4px solid #2563eb;
-    outline-offset: 3px;
-  }
-
-  .worker-source.keyboard-selected .worker-avatar {
-    box-shadow: 0 0 0 5px #ffffff, 0 0 0 9px #2563eb;
-  }
-
   .cell.drag-over {
     border-color: #3b82f6;
     background: #dbeafe;
@@ -1152,26 +1141,12 @@ padding-bottom: 60px;
     background: #d1d5db;
     cursor: pointer;
     transition: all 0.2s;
-    border: 0;
-    padding: 0;
   }
 
   .slide-dot.active {
     background: #193E75;
     width: 24px;
     border-radius: 4px;
-  }
-
-  .visually-hidden {
-    position: absolute !important;
-    width: 1px !important;
-    height: 1px !important;
-    padding: 0 !important;
-    margin: -1px !important;
-    overflow: hidden !important;
-    clip: rect(0 0 0 0) !important;
-    white-space: nowrap !important;
-    border: 0 !important;
   }
 
   .modal-btn {
@@ -1350,6 +1325,7 @@ padding-bottom: 60px;
     padding: 56px 28px 140px;
     color: #1a2744;
     z-index: 2;
+    overflow-y: auto;
   }
 
   .welcome-intro-title {
@@ -1417,6 +1393,7 @@ padding-bottom: 60px;
     inset: 0;
     padding: 236px 18px 108px;
     color: #1a2744;
+    overflow-y: auto;
   }
 
   .welcome-role-title {
@@ -1585,12 +1562,10 @@ padding-bottom: 60px;
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
-    line-height: 1.25;
+    line-height: 1;
     padding: 9px 13px;
-    border-radius: 12px;
+    border-radius: 999px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
-    max-width: min(260px, calc(100vw - 24px));
-    text-align: center;
     opacity: 0;
     transform: translateY(4px);
     transition: opacity 0.18s ease, transform 0.18s ease;
@@ -1960,20 +1935,20 @@ padding-bottom: 60px;
 
 </nav>
 <div class="nav-scrim" id="navScrim"></div>
-<div class="welcome-overlay" id="welcomeOverlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle" aria-describedby="welcomeDesc" aria-hidden="false">
+<div class="welcome-overlay" id="welcomeOverlay">
   <div class="welcome-card">
     <div class="welcome-role-slides">
       <div class="welcome-role-slide active" data-role-slide="0">
         <div class="welcome-intro-body">
-          <div class="welcome-intro-title" id="welcomeTitle">WELCOME TO<br>CREW PLANNER!</div>
-          <p class="welcome-intro-text" id="welcomeDesc">
+          <div class="welcome-intro-title">WELCOME TO<br>CREW PLANNER!</div>
+          <p class="welcome-intro-text">
             You're in charge of scheduling trades for a construction project.
           </p>
           <p class="welcome-intro-text">
             Schedule the Crane Operator, Concreter, and Carpenter to complete the job on time while working around the weather.
           </p>
         </div>
-        <img class="welcome-intro-manager" src="images/character_coins/manager.svg" alt="" aria-hidden="true">
+        <img class="welcome-intro-manager" src="images/character_coins/manager.svg" alt="Manager">
       </div>
 
       <div class="welcome-role-slide" data-role-slide="1">
@@ -2025,15 +2000,15 @@ padding-bottom: 60px;
         </div>
       </div>
     </div>
-    <button class="welcome-next" id="welcomeNextBtn" data-initial-focus onclick="nextWelcomeSlide()">NEXT</button>
+    <button class="welcome-next" id="welcomeNextBtn" onclick="nextWelcomeSlide()">NEXT</button>
     <div class="welcome-dots" id="welcomeDots"></div>
   </div>
 </div>
-<div class="orientation-overlay" id="orientationOverlay" role="dialog" aria-modal="true" aria-labelledby="orientationTitle" aria-describedby="orientationText" aria-hidden="true">
+<div class="orientation-overlay" id="orientationOverlay" aria-hidden="true">
   <div class="orientation-card" role="status" aria-live="polite">
     <div class="orientation-icon" aria-hidden="true">📱</div>
-    <h2 class="orientation-title" id="orientationTitle">Portrait Mode Preferred</h2>
-    <p class="orientation-text" id="orientationText">For the best Crew Planner experience, rotate your device to portrait mode.</p>
+    <h2 class="orientation-title">Portrait Mode Preferred</h2>
+    <p class="orientation-text">For the best Crew Planner experience, rotate your device to portrait mode.</p>
   </div>
 </div>
 <div class="app">
@@ -2114,19 +2089,19 @@ padding-bottom: 60px;
 </div>
 
 <!-- Feedback Modal -->
-<div class="feedback-overlay" id="feedbackOverlay" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle" aria-describedby="feedbackMsg feedbackHint" aria-hidden="true">
+<div class="feedback-overlay" id="feedbackOverlay">
   <div class="feedback-popup" id="feedbackPopup">
-    <button class="feedback-close" data-initial-focus aria-label="Close" onclick="closeFeedback()">×</button>
-    <div class="feedback-title" id="feedbackTitle">ATTENTION!</div>
+    <button class="feedback-close" aria-label="Close" onclick="closeFeedback()">×</button>
+    <div class="feedback-title">ATTENTION!</div>
     <div class="feedback-avatar" id="feedbackAvatar"></div>
     <div class="feedback-msg" id="feedbackMsg"></div>
     <div class="feedback-hint" id="feedbackHint"></div>
   </div>
 </div>
 
-<div class="weather-popup-overlay" id="weatherPopupOverlay" role="dialog" aria-modal="true" aria-labelledby="weatherPopupTitle" aria-describedby="weatherPopupText" aria-hidden="true">
+<div class="weather-popup-overlay" id="weatherPopupOverlay">
   <div class="weather-popup" id="weatherPopup">
-    <button class="weather-popup-close" data-initial-focus aria-label="Close weather info" onclick="closeWeatherPopup()">×</button>
+    <button class="weather-popup-close" aria-label="Close weather info" onclick="closeWeatherPopup()">×</button>
     <div class="weather-popup-title" id="weatherPopupTitle">Weather info</div>
     <div class="weather-popup-body">
       <div class="weather-popup-icon" id="weatherPopupIcon"></div>
@@ -2136,10 +2111,9 @@ padding-bottom: 60px;
 </div>
 
 <!-- Help Modal -->
-<div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle" aria-describedby="helpSlideText" aria-hidden="true">
+<div class="modal-overlay" id="helpModal">
   <div class="modal">
-    <h2 id="helpModalTitle">Game Rules</h2>
-    <div class="visually-hidden" id="helpSlideText" aria-live="polite"></div>
+    <h2>Game Rules</h2>
     <div class="slide-container">
       <div class="slide active" data-slide="0">
         <p><strong>Your Goal:</strong> Schedule the Crane Operator, Concreter, and Carpenter to complete the construction project on time.</p>
@@ -2162,32 +2136,31 @@ padding-bottom: 60px;
       </div>
       <div class="slide" data-slide="3">
         <p><strong>How to Play:</strong></p>
-        <p>Select workers from the bottom bar, then place them in schedule slots that match the weather and work order requirements. You can do this with drag and drop, or with keyboard navigation using Enter or Space.</p>
+        <p>Drag workers from the bottom bar onto the schedule grid. Place them in time slots that match the weather and work order requirements.</p>
         <p>Each worker needs to fill all 3 of their slots to complete their work.</p>
       </div>
     </div>
     <div class="modal-nav">
       <button class="modal-btn" id="prevSlide">← Back</button>
       <div class="slide-dots" id="slideDots"></div>
-      <button class="modal-btn modal-btn-primary" id="nextSlide" data-initial-focus>Next →</button>
+      <button class="modal-btn modal-btn-primary" id="nextSlide">Next →</button>
     </div>
     <button class="modal-close" onclick="closeHelp()">×</button>
   </div>
 </div>
 
 <!-- Success Overlay -->
-<div class="success-overlay" id="successOverlay" role="dialog" aria-modal="true" aria-labelledby="successTitle" aria-describedby="successDesc" aria-hidden="true">
+<div class="success-overlay" id="successOverlay">
   <div class="success-card">
     <div class="success-icon">🎉</div>
-    <h2 id="successTitle">Great Job!</h2>
-    <p id="successDesc">You've successfully planned the crew schedule! All workers are assigned, the work order is correct, and the weather is safe.</p>
-    <button data-initial-focus onclick="closeSuccess(); resetGame();">Play Again</button>
+    <h2>Great Job!</h2>
+    <p>You've successfully planned the crew schedule! All workers are assigned, the work order is correct, and the weather is safe.</p>
+    <button onclick="resetGame(); document.getElementById('successOverlay').classList.remove('active');">Play Again</button>
   </div>
 </div>
 
 <!-- Toast -->
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<div class="visually-hidden" id="onboardingStatus" role="status" aria-live="polite"></div>
+<div class="toast" id="toast"></div>
 
 <!-- Drag ghost -->
 <div class="drag-ghost" id="dragGhost"></div>
@@ -2287,8 +2260,6 @@ const gameState = {
   settingDay: null     // day name where concrete sets (day after pour)
 };
 
-let keyboardSelectedRole = null;
-
 // ============================================================
 //  SVG ICONS (same as before)
 // ============================================================
@@ -2296,20 +2267,20 @@ function weatherSVG(type) {
   const meta = weatherMeta[type];
   if (!meta) return '';
   const tip = weatherDescriptions[type] || meta.label;
-  return `<img class="weather-icon" src="${meta.src}" alt="" aria-hidden="true" title="${tip}" data-weather="${type}">`;
+  return `<img class="weather-icon" src="${meta.src}" alt="${meta.label}" title="${tip}" data-weather="${type}">`;
 }
 
 function weatherPopupIconSVG(type) {
   const meta = weatherMeta[type];
   if (!meta) return '';
-  return `<img src="${meta.src}" alt="" aria-hidden="true">`;
+  return `<img src="${meta.src}" alt="${meta.label}">`;
 }
 
 function workerSVG(role) {
   const avatars = {
-    'crane': `<img src="images/character_coins/craneoperator_coin.svg" alt="" aria-hidden="true">`,
-    'concreter': `<img src="images/character_coins/concreter_coin.svg" alt="" aria-hidden="true">`,
-    'carpenter': `<img src="images/character_coins/carpenter_coin.svg" alt="" aria-hidden="true">`
+    'crane': `<img src="images/character_coins/craneoperator_coin.svg" alt="Crane Operator">`,
+    'concreter': `<img src="images/character_coins/concreter_coin.svg" alt="Concreter">`,
+    'carpenter': `<img src="images/character_coins/carpenter_coin.svg" alt="Carpenter">`
   };
   return avatars[role] || '';
 }
@@ -2345,7 +2316,6 @@ function buildGrid() {
         cell.dataset.slot = si;
         const key = `${day}-${si}`;
         cell.innerHTML = weatherSVG(weatherData[key]);
-        setupCellAccessibility(cell);
         row.appendChild(cell);
       });
       grid.appendChild(row);
@@ -2372,7 +2342,6 @@ function buildGrid() {
       cell.dataset.slot = si;
       const key = `${day}-${si}`;
       cell.innerHTML = weatherSVG(weatherData[key]);
-      setupCellAccessibility(cell);
       row.appendChild(cell);
     }
     grid.appendChild(row);
@@ -2389,6 +2358,7 @@ function setAvatars() {
 //  PROGRESS & UI UPDATES
 // ============================================================
 function updateProgress(role) {
+  const used = gameState[role + (role === 'concreter' ? 'SlotsUsed' : role === 'crane' ? 'SlotsUsed' : 'SlotsUsed')];
   const count = role === 'crane' ? gameState.craneSlotsUsed :
                 role === 'concreter' ? gameState.concreterSlotsUsed :
                 gameState.carpenterSlotsUsed;
@@ -2401,13 +2371,10 @@ function updateProgress(role) {
   if (count >= 3) {
     src.classList.add('completed');
     src.setAttribute('draggable', 'false');
-    src.setAttribute('aria-disabled', 'true');
   } else {
     src.classList.remove('completed');
     src.setAttribute('draggable', 'true');
-    src.setAttribute('aria-disabled', 'false');
   }
-  updateWorkerAccessibility(role);
 }
 
 function updateAllProgress() {
@@ -2424,18 +2391,14 @@ function showFeedback(role, message, hint) {
   const popup = document.getElementById('feedbackPopup');
   popup.style.setProperty('--role-color', roleColors[role]);
   const roleImg = role === 'crane' ? 'craneoperator.svg' : `${role}.svg`;
-  document.getElementById('feedbackAvatar').innerHTML = `<img class="feedback-character" src="images/character_coins/${roleImg}" alt="" aria-hidden="true">`;
+  document.getElementById('feedbackAvatar').innerHTML = `<img class="feedback-character" src="images/character_coins/${roleImg}" alt="${w.name}">`;
   document.getElementById('feedbackMsg').textContent = message;
   document.getElementById('feedbackHint').textContent = hint || '';
   document.getElementById('feedbackOverlay').classList.add('active');
-  document.getElementById('feedbackOverlay').setAttribute('aria-hidden', 'false');
-  updatePopupFocusState();
 }
 
 function closeFeedback() {
   document.getElementById('feedbackOverlay').classList.remove('active');
-  document.getElementById('feedbackOverlay').setAttribute('aria-hidden', 'true');
-  updatePopupFocusState();
 }
 
 document.getElementById('feedbackOverlay').addEventListener('click', e => {
@@ -2444,8 +2407,6 @@ document.getElementById('feedbackOverlay').addEventListener('click', e => {
 
 function closeWeatherPopup() {
   document.getElementById('weatherPopupOverlay').classList.remove('active');
-  document.getElementById('weatherPopupOverlay').setAttribute('aria-hidden', 'true');
-  updatePopupFocusState();
 }
 
 function showWeatherPopup(type, day, slot) {
@@ -2458,8 +2419,6 @@ function showWeatherPopup(type, day, slot) {
   iconEl.innerHTML = weatherPopupIconSVG(type);
   textEl.textContent = weatherDescriptions[type] || `${label} conditions.`;
   document.getElementById('weatherPopupOverlay').classList.add('active');
-  document.getElementById('weatherPopupOverlay').setAttribute('aria-hidden', 'false');
-  updatePopupFocusState();
 }
 
 function isCoarsePointer() {
@@ -2517,275 +2476,6 @@ function showToast(msg) {
   t.classList.add('show');
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-const popupIds = ['feedbackOverlay', 'weatherPopupOverlay', 'helpModal', 'successOverlay', 'welcomeOverlay'];
-let activePopup = null;
-let lastFocusedBeforePopup = null;
-
-function isPopupVisible(el) {
-  if (!el) return false;
-  const style = window.getComputedStyle(el);
-  return style.display !== 'none' && style.visibility !== 'hidden' && !el.hasAttribute('hidden');
-}
-
-function getActivePopup() {
-  return popupIds
-    .map(id => document.getElementById(id))
-    .find(el => isPopupVisible(el) && el.getAttribute('aria-hidden') !== 'true') || null;
-}
-
-function inertElement(el, inert, options = {}) {
-  if (!el) return;
-  el.inert = inert;
-  if (inert) {
-    if (!el.hasAttribute('data-popup-aria-hidden')) {
-      el.setAttribute('data-popup-aria-hidden', el.getAttribute('aria-hidden') || '');
-    }
-    el.setAttribute('aria-hidden', 'true');
-    return;
-  }
-  if (el.hasAttribute('data-popup-aria-hidden')) {
-    const previous = el.getAttribute('data-popup-aria-hidden');
-    if (!options.keepCurrentAriaHidden) {
-      if (previous) el.setAttribute('aria-hidden', previous);
-      else el.removeAttribute('aria-hidden');
-    }
-    el.removeAttribute('data-popup-aria-hidden');
-  }
-}
-
-function getFocusableElements(container) {
-  if (!container) return [];
-  const selector = [
-    'a[href]',
-    'button:not([disabled])',
-    'input:not([disabled])',
-    'select:not([disabled])',
-    'textarea:not([disabled])',
-    '[tabindex]:not([tabindex="-1"])'
-  ].join(',');
-  return [...container.querySelectorAll(selector)]
-    .filter(el => !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length));
-}
-
-function setPageInertForPopup(popup) {
-  [...document.body.children].forEach(child => {
-    const shouldInert = !!popup && child !== popup;
-    if (shouldInert) {
-      inertElement(child, true);
-    } else if (child.hasAttribute('data-popup-aria-hidden')) {
-      inertElement(child, false, { keepCurrentAriaHidden: child === popup });
-    } else if (!popup) {
-      child.inert = false;
-    }
-  });
-}
-
-function setOnboardingIsolation(active) {
-  ['navDrawer', 'navScrim', 'welcomeOverlay', 'orientationOverlay', 'helpModal', 'feedbackOverlay', 'weatherPopupOverlay', 'successOverlay'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) inertElement(el, active);
-  });
-}
-
-function focusPopup(popup) {
-  const currentInside = popup.contains(document.activeElement);
-  if (currentInside) return;
-  const preferred = popup.querySelector('[data-initial-focus]');
-  const focusables = getFocusableElements(popup);
-  const target = preferred || focusables[0] || popup;
-  if (!target.hasAttribute('tabindex') && target === popup) target.setAttribute('tabindex', '-1');
-  target.focus({ preventScroll: true });
-}
-
-function updatePopupFocusState() {
-  const popup = getActivePopup();
-  if (popup && popup !== activePopup) {
-    lastFocusedBeforePopup = document.activeElement;
-  }
-  activePopup = popup;
-  setPageInertForPopup(activePopup);
-  if (activePopup) {
-    window.setTimeout(() => focusPopup(activePopup), 0);
-  } else if (lastFocusedBeforePopup && typeof lastFocusedBeforePopup.focus === 'function' && document.contains(lastFocusedBeforePopup)) {
-    lastFocusedBeforePopup.focus({ preventScroll: true });
-    lastFocusedBeforePopup = null;
-  }
-}
-
-document.addEventListener('keydown', e => {
-  if (!activePopup) return;
-
-  if (e.key === 'Escape') {
-    if (activePopup.id === 'feedbackOverlay') closeFeedback();
-    else if (activePopup.id === 'weatherPopupOverlay') closeWeatherPopup();
-    else if (activePopup.id === 'helpModal') closeHelp();
-    return;
-  }
-
-  if (e.key !== 'Tab') return;
-
-  const focusables = getFocusableElements(activePopup);
-  if (!focusables.length) {
-    e.preventDefault();
-    activePopup.focus({ preventScroll: true });
-    return;
-  }
-
-  const first = focusables[0];
-  const last = focusables[focusables.length - 1];
-  if (e.shiftKey && document.activeElement === first) {
-    e.preventDefault();
-    last.focus();
-  } else if (!e.shiftKey && document.activeElement === last) {
-    e.preventDefault();
-    first.focus();
-  }
-});
-
-function countForRole(role) {
-  return role === 'crane' ? gameState.craneSlotsUsed :
-         role === 'concreter' ? gameState.concreterSlotsUsed :
-         gameState.carpenterSlotsUsed;
-}
-
-function slotAccessibleName(cell) {
-  const day = cell.dataset.day;
-  const slot = parseInt(cell.dataset.slot, 10);
-  const key = `${day}-${slot}`;
-  const weather = weatherData[key];
-  const weatherLabel = weatherMeta[weather]?.label || 'weather unknown';
-  const assigned = gameState.schedule[key];
-  if (assigned === 'setting') {
-    return `${day}, ${slotLabels[slot]}, concrete setting day. Unavailable.`;
-  }
-  if (assigned) {
-    return `${day}, ${slotLabels[slot]}, ${weatherLabel}. Assigned to ${workers[assigned].name}. Press Enter to move this worker, or Delete to remove.`;
-  }
-  if (keyboardSelectedRole) {
-    return `${day}, ${slotLabels[slot]}, ${weatherLabel}, empty. Press Enter to place ${workers[keyboardSelectedRole].name}.`;
-  }
-  return `${day}, ${slotLabels[slot]}, ${weatherLabel}, empty. Select a worker first, then press Enter here to place them.`;
-}
-
-function setupCellAccessibility(cell) {
-  cell.setAttribute('role', 'button');
-  cell.setAttribute('tabindex', '0');
-  cell.setAttribute('aria-describedby', 'onboardingStatus');
-  if (!cell.dataset.keyboardReady) {
-    cell.addEventListener('keydown', handleCellKeydown);
-    cell.dataset.keyboardReady = 'true';
-  }
-  updateCellAccessibility(cell);
-}
-
-function updateCellAccessibility(cell) {
-  if (!cell) return;
-  cell.setAttribute('aria-label', slotAccessibleName(cell));
-  const occupied = gameState.schedule[`${cell.dataset.day}-${cell.dataset.slot}`];
-  cell.setAttribute('aria-disabled', occupied === 'setting' ? 'true' : 'false');
-}
-
-function updateAllCellAccessibility() {
-  document.querySelectorAll('.cell').forEach(updateCellAccessibility);
-}
-
-function updateWorkerAccessibility(role) {
-  const src = document.getElementById(`src-${role}`);
-  if (!src) return;
-  const count = countForRole(role);
-  const selected = keyboardSelectedRole === role;
-  src.setAttribute('role', 'button');
-  src.setAttribute('tabindex', '0');
-  src.setAttribute('aria-pressed', selected ? 'true' : 'false');
-  src.setAttribute('aria-describedby', 'onboardingStatus');
-  src.classList.toggle('keyboard-selected', selected);
-  const state = count >= 3 ? 'complete' : `${count} of 3 shifts assigned`;
-  const selectedText = selected ? ' Selected.' : '';
-  src.setAttribute('aria-label', `${workers[role].name}. ${state}.${selectedText} Press Enter to select this worker.`);
-}
-
-function updateAllWorkerAccessibility() {
-  Object.keys(workers).forEach(updateWorkerAccessibility);
-}
-
-function selectKeyboardRole(role) {
-  if (!canDragRole(role)) {
-    showToast(`${workers[role].name} already has 3 shifts assigned.`);
-    return;
-  }
-  keyboardSelectedRole = role;
-  stopIdleAnimation();
-  if (onboarding.step === 1 && role === onboarding.role) advanceOnboardingToDrop(true);
-  updateAllWorkerAccessibility();
-  updateAllCellAccessibility();
-  showToast(`${workers[role].name} selected. Choose a schedule slot.`);
-}
-
-function clearKeyboardSelection() {
-  if (!keyboardSelectedRole) return;
-  keyboardSelectedRole = null;
-  updateAllWorkerAccessibility();
-  updateAllCellAccessibility();
-  showToast('Worker selection cleared.');
-}
-
-function handleWorkerKeydown(e) {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    selectKeyboardRole(e.currentTarget.dataset.role);
-  } else if (e.key === 'Escape') {
-    e.preventDefault();
-    clearKeyboardSelection();
-  }
-}
-
-function handleCellKeydown(e) {
-  const cell = e.currentTarget;
-  const key = `${cell.dataset.day}-${cell.dataset.slot}`;
-  const assigned = gameState.schedule[key];
-
-  if (e.key === 'Escape') {
-    e.preventDefault();
-    clearKeyboardSelection();
-    return;
-  }
-
-  if ((e.key === 'Delete' || e.key === 'Backspace') && assigned && assigned !== 'setting') {
-    e.preventDefault();
-    removeWorker(assigned, cell);
-    return;
-  }
-
-  if (e.key !== 'Enter' && e.key !== ' ') return;
-  e.preventDefault();
-
-  if (assigned === 'setting') {
-    showToast('Concrete is setting in this slot.');
-    return;
-  }
-
-  if (assigned) {
-    removeWorker(assigned, cell);
-    keyboardSelectedRole = assigned;
-    updateAllWorkerAccessibility();
-    updateAllCellAccessibility();
-    showToast(`${workers[assigned].name} selected. Choose a new slot.`);
-    return;
-  }
-
-  if (!keyboardSelectedRole) {
-    showToast('Select a worker first.');
-    return;
-  }
-
-  const placed = attemptPlacement(keyboardSelectedRole, cell.dataset.day, parseInt(cell.dataset.slot, 10), cell);
-  if (placed && !canDragRole(keyboardSelectedRole)) {
-    keyboardSelectedRole = null;
-  }
-  updateAllWorkerAccessibility();
-  updateAllCellAccessibility();
 }
 
 // ============================================================
@@ -3190,7 +2880,6 @@ function addWorkerToCell(cell, role) {
   const removeBtn = document.createElement('button');
   removeBtn.className = 'remove-btn';
   removeBtn.innerHTML = '✕';
-  removeBtn.setAttribute('aria-label', `Remove ${workers[role].name} from ${day} ${slotLabels[slot]}`);
   removeBtn.addEventListener('click', e => {
     e.stopPropagation();
     removeWorker(role, cell);
@@ -3202,7 +2891,6 @@ function addWorkerToCell(cell, role) {
   cell.style.borderStyle = 'solid';
   cell.style.borderColor = '#22c55e';
   cell.style.background = roleColors[role] + '18';
-  updateCellAccessibility(cell);
 }
 
 function markAsSettingCell(cell) {
@@ -3212,7 +2900,6 @@ function markAsSettingCell(cell) {
   `;
   cell.classList.add('setting-cell');
   cell.style.borderStyle = 'solid';
-  updateCellAccessibility(cell);
 }
 
 function resetCellAppearance(cell) {
@@ -3225,7 +2912,6 @@ function resetCellAppearance(cell) {
   cell.style.background = '';
   cell.dataset.day = day;
   cell.dataset.slot = slot;
-  setupCellAccessibility(cell);
 }
 
 // ============================================================
@@ -3257,7 +2943,6 @@ function removeWorker(role, cell) {
     gameState.concreteDay = null;
     gameState.settingDay = null;
     updateAllProgress();
-    updateAllCellAccessibility();
     showToast('Concreter removed — full day cleared.');
     return;
   }
@@ -3273,7 +2958,6 @@ function removeWorker(role, cell) {
   else if (role === 'carpenter') gameState.carpenterSlotsUsed--;
 
   updateAllProgress();
-  updateAllCellAccessibility();
   showToast(`${workers[role].name} removed from ${day}.`);
 }
 
@@ -3299,22 +2983,10 @@ function checkCompletion() {
 
     if (valid) {
       setTimeout(() => {
-        showSuccess();
+        document.getElementById('successOverlay').classList.add('active');
       }, 600);
     }
   }
-}
-
-function showSuccess() {
-  document.getElementById('successOverlay').classList.add('active');
-  document.getElementById('successOverlay').setAttribute('aria-hidden', 'false');
-  updatePopupFocusState();
-}
-
-function closeSuccess() {
-  document.getElementById('successOverlay').classList.remove('active');
-  document.getElementById('successOverlay').setAttribute('aria-hidden', 'true');
-  updatePopupFocusState();
 }
 
 // ============================================================
@@ -3709,14 +3381,6 @@ function stopOnboardingFocusTracking() {
   }
 }
 
-function onboardingRoleHintText() {
-  return 'Press Enter to select me, or drag me';
-}
-
-function onboardingDropHintText() {
-  return 'Press Enter to place me here';
-}
-
 function trackOnboardingFocus() {
   if (onboarding.step === 0) {
     stopOnboardingFocusTracking();
@@ -3733,7 +3397,7 @@ function trackOnboardingFocus() {
         borderColor: 'rgba(160, 194, 255, 0.98)',
         glowColor: 'rgba(93, 139, 219, 0.22)'
       });
-      placeOnboardingHint(avatarEl || roleEl, onboardingRoleHintText());
+      placeOnboardingHint(avatarEl || roleEl, 'Drag me');
     }
   } else if (onboarding.step === 2) {
     const cell = document.querySelector(`.cell[data-day="${onboarding.targetDay}"][data-slot="${onboarding.targetSlot}"]`);
@@ -3744,7 +3408,7 @@ function trackOnboardingFocus() {
         borderColor: 'rgba(102, 217, 102, 0.98)',
         glowColor: 'rgba(102, 217, 102, 0.18)'
       });
-      placeOnboardingHint(cell, onboardingDropHintText());
+      placeOnboardingHint(cell, 'Drop me here');
     }
   }
 
@@ -3765,11 +3429,7 @@ function placeOnboardingHint(targetEl, text) {
   if (!targetEl) return;
   const hint = ensureOnboardingHint();
   hint.textContent = text;
-  hint.setAttribute('role', 'status');
-  hint.setAttribute('aria-live', 'polite');
   hint.classList.add('show');
-  const status = document.getElementById('onboardingStatus');
-  if (status) status.textContent = text;
   const rect = targetEl.getBoundingClientRect();
   const gap = 12;
   const maxLeft = window.innerWidth - hint.offsetWidth - 8;
@@ -3787,7 +3447,6 @@ function startOnboarding() {
   if (!roleEl) return;
   const avatarEl = roleEl.querySelector('.worker-avatar');
   showOnboardingBackdrop();
-  setOnboardingIsolation(true);
   onboarding.step = 1;
   roleEl.classList.add('onboarding-role-highlight');
   showOnboardingFocusRing(getRoleAvatarRect(roleEl), {
@@ -3796,12 +3455,11 @@ function startOnboarding() {
     borderColor: 'rgba(160, 194, 255, 0.98)',
     glowColor: 'rgba(93, 139, 219, 0.22)'
   });
-  placeOnboardingHint(avatarEl || roleEl, onboardingRoleHintText());
-  roleEl.focus({ preventScroll: true });
+  placeOnboardingHint(avatarEl || roleEl, 'Drag me');
   startOnboardingFocusTracking();
 }
 
-function advanceOnboardingToDrop(focusTarget = true) {
+function advanceOnboardingToDrop() {
   if (onboarding.step !== 1) return;
   clearOnboardingHighlights();
   showOnboardingBackdrop();
@@ -3818,8 +3476,7 @@ function advanceOnboardingToDrop(focusTarget = true) {
     borderColor: 'rgba(102, 217, 102, 0.98)',
     glowColor: 'rgba(102, 217, 102, 0.18)'
   });
-  placeOnboardingHint(targetCell, onboardingDropHintText());
-  if (focusTarget) targetCell.focus({ preventScroll: true });
+  placeOnboardingHint(targetCell, 'Drop me here');
   startOnboardingFocusTracking();
 }
 
@@ -3842,7 +3499,7 @@ function refreshOnboarding() {
       borderColor: 'rgba(160, 194, 255, 0.98)',
       glowColor: 'rgba(93, 139, 219, 0.22)'
     });
-    placeOnboardingHint(avatarEl || roleEl, onboardingRoleHintText());
+    placeOnboardingHint(avatarEl || roleEl, 'Drag me');
     return;
   }
   if (onboarding.step === 2) {
@@ -3855,7 +3512,7 @@ function refreshOnboarding() {
       borderColor: 'rgba(102, 217, 102, 0.98)',
       glowColor: 'rgba(102, 217, 102, 0.18)'
     });
-    placeOnboardingHint(cell, onboardingDropHintText());
+    placeOnboardingHint(cell, 'Drop me here');
   }
 }
 
@@ -3864,11 +3521,8 @@ function finishOnboarding() {
   clearOnboardingHighlights();
   hideOnboardingHint();
   hideOnboardingBackdrop();
-  setOnboardingIsolation(false);
   hideOnboardingFocusRing();
   stopOnboardingFocusTracking();
-  const status = document.getElementById('onboardingStatus');
-  if (status) status.textContent = '';
   // Start idle animation after onboarding is complete
   startIdleTimer();
 }
@@ -3876,11 +3530,8 @@ function finishOnboarding() {
 // --- Prevent ALL native HTML5 drag (eliminates browser ghost) ---
 document.querySelectorAll('.worker-source').forEach(src => {
   src.setAttribute('draggable', 'false');
-  src.setAttribute('role', 'button');
-  src.setAttribute('tabindex', '0');
   src.querySelectorAll('img').forEach(img => img.setAttribute('draggable', 'false'));
   src.addEventListener('dragstart', e => e.preventDefault());
-  src.addEventListener('keydown', handleWorkerKeydown);
 });
 
 // --- Mouse: drag from source (pure mousedown/move/up, no native ghost) ---
@@ -3892,7 +3543,7 @@ document.querySelectorAll('.worker-source').forEach(src => {
     if (e.button !== 0) return;
     const role = src.dataset.role;
     if (!canDragRole(role)) return;
-    if (onboarding.step === 1 && role === onboarding.role) advanceOnboardingToDrop(false);
+    if (onboarding.step === 1 && role === onboarding.role) advanceOnboardingToDrop();
     stopIdleAnimation();
     e.preventDefault();
     mouseDragging = true;
@@ -3961,7 +3612,7 @@ document.querySelectorAll('.worker-source').forEach(src => {
     stopIdleAnimation();
     const role = src.dataset.role;
     if (!canDragRole(role)) return;
-    if (onboarding.step === 1 && role === onboarding.role) advanceOnboardingToDrop(false);
+    if (onboarding.step === 1 && role === onboarding.role) advanceOnboardingToDrop();
     e.preventDefault();
     touchDragging = true;
     touchRole = role;
@@ -4083,11 +3734,8 @@ function resetGame() {
   gameState.settingDay = null;
 
   document.querySelectorAll('.cell').forEach(cell => resetCellAppearance(cell));
-  keyboardSelectedRole = null;
   updateAllProgress();
-  updateAllWorkerAccessibility();
-  updateAllCellAccessibility();
-  closeSuccess();
+  document.getElementById('successOverlay').classList.remove('active');
   showToast('Schedule cleared!');
 }
 
@@ -4101,7 +3749,6 @@ function renderWelcomeSlide() {
   const slides = document.querySelectorAll('.welcome-role-slide');
   slides.forEach((slide, i) => {
     slide.classList.toggle('active', i === welcomeSlideIndex);
-    slide.setAttribute('aria-hidden', i === welcomeSlideIndex ? 'false' : 'true');
   });
 
   const dots = document.getElementById('welcomeDots');
@@ -4131,10 +3778,8 @@ function nextWelcomeSlide() {
 
 function closeWelcome() {
   document.getElementById('welcomeOverlay').style.display = 'none';
-  document.getElementById('welcomeOverlay').setAttribute('aria-hidden', 'true');
   welcomeSlideIndex = 0;
   renderWelcomeSlide();
-  updatePopupFocusState();
   setTimeout(startOnboarding, 100);
 }
 
@@ -4169,14 +3814,10 @@ const totalSlides = 4;
 function showHelp() {
   goToSlide(0);
   document.getElementById('helpModal').classList.add('active');
-  document.getElementById('helpModal').setAttribute('aria-hidden', 'false');
-  updatePopupFocusState();
 }
 
 function closeHelp() {
   document.getElementById('helpModal').classList.remove('active');
-  document.getElementById('helpModal').setAttribute('aria-hidden', 'true');
-  updatePopupFocusState();
 }
 
 function goToSlide(index) {
@@ -4185,26 +3826,16 @@ function goToSlide(index) {
   // Update slides
   document.querySelectorAll('.slide').forEach((slide, i) => {
     slide.classList.toggle('active', i === currentSlide);
-    slide.setAttribute('aria-hidden', i === currentSlide ? 'false' : 'true');
   });
 
   // Update dots
   const dotsContainer = document.getElementById('slideDots');
   dotsContainer.innerHTML = '';
   for (let i = 0; i < totalSlides; i++) {
-    const dot = document.createElement('button');
-    dot.type = 'button';
+    const dot = document.createElement('div');
     dot.className = 'slide-dot' + (i === currentSlide ? ' active' : '');
-    dot.setAttribute('aria-label', `Show rules slide ${i + 1} of ${totalSlides}`);
-    dot.setAttribute('aria-current', i === currentSlide ? 'step' : 'false');
     dot.onclick = () => goToSlide(i);
     dotsContainer.appendChild(dot);
-  }
-
-  const activeSlide = document.querySelector(`.slide[data-slide="${currentSlide}"]`);
-  const helpSlideText = document.getElementById('helpSlideText');
-  if (activeSlide && helpSlideText) {
-    helpSlideText.textContent = `Slide ${currentSlide + 1} of ${totalSlides}. ${activeSlide.textContent.trim().replace(/\s+/g, ' ')}`;
   }
 
   // Update buttons
@@ -4234,9 +3865,6 @@ document.getElementById('helpModal').addEventListener('click', (e) => {
 buildGrid();
 setAvatars();
 updateAllProgress();
-updateAllWorkerAccessibility();
-updateAllCellAccessibility();
-updatePopupFocusState();
 // startIdleTimer(); // Don't start idle animation until onboarding is complete
 
 let lastDesktop = window.matchMedia('(min-width: 1024px)').matches;
