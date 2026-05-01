@@ -33,7 +33,7 @@ body {
     left: 20px;
     z-index: 1100;
     width: auto;
-    height: 60px;
+    height: 100px;
     object-fit: contain;
     pointer-events: auto;
 }
