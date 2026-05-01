@@ -1184,9 +1184,14 @@ function populateLibrary(stageIdx, moveFocus = false) {
   lib.querySelectorAll('.choice-wrap').forEach(el => el.remove());
 
   const choices = [...stage.choices];
-  for (let i = choices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [choices[i], choices[j]] = [choices[j], choices[i]];
+  if (stageIdx === 1) {
+    const correctIdx = choices.findIndex(c => c.correct);
+    if (correctIdx > 0) choices.unshift(...choices.splice(correctIdx, 1));
+  } else {
+    for (let i = choices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [choices[i], choices[j]] = [choices[j], choices[i]];
+    }
   }
 
   choices.forEach((c, idx) => {
