@@ -62,7 +62,7 @@
       flex: 1;
       position: relative;
       overflow: visible;
-      background: url('images/background-house.svg') center center / cover no-repeat;
+      background: #d3d3d8 url('images/background-house.svg') center center / cover no-repeat;
     }
 
     /* Desktop: SVG covers the scene, centred on pipe area */
@@ -81,10 +81,33 @@
       }
     }
 
-    /* Small landscape (phones) — hide character so it doesn't overlap scene */
+    /* Small landscape (phones) — library moves to the right side */
     @media (orientation: landscape) and (max-height: 500px) {
+      #app {
+        display: grid;
+        grid-template-columns: 1fr clamp(180px, 28vw, 240px);
+        grid-template-rows: 1fr auto;
+      }
+      #scene    { grid-column: 1; grid-row: 1; }
+      #tutorial-panel { grid-column: 1; grid-row: 2; }
+      #library  {
+        grid-column: 2; grid-row: 1 / 3;
+        height: 100%; width: 100%;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 8px 6px;
+      }
       .tutorial-character-wrap { display: none; }
       .tutorial-text { padding-left: 16px; }
+      /* Choices: icon left, label right */
+      .choice-wrap { flex-direction: row; align-items: center; gap: 8px; flex-shrink: 0; }
+      .choice     { width: 70px; height: 70px; flex-shrink: 0; }
+      .choice-label {
+        font-size: 11px; font-weight: 700;
+        white-space: normal; text-align: left;
+        max-width: 90px; line-height: 1.3;
+      }
     }
 
     /* Drop zones */
@@ -153,28 +176,31 @@
 
     @media (orientation: portrait) {
       #library {
-        height: 160px;
+        height: auto;
+        min-height: 160px;
         flex-direction: row;
         flex-wrap: nowrap;
         align-items: center;
         justify-content: space-evenly;
+        padding: 10px 4px 12px;
       }
 
-      .choice { width: 100px; height: 100px; flex-shrink: 0; }
+      .choice { width: 84px; height: 84px; flex-shrink: 0; }
 
       .choice-wrap {
-        flex-direction: column-reverse;
+        flex-direction: column;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         flex-shrink: 1;
         justify-content: center;
       }
 
       .choice-label {
-        font-size: 12px;
-        white-space: nowrap;
+        font-size: 11px;
+        white-space: normal;
         text-align: center;
-        max-width: none;
+        max-width: min(28vw, 88px);
+        line-height: 1.25;
       }
     }
 
@@ -533,6 +559,10 @@
     #ready-btn:active { transform: scale(0.95); }
 
     @media (max-width: 767px) {
+      #welcome-card {
+        padding: 56px min(52vw, 250px) 110px 20px;
+        overflow-y: auto;
+      }
       #welcome-card h1 { font-size: 40px; }
       #welcome-card .welcome-sub,
       #welcome-card .welcome-body { font-size: 14px; }
@@ -540,11 +570,12 @@
     }
 
     @media (orientation: landscape) and (max-height: 740px) and (max-width: 980px) {
-      #welcome-screen { padding: 12px; align-items: center; }
+      #welcome-screen { padding: 12px; align-items: center; justify-content: center; }
+      #welcome-container { max-width: min(700px, 94vw); width: 100%; }
       #welcome-card {
-        width: min(940px, 96vw); max-width: none; height: auto; max-height: 92vh;
+        width: 100%; max-width: none; height: auto; max-height: 92vh;
         min-height: 0; display: flex; flex-direction: column; overflow: auto;
-        border-radius: 14px; padding: 16px 170px 0 18px;
+        border-radius: 14px; padding: 16px 170px 14px 18px;
       }
       #welcome-card h1 { font-size: clamp(28px, 5.4vw, 40px); line-height: 0.9; margin-bottom: 10px; text-align: left; }
       #welcome-card .welcome-sub,
@@ -639,8 +670,8 @@
         </style>
       </defs>
 
-      <!-- ── Background ── -->
-      <rect x="0" y="0" width="2834.6" height="2834.6" fill="#d3d3d8"/>
+      <!-- ── Background (transparent — CSS background-house.svg shows through) ── -->
+      <rect x="0" y="0" width="2834.6" height="2834.6" fill="none"/>
       <rect class="st1" y="1663.9" width="5670" height="1178.5"/>
       <rect class="st5" y="1625.8" width="5670" height="65.7"/>
 
@@ -865,7 +896,7 @@
   <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
   <a href="../../index.html" class="nav-link nav-link-home"><span class="nav-link-label">Home</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/home.svg" alt=""></span></a>
   <a href="../../about.html" class="nav-link nav-link-about"><span class="nav-link-label">About</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/about.svg" alt=""></span></a>
-  <a href="../../career-explorer.html" class="nav-link nav-link-career"><span class="nav-link-label">Career Explorer</span><span class="nav-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.5 7a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zm0 0V4m0 13v3m7-9h3m-3.5-5.5l2.2-2.2M4.8 18.2l2.2-2.2M5.6 5.6l3.5 3.5M18.4 18.4l-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 14l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span></a>
+  <a href="../../career-explorer.html" class="nav-link nav-link-career"><span class="nav-link-label">Career Explorer</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/careerexplorer.svg" alt=""></span></a>
   <a href="../../explore-stories.html" class="nav-link nav-link-videos"><span class="nav-link-label">Video Stories</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/videos.svg" alt=""></span></a>
   <a href="../../mini-games.html" class="nav-link nav-link-games active"><span class="nav-link-label">Mini Games</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/game.svg" alt=""></span></a>
   <a href="https://www.menti.com/al3j6nyu9ebk" class="nav-link nav-link-survey" target="_blank" rel="noopener noreferrer"><span class="nav-link-label">Survey</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/survey.svg" alt=""></span></a>
