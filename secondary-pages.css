@@ -82,11 +82,11 @@ body.page-secondary.credits-page .menu-btn {
 
 .page-corner-logo {
     position: absolute;
-    top: 26px;
+    top: 20px;
     left: 26px;
     z-index: 11;
     width: auto;
-    height: 100px;
+    height: 80px;
     object-fit: contain;
     display: block;
 }
@@ -640,8 +640,9 @@ body.page-secondary.mini-games-page .page-main {
     }
 
     .page-corner-logo {
-        top: 14px;
+        top: 10px;
         left: 14px;
+        height: 60px;
     }
 
     .page-hero p {

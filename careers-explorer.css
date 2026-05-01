@@ -661,8 +661,9 @@ body {
     }
 
     .page-corner-logo {
-        top: 16px;
+        top: 10px;
         left: 16px;
+        height: 60px;
     }
 
     .card-view {
