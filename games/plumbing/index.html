@@ -604,15 +604,9 @@
         </defs>
         <g clip-path="url(#mistakeOuterClip)">
           <rect width="192" height="28" fill="#193E75" fill-opacity="0.9"/>
-          <g clip-path="url(#mistakeClip)">
-            <rect id="mistakeRed"    x="192" y="0" width="0" height="28" fill="#E61E2A"/>
-            <rect id="mistakeOrange" x="192" y="0" width="0" height="28" fill="#F37329"/>
-            <rect id="mistakeYellow" x="192" y="0" width="0" height="28" fill="#F5C942"/>
-          </g>
-          <!-- Slot outlines — visible empty initially, colour shows through when filled -->
-          <rect x="136"   y="1" width="18.7" height="26" rx="3" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-          <rect x="154.7" y="1" width="18.7" height="26" rx="3" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-          <rect x="173.3" y="1" width="18.7" height="26" rx="3" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+          <rect id="mistakeRed"    x="136"   y="0" width="18.7" height="28" fill="#E61E2A" opacity="0.25"/>
+          <rect id="mistakeOrange" x="154.7" y="0" width="18.7" height="28" fill="#F37329" opacity="0.25"/>
+          <rect id="mistakeYellow" x="173.3" y="0" width="18.7" height="28" fill="#F5C942" opacity="0.25"/>
         </g>
         <text x="8" y="19" fill="white" font-family="'Segoe UI',Arial,sans-serif" font-size="12" font-weight="700" text-anchor="start">Improper Fitting</text>
       </svg>
@@ -963,24 +957,10 @@ function updateHUD() {
   // Stage counter
   document.getElementById('stageNumber').textContent = `${currentStage}/${STAGES.length}`;
 
-  // Mistake bar — 3 segments, fills right-to-left (yellow first, then orange, then red)
-  const pct = Math.min(100, Math.max(0, (mistakes / MAX_MISTAKES) * 100));
-  const maxW = 56; // bar area width (x=136 to x=192)
-  const rightEdge = 192;
-
-  const yW = Math.min(maxW / 3, (pct / 100) * maxW);
-  const oW = pct > 33.33 ? Math.min(maxW / 3, ((pct - 33.33) / 100) * maxW * 3) : 0;
-  const rW = pct > 66.66 ? Math.min(maxW / 3, ((pct - 66.66) / 100) * maxW * 3) : 0;
-
-  // Yellow: rightmost segment
-  document.getElementById('mistakeYellow').setAttribute('x', rightEdge - yW);
-  document.getElementById('mistakeYellow').setAttribute('width', yW);
-  // Orange: left of yellow
-  document.getElementById('mistakeOrange').setAttribute('x', rightEdge - yW - oW);
-  document.getElementById('mistakeOrange').setAttribute('width', oW);
-  // Red: leftmost
-  document.getElementById('mistakeRed').setAttribute('x', rightEdge - yW - oW - rW);
-  document.getElementById('mistakeRed').setAttribute('width', rW);
+  // Mistake bar — segments go full opacity as mistakes accrue (yellow→orange→red)
+  document.getElementById('mistakeYellow').setAttribute('opacity', mistakes >= 1 ? '1' : '0.25');
+  document.getElementById('mistakeOrange').setAttribute('opacity', mistakes >= 2 ? '1' : '0.25');
+  document.getElementById('mistakeRed').setAttribute('opacity',    mistakes >= 3 ? '1' : '0.25');
 }
 
 // ── SVG aspect ratio by orientation ──────────────────────────────
