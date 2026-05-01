@@ -62,7 +62,7 @@
       flex: 1;
       position: relative;
       overflow: visible;
-      background: linear-gradient(to bottom, #d3d3d8 57%, #72513b 57%, #72513b 59%, #9a6c49 59%);
+      background: url('images/background-house.svg') center center / cover no-repeat;
     }
 
     /* Desktop: SVG covers the scene, centred on pipe area */
@@ -74,10 +74,6 @@
 
     /* Mobile portrait */
     @media (orientation: portrait) {
-      #scene {
-        background: linear-gradient(to bottom,
-          #d3d3d8 48%, #72513b 48%, #72513b 49.5%, #9a6c49 49.5%);
-      }
       #game-svg {
         position: absolute;
         width: 100%; height: 100%;
@@ -597,14 +593,6 @@
       outline: 3px solid #F5C942;
       outline-offset: 3px;
     }
-    #library-hint {
-      position: absolute;
-      bottom: 6px; left: 0; right: 0;
-      color: rgba(255,255,255,0.5);
-      font-size: 11px;
-      text-align: center;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body>
@@ -848,7 +836,6 @@
   <!-- Library panel -->
   <div id="library" role="region" aria-label="Part selection — Tab to browse, Enter or Space to place">
     <!-- choices injected by JS -->
-    <span id="library-hint" aria-hidden="true">Tab · Enter to select</span>
   </div>
 
 </div>
@@ -985,13 +972,14 @@ function setTutorialText(stageIdx) {
 
 // ── State ─────────────────────────────────────────────────────────
 let currentStage = 1;
+let completedStages = 0;
 let dragState = null;
 let mistakes = 0;
 const MAX_MISTAKES = 3;
 
 function updateHUD() {
   // Stage counter
-  document.getElementById('stageNumber').textContent = `${currentStage}/${STAGES.length}`;
+  document.getElementById('stageNumber').textContent = `${completedStages}/${STAGES.length}`;
 
   // Mistake bar — segments go full opacity as mistakes accrue (yellow→orange→red)
   document.getElementById('mistakeYellow').setAttribute('opacity', mistakes >= 1 ? '1' : '0.25');
@@ -1192,7 +1180,9 @@ function handleCorrect() {
     pieces.forEach((el, i) => el.setAttribute('fill', origFills[i]));
   }, 1100);
 
-  announce(`Correct! Stage ${currentStage} of ${STAGES.length} complete.`);
+  completedStages++;
+  updateHUD();
+  announce(`Correct! Stage ${completedStages} of ${STAGES.length} complete.`);
 
   correctTimer = setTimeout(() => {
     correctTimer = null;
@@ -1270,6 +1260,7 @@ populateLibrary(1);
 document.getElementById('play-again-btn').addEventListener('click', () => {
   if (correctTimer) { clearTimeout(correctTimer); correctTimer = null; }
   currentStage = 1;
+  completedStages = 0;
   mistakes = 0;
   updateHUD();
   document.getElementById('win-screen').style.display = 'none';
@@ -1294,6 +1285,7 @@ document.getElementById('gameover-try-btn').addEventListener('click', () => {
   document.getElementById('gameover-modal').classList.remove('visible');
   if (correctTimer) { clearTimeout(correctTimer); correctTimer = null; }
   currentStage = 1;
+  completedStages = 0;
   mistakes = 0;
   updateHUD();
   document.getElementById('win-screen').style.display = 'none';
