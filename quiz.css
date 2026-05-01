@@ -666,7 +666,7 @@ h2 {
     }
 
     .results-panel {
-        padding: 36px 28px 48px;
+        padding: 36px 28px 80px;
     }
 
     .match-badge {
@@ -703,7 +703,7 @@ h2 {
     }
 
     .results-panel {
-        padding: 28px 16px 40px;
+        padding: 28px 16px 80px;
     }
 
     .result-card {
