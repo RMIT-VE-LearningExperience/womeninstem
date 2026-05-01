@@ -476,32 +476,23 @@
       padding: 32px 20px;
     }
 
-    #welcome-plumber {
-      position: fixed;
-      right: 6px;
-      bottom: -8px;
-      width: 52vw;
-      max-width: 250px;
-      height: auto;
-      pointer-events: none;
-      z-index: 1002;
-    }
-
     #welcome-container {
       position: relative;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
     }
 
     #welcome-card {
       background: #efefef;
       border-radius: 16px;
       width: 100%;
-      height: 80vh;
+      max-height: 85vh;
       position: relative;
-      padding: 56px 28px 28px;
-      overflow: hidden;
+      padding: 48px 28px 0;
+      overflow-y: auto;
       box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
     }
 
     #welcome-back { display: none; }
@@ -536,10 +527,23 @@
       line-height: 1.35;
     }
 
+    #welcome-footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 24px;
+      flex-shrink: 0;
+    }
+
+    #welcome-plumber {
+      height: clamp(180px, 42vw, 260px);
+      width: auto;
+      display: block;
+      pointer-events: none;
+      align-self: flex-end;
+    }
+
     #ready-btn {
-      position: absolute;
-      bottom: 24px;
-      left: 24px;
       width: 82px;
       height: 82px;
       border-radius: 50%;
@@ -554,15 +558,14 @@
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 6px 16px rgba(0,0,0,0.2);
       transition: all 0.15s;
+      flex-shrink: 0;
+      align-self: flex-end;
+      margin-bottom: 24px;
     }
     #ready-btn:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
     #ready-btn:active { transform: scale(0.95); }
 
     @media (max-width: 767px) {
-      #welcome-card {
-        padding: 56px min(52vw, 250px) 110px 20px;
-        overflow-y: auto;
-      }
       #welcome-card h1 { font-size: 40px; }
       #welcome-card .welcome-sub,
       #welcome-card .welcome-body { font-size: 14px; }
@@ -573,16 +576,14 @@
       #welcome-screen { padding: 12px; align-items: center; justify-content: center; }
       #welcome-container { max-width: min(700px, 94vw); width: 100%; }
       #welcome-card {
-        width: 100%; max-width: none; height: auto; max-height: 92vh;
-        min-height: 0; display: flex; flex-direction: column; overflow: auto;
-        border-radius: 14px; padding: 16px 170px 14px 18px;
+        max-height: 92vh; padding: 16px 24px 0;
+        border-radius: 14px;
       }
       #welcome-card h1 { font-size: clamp(28px, 5.4vw, 40px); line-height: 0.9; margin-bottom: 10px; text-align: left; }
       #welcome-card .welcome-sub,
       #welcome-card .welcome-body { font-size: 13px; line-height: 1.28; margin-bottom: 8px; }
-      #welcome-plumber { width: min(22vw, 150px); max-width: 150px; bottom: 0; }
-      #ready-btn { position: static; align-self: flex-start; margin: 8px 0 14px 18px;
-        width: 64px; height: 64px; font-size: 16px; line-height: 1; z-index: 3; }
+      #welcome-plumber { height: clamp(100px, 20vh, 160px); }
+      #ready-btn { width: 64px; height: 64px; font-size: 16px; margin-bottom: 16px; }
     }
 
     /* Win overlay */
@@ -880,16 +881,16 @@
     <div id="welcome-card">
       <button id="welcome-back" aria-label="Back">&#8617;</button>
       <button id="welcome-close" aria-label="Close">&#10005;</button>
-      <div class="welcome-text-area">
-        <h1>Welcome to<br>Pipe Connect!</h1>
-        <p class="welcome-sub">You're in charge of keeping water flowing on a real job site. Complete three stages by matching the correct components—fittings, meters, valves, and more—to each gap.</p>
-        <p class="welcome-body">Choose carefully: the wrong part can cause leaks or failures. You can make up to three mistakes—then the game is over.</p>
+      <h1>Welcome to<br>Pipe Connect!</h1>
+      <p class="welcome-sub">You're in charge of keeping water flowing on a real job site. Complete three stages by matching the correct components—fittings, meters, valves, and more—to each gap.</p>
+      <p class="welcome-body">Choose carefully: the wrong part can cause leaks or failures. You can make up to three mistakes—then the game is over.</p>
+      <div id="welcome-footer">
+        <button id="ready-btn">READY</button>
+        <img id="welcome-plumber" src="images/plumber.svg" alt="Plumber character">
       </div>
-      <button id="ready-btn">READY</button>
     </div>
   </div>
 </div>
-<img id="welcome-plumber" src="images/plumber.svg" alt="Plumber character">
 
 <!-- Nav drawer -->
 <nav class="nav-drawer" id="navDrawer">
@@ -1340,7 +1341,6 @@ document.getElementById('gameover-try-btn').addEventListener('click', () => {
 // ── Welcome screen ────────────────────────────────────────────────
 function dismissWelcome() {
   document.getElementById('welcome-screen').style.display = 'none';
-  document.getElementById('welcome-plumber').style.display = 'none';
   announce('Game started. ' + TUTORIAL_TEXT[0]);
   focusFirstChoice();
 }
