@@ -39,14 +39,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // Career Explorer button
     const careerBtn = document.querySelector('.btn-career');
     if (careerBtn) {
-        careerBtn.addEventListener('click', navigateToCareersExplorer);
+        careerBtn.addEventListener('click', () => {
+            gtag('event', 'click', { event_category: 'homepage', event_label: 'career_explorer_cta' });
+            navigateToCareersExplorer();
+        });
     }
 
     // About button
     const aboutBtn = document.querySelector('.btn-about');
     if (aboutBtn) {
-        aboutBtn.addEventListener('click', navigateToAbout);
+        aboutBtn.addEventListener('click', () => {
+            gtag('event', 'click', { event_category: 'homepage', event_label: 'about_cta' });
+            navigateToAbout();
+        });
     }
+
+    // Mini Games button (hero)
+    const gamesBtn = document.querySelector('.btn-games');
+    if (gamesBtn) {
+        gamesBtn.addEventListener('click', () => {
+            gtag('event', 'click', { event_category: 'homepage', event_label: 'mini_games_cta' });
+        });
+    }
+
+    // Game cards in dashboard
+    document.querySelectorAll('.game-card[data-href]').forEach(card => {
+        card.addEventListener('click', () => {
+            gtag('event', 'click', { event_category: 'mini_games', event_label: card.id || card.dataset.href });
+        });
+    });
 
     // Hamburger menu is handled by nav.js
 });

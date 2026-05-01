@@ -1159,6 +1159,7 @@ function createCareerCard(career, matchingLevels = null) {
             toggleComparison(career, card, compareBtn);
             return;
         }
+        gtag('event', 'career_card_click', { event_category: 'career_explorer', event_label: career.name });
         showCareerInfo(career);
     };
     card.addEventListener('click', activateCard);
@@ -1409,7 +1410,7 @@ function updateComparisonStates() {
 
 function updateCompareActionButton() {
     if (!compareActionBtn) return;
-    compareActionBtn.textContent = compareModeActive ? 'Done' : 'Compare';
+    compareActionBtn.textContent = compareModeActive ? 'Done' : 'Compare Roles';
 }
 
 function showLimitReachedFeedback(cardElement) {
@@ -2183,6 +2184,7 @@ if (videoStoriesFilterBtn) {
 if (compareActionBtn) {
     compareActionBtn.addEventListener('click', () => {
         if (!compareModeActive) {
+            gtag('event', 'click', { event_category: 'career_explorer', event_label: 'compare_roles_open' });
             setCompareMode(true);
             updateCompareActionButton();
             return;

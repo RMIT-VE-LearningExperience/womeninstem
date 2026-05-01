@@ -50,26 +50,42 @@ const questionScreens = [
 // ===================================
 function initializeEventListeners() {
     if (startBtn) {
-        startBtn.addEventListener('click', startQuiz);
+        startBtn.addEventListener('click', () => {
+            gtag('event', 'quiz_start', { event_category: 'quiz' });
+            startQuiz();
+        });
     }
 
     if (skipBtn) {
-        skipBtn.addEventListener('click', skipQuiz);
+        skipBtn.addEventListener('click', () => {
+            gtag('event', 'quiz_skip', { event_category: 'quiz' });
+            skipQuiz();
+        });
     }
 
     questionScreens.forEach((screen, index) => {
         const answerButtons = screen.querySelectorAll('.answer-btn');
         answerButtons.forEach(button => {
-            button.addEventListener('click', () => selectAnswer(button, index));
+            button.addEventListener('click', () => {
+                const label = button.querySelector('span') ? button.querySelector('span').textContent.trim() : `q${index + 1}`;
+                gtag('event', 'quiz_answer', { event_category: 'quiz', event_label: `q${index + 1}: ${label}` });
+                selectAnswer(button, index);
+            });
         });
     });
 
     if (exploreBtn) {
-        exploreBtn.addEventListener('click', navigateToExplorer);
+        exploreBtn.addEventListener('click', () => {
+            gtag('event', 'click', { event_category: 'quiz', event_label: 'explore_careers_after_quiz' });
+            navigateToExplorer();
+        });
     }
 
     if (retakeBtn) {
-        retakeBtn.addEventListener('click', retakeQuiz);
+        retakeBtn.addEventListener('click', () => {
+            gtag('event', 'quiz_retake', { event_category: 'quiz' });
+            retakeQuiz();
+        });
     }
 }
 
@@ -180,6 +196,7 @@ function calculateScores() {
 // ===================================
 function showResults() {
     console.log('🎉 Showing results...');
+    gtag('event', 'quiz_complete', { event_category: 'quiz' });
 
     const allResults = Object.entries(careerScores)
         .map(([name, scoreData]) => {
