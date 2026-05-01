@@ -478,9 +478,16 @@
       width: 100%;
       height: 80%;
       position: relative;
-      padding: 56px 28px 28px;
+      padding: 0;
       overflow: hidden;
       box-shadow: 0 18px 50px rgba(0,0,0,0.25);
+    }
+
+    #welcome-card .welcome-text-area {
+      position: absolute;
+      inset: 0;
+      padding: 56px 28px 110px;
+      overflow-y: auto;
     }
 
     #welcome-back { display: none; }
@@ -838,9 +845,11 @@
     <div id="welcome-card">
       <button id="welcome-back" aria-label="Back">&#8617;</button>
       <button id="welcome-close" aria-label="Close">&#10005;</button>
-      <h1>Welcome to<br>Pipe Connect!</h1>
-      <p class="welcome-sub">You're in charge of keeping water flowing on a real job site. Complete three stages by matching the correct components—fittings, meters, valves, and more—to each gap.</p>
-      <p class="welcome-body">Choose carefully: the wrong part can cause leaks or failures. You can make up to three mistakes—then the game is over.</p>
+      <div class="welcome-text-area">
+        <h1>Welcome to<br>Pipe Connect!</h1>
+        <p class="welcome-sub">You're in charge of keeping water flowing on a real job site. Complete three stages by matching the correct components—fittings, meters, valves, and more—to each gap.</p>
+        <p class="welcome-body">Choose carefully: the wrong part can cause leaks or failures. You can make up to three mistakes—then the game is over.</p>
+      </div>
       <button id="ready-btn">READY</button>
     </div>
   </div>
