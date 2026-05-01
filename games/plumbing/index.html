@@ -476,7 +476,78 @@
       #wrong-card { padding: 36px 28px 100px; border-radius: 14px; }
       #wrong-card h2 { font-size: clamp(20px, 6vw, 26px); margin-bottom: 20px; }
       #try-again-btn { width: 68px; height: 68px; font-size: 10px; bottom: 20px; right: 24px; }
+    }
 
+    #correct-modal {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(22, 128, 56, 0.92);
+      align-items: center; justify-content: center;
+      padding: 32px 24px 48px;
+    }
+    #correct-modal.visible { display: flex; }
+
+    #correct-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 44px 48px 110px;
+      max-width: 540px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #correct-card h2 {
+      color: #156b2f;
+      font-size: clamp(20px, 3.5vw, 30px);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    #correct-card .correct-sub {
+      font-size: clamp(13px, 1.8vw, 16px);
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    #correct-card .correct-body {
+      font-size: clamp(13px, 1.6vw, 15px);
+      color: #222;
+      line-height: 1.65;
+      font-weight: 400;
+    }
+
+    #next-btn {
+      position: absolute;
+      bottom: 24px; right: 36px;
+      width: 78px; height: 78px;
+      border-radius: 50%;
+      background: #f5c842;
+      border: none;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 800;
+      color: #1a2a4a;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      line-height: 1.25;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    #next-btn:hover { transform: scale(1.06); }
+
+    @media (orientation: portrait) {
+      #correct-modal { padding: 24px 16px 44px; }
+      #correct-card { padding: 36px 28px 100px; border-radius: 14px; }
+      #correct-card h2 { font-size: clamp(20px, 6vw, 26px); margin-bottom: 20px; }
+      #next-btn { width: 68px; height: 68px; font-size: 10px; bottom: 20px; right: 24px; }
     }
 
     /* Welcome screen — matches crane-operator style */
@@ -998,6 +1069,16 @@
   </div>
 </div>
 
+<!-- Correct-part modal -->
+<div id="correct-modal" role="dialog" aria-modal="true" aria-labelledby="correct-modal-title">
+  <div id="correct-card">
+    <h2 id="correct-modal-title">Correct!</h2>
+    <p class="correct-sub"></p>
+    <p class="correct-body"></p>
+    <button id="next-btn">NEXT</button>
+  </div>
+</div>
+
 <!-- Game-over modal -->
 <div id="gameover-modal" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
   <div id="gameover-card">
@@ -1024,7 +1105,12 @@ const STAGES = [
     id: 1,
     label: 'Stage 1 of 3 — Select the correct part',
     choices: [
-      { img: 'images/libraryoptions/stage2/water_meter.png', label: 'Water Meter', correct: true },
+      { img: 'images/libraryoptions/stage2/water_meter.png', label: 'Water Meter', correct: true,
+        feedback: {
+          sub: 'A water meter measures the volume of potable water entering the building — essential for accurate billing and monitoring consumption.',
+          body: "Every building connected to the mains supply needs a water meter to satisfy local council and water authority requirements. It's the first component in the supply chain."
+        }
+      },
       {
         img: 'images/libraryoptions/stage2/gas_meter.png?v=2',
         label: 'Gas Meter',
@@ -1049,7 +1135,12 @@ const STAGES = [
     id: 2,
     label: 'Stage 2 of 3 — Select the correct part',
     choices: [
-      { img: 'images/libraryoptions/stage1/copper_pipe.png', label: 'Copper Pipe', correct: true },
+      { img: 'images/libraryoptions/stage1/copper_pipe.png', label: 'Copper Pipe', correct: true,
+        feedback: {
+          sub: 'Copper pipe is the approved material for this cold water supply run — corrosion-resistant, pressure-rated, and compliant with Australian plumbing standards.',
+          body: "Copper handles high pressures without leaching harmful substances and is listed in the site's approved materials schedule — making it the only valid choice here."
+        }
+      },
       {
         img: 'images/libraryoptions/stage1/lead_pipe.png',
         label: 'Lead Pipe',
@@ -1074,7 +1165,12 @@ const STAGES = [
     id: 3,
     label: 'Stage 3 of 3 — Select the correct part',
     choices: [
-      { img: 'images/libraryoptions/stage3/backflow.jpg?v=2', label: 'Backflow Prevention Device', correct: true },
+      { img: 'images/libraryoptions/stage3/backflow.jpg?v=2', label: 'Backflow Prevention Device', correct: true,
+        feedback: {
+          sub: 'A backflow prevention device stops contaminated water from flowing back into the mains supply — a legal requirement at this connection point.',
+          body: 'Without it, a pressure drop in the mains could draw dirty water from inside the building into the public supply. The Plumbing Code of Australia mandates this device at mains connection points.'
+        }
+      },
       {
         img: 'images/libraryoptions/stage3/brass_valve_assembly.jpg?v=2',
         label: 'Brass Valve Assembly',
@@ -1429,10 +1525,18 @@ function handleCorrect() {
   updateHUD();
   announce(`Correct! Stage ${completedStages} of ${STAGES.length} complete.`);
 
+  const correctChoice = STAGES[currentStage - 1].choices.find(c => c.correct);
+  const fb = correctChoice?.feedback;
+  document.getElementById('correct-modal-title').textContent = correctChoice?.label ?? 'Correct!';
+  document.querySelector('#correct-card .correct-sub').textContent = fb?.sub ?? '';
+  document.querySelector('#correct-card .correct-body').textContent = fb?.body ?? '';
+
+  if (correctTimer) clearTimeout(correctTimer);
   correctTimer = setTimeout(() => {
     correctTimer = null;
-    advanceStage();
-  }, 1900);
+    document.getElementById('correct-modal').classList.add('visible');
+    document.getElementById('next-btn').focus();
+  }, 1300);
 }
 
 // ── Wrong drop ────────────────────────────────────────────────────
@@ -1484,6 +1588,13 @@ document.getElementById('try-again-btn').addEventListener('click', () => {
   focusFirstChoice();
 });
 
+document.getElementById('next-btn').addEventListener('click', () => {
+  document.getElementById('correct-modal').classList.remove('visible');
+  advanceStage();
+});
+
+trapFocus(document.getElementById('correct-modal'));
+
 // ── Advance stage ─────────────────────────────────────────────────
 function advanceStage() {
   if (currentStage >= STAGES.length) {
@@ -1512,6 +1623,7 @@ populateLibrary(1);
 // ── Play Again ────────────────────────────────────────────────────
 document.getElementById('play-again-btn').addEventListener('click', () => {
   if (correctTimer) { clearTimeout(correctTimer); correctTimer = null; }
+  document.getElementById('correct-modal').classList.remove('visible');
   currentStage = 1;
   completedStages = 0;
   mistakes = 0;
@@ -1536,6 +1648,7 @@ document.getElementById('play-again-btn').addEventListener('click', () => {
 
 document.getElementById('gameover-try-btn').addEventListener('click', () => {
   document.getElementById('gameover-modal').classList.remove('visible');
+  document.getElementById('correct-modal').classList.remove('visible');
   if (correctTimer) { clearTimeout(correctTimer); correctTimer = null; }
   currentStage = 1;
   completedStages = 0;
