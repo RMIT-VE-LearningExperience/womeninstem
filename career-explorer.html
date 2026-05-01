@@ -66,7 +66,7 @@
     <!-- Top Navigation Icons -->
     <div class="top-nav-icons">
         <div class="nav-search-shell" id="navSearchShell">
-            <input type="text" id="careerSearch" class="nav-search-input" placeholder="Search careers by name ..." autocomplete="off" />
+            <input type="text" id="careerSearch" class="nav-search-input" placeholder="Search careers by name ..." autocomplete="off" aria-label="Search careers" />
             <button class="nav-search-btn" id="searchToggleBtn" aria-label="Open search" title="Search">
                 <img src="images/search.svg" alt="Search icon" />
             </button>
@@ -112,8 +112,8 @@
                     <div class="range-slider-wrapper">
                         <img src="images/money.svg" alt="Salary" class="salary-icon" />
                         <div class="range-slider-container">
-                            <input type="range" id="salaryMin" class="range-slider range-min" min="40" max="200" value="40" step="10">
-                            <input type="range" id="salaryMax" class="range-slider range-max" min="40" max="200" value="200" step="10">
+                            <input type="range" id="salaryMin" class="range-slider range-min" min="40" max="200" value="40" step="10" aria-label="Minimum salary">
+                            <input type="range" id="salaryMax" class="range-slider range-max" min="40" max="200" value="200" step="10" aria-label="Maximum salary">
                             <div class="range-track"></div>
                             <div class="range-fill" id="rangeFill"></div>
                             <div class="salary-range-display" id="salaryRangeDisplay">$40k - $200k</div>
