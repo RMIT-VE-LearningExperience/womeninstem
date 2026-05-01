@@ -1062,7 +1062,10 @@ function announce(text) {
   requestAnimationFrame(() => { el.textContent = text; });
 }
 
+const isTouch = () => window.matchMedia('(pointer: coarse)').matches;
+
 function focusFirstChoice() {
+  if (isTouch()) return;
   requestAnimationFrame(() => {
     const first = document.querySelector('#library .choice');
     if (first) first.focus();
@@ -1402,9 +1405,9 @@ trapFocus(document.getElementById('wrong-modal'));
 trapFocus(document.getElementById('gameover-modal'));
 trapFocus(document.getElementById('win-screen'));
 
-// Init HUD and set initial focus on the welcome Ready button
+// Init HUD; focus ready button only for keyboard users
 updateHUD();
-requestAnimationFrame(() => document.getElementById('ready-btn').focus());
+if (!isTouch()) requestAnimationFrame(() => document.getElementById('ready-btn').focus());
 
 // ── Orientation overlay ───────────────────────────────────────────
 const orientationOverlay = document.getElementById('orientationOverlay');
