@@ -462,7 +462,7 @@
       max-width: 250px;
       height: auto;
       pointer-events: none;
-      z-index: 450;
+      z-index: 402;
     }
 
     #welcome-container {
@@ -545,11 +545,18 @@
     }
 
     @media (orientation: landscape) and (max-height: 740px) and (max-width: 980px) {
-      #welcome-screen { padding: 12px; }
-      #welcome-container { max-width: min(940px, 96vw); }
-      #welcome-card { height: auto; max-height: 92vh; padding: 32px 24px 28px; }
-      #welcome-card h1 { font-size: 32px; margin-bottom: 14px; }
-      #welcome-plumber { max-width: 180px; }
+      #welcome-screen { padding: 12px; align-items: center; }
+      #welcome-card {
+        width: min(940px, 96vw); max-width: none; height: auto; max-height: 92vh;
+        min-height: 0; display: flex; flex-direction: column; overflow: auto;
+        border-radius: 14px; padding: 16px 170px 0 18px;
+      }
+      #welcome-card h1 { font-size: clamp(28px, 5.4vw, 40px); line-height: 0.9; margin-bottom: 10px; text-align: left; }
+      #welcome-card .welcome-sub,
+      #welcome-card .welcome-body { font-size: 13px; line-height: 1.28; margin-bottom: 8px; }
+      #welcome-plumber { width: min(22vw, 150px); max-width: 150px; bottom: 0; }
+      #ready-btn { position: static; align-self: flex-start; margin: 8px 0 14px 18px;
+        width: 64px; height: 64px; font-size: 16px; line-height: 1; z-index: 3; }
     }
 
     /* Win overlay */
