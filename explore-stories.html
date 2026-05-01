@@ -62,12 +62,12 @@
         }
 
         .page-corner-logo {
-            position: absolute;
-            top: 26px;
-            left: 26px;
+            position: fixed;
+            top: 20px;
+            left: 20px;
             z-index: 11;
             width: auto;
-            height: 60px;
+            height: 100px;
             object-fit: contain;
             display: block;
         }
@@ -401,15 +401,16 @@
         }
 
         @media (max-width: 1024px) {
-            body { padding: 22px 14px; }
+            body { padding: 92px 14px 22px; }
             .menu-btn {
                 top: 14px;
                 right: 14px;
                 margin: 0;
             }
             .page-corner-logo {
-                top: 14px;
+                top: 10px;
                 left: 14px;
+                height: 68px;
             }
             .hero p { font-size: clamp(16px, 2.7vw, 28px); }
             .hero p.sub { font-size: clamp(14px, 2.2vw, 23px); }

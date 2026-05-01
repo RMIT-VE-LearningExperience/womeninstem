@@ -38,6 +38,68 @@ body {
 }
 
 /* ===================================
+   CORNER LOGO
+   =================================== */
+.page-corner-logo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 200;
+    width: auto;
+    height: 100px;
+    object-fit: contain;
+    pointer-events: auto;
+}
+
+/* ===================================
+   SPONSOR FOOTER
+   =================================== */
+.quiz-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    padding: 10px 20px;
+    background: rgba(25, 62, 117, 0.92);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.quiz-footer span {
+    color: rgba(255,255,255,0.8);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.quiz-footer img {
+    height: 28px;
+    width: auto;
+}
+
+.quiz-footer-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,0.4);
+}
+
+@media (max-width: 767px) {
+    .page-corner-logo {
+        height: 68px;
+        top: 10px;
+    }
+    .quiz-footer {
+        padding: 8px 14px;
+        gap: 10px;
+    }
+    .quiz-footer img { height: 22px; }
+}
+
+/* ===================================
    HOME BUTTON (top-right)
    =================================== */
 .home-btn {
