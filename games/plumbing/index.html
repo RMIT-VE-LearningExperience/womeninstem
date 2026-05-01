@@ -984,27 +984,75 @@ const STAGES = [
     id: 1,
     label: 'Stage 1 of 3 — Select the correct part',
     choices: [
-      { img: 'images/libraryoptions/stage2/water_meter.png',           label: 'Water Meter',           correct: true  },
-      { img: 'images/libraryoptions/stage2/gas_meter.png?v=2',          label: 'Gas Meter',             correct: false },
-      { img: 'images/libraryoptions/stage2/recycled_water_meter.png',  label: 'Recycled Water Meter',  correct: false }
+      { img: 'images/libraryoptions/stage2/water_meter.png', label: 'Water Meter', correct: true },
+      {
+        img: 'images/libraryoptions/stage2/gas_meter.png?v=2',
+        label: 'Gas Meter',
+        correct: false,
+        feedback: {
+          sub: 'A gas meter measures gas consumption — not water. Installing one here leaves the building without water metering.',
+          body: 'Using the wrong meter type causes billing errors, fails compliance checks, and means water usage can\'t be monitored on site.'
+        }
+      },
+      {
+        img: 'images/libraryoptions/stage2/recycled_water_meter.png',
+        label: 'Recycled Water Meter',
+        correct: false,
+        feedback: {
+          sub: 'A recycled water meter is for non-potable (grey) water supplies like irrigation — not drinking water mains.',
+          body: 'Cross-connecting recycled and potable water is a serious health hazard and a violation of plumbing codes.'
+        }
+      }
     ]
   },
   {
     id: 2,
     label: 'Stage 2 of 3 — Select the correct part',
     choices: [
-      { img: 'images/libraryoptions/stage1/copper_pipe.png', label: 'Copper Pipe',  correct: true  },
-      { img: 'images/libraryoptions/stage1/lead_pipe.png',   label: 'Lead Pipe',    correct: false },
-      { img: 'images/libraryoptions/stage1/plastic_pipe.png',label: 'Plastic Pipe', correct: false }
+      { img: 'images/libraryoptions/stage1/copper_pipe.png', label: 'Copper Pipe', correct: true },
+      {
+        img: 'images/libraryoptions/stage1/lead_pipe.png',
+        label: 'Lead Pipe',
+        correct: false,
+        feedback: {
+          sub: 'Lead pipes are banned in Australian plumbing. Lead leaches into drinking water and causes serious long-term health risks.',
+          body: 'All lead pipework must be removed under current standards. Never install lead pipe in a water supply system.'
+        }
+      },
+      {
+        img: 'images/libraryoptions/stage1/plastic_pipe.png',
+        label: 'Plastic Pipe',
+        correct: false,
+        feedback: {
+          sub: 'Plastic pipe isn\'t suitable for this cold water supply run under the current site specification.',
+          body: 'Copper is required here for durability, pressure rating, and compliance with the site\'s approved materials schedule.'
+        }
+      }
     ]
   },
   {
     id: 3,
     label: 'Stage 3 of 3 — Select the correct part',
     choices: [
-      { img: 'images/libraryoptions/stage3/backflow.jpg?v=2',              label: 'Backflow Prevention Device', correct: true  },
-      { img: 'images/libraryoptions/stage3/brass_valve_assembly.jpg?v=2',  label: 'Brass Valve Assembly',       correct: false },
-      { img: 'images/libraryoptions/stage3/pressure_zone_device.jpg?v=2',  label: 'Pressure Zone Device',       correct: false }
+      { img: 'images/libraryoptions/stage3/backflow.jpg?v=2', label: 'Backflow Prevention Device', correct: true },
+      {
+        img: 'images/libraryoptions/stage3/brass_valve_assembly.jpg?v=2',
+        label: 'Brass Valve Assembly',
+        correct: false,
+        feedback: {
+          sub: 'A brass valve assembly controls flow but provides no protection against backflow.',
+          body: 'Without backflow prevention, contaminated water can be pushed back into the mains — a serious health and compliance risk.'
+        }
+      },
+      {
+        img: 'images/libraryoptions/stage3/pressure_zone_device.jpg?v=2',
+        label: 'Pressure Zone Device',
+        correct: false,
+        feedback: {
+          sub: 'A pressure zone device regulates water pressure — it doesn\'t stop reverse flow.',
+          body: 'Backflow prevention is a separate requirement. A PRV alone leaves the potable water supply unprotected against contamination.'
+        }
+      }
     ]
   }
 ];
@@ -1109,6 +1157,7 @@ function populateLibrary(stageIdx, moveFocus = false) {
     const icon = document.createElement('div');
     icon.className = 'choice';
     icon.dataset.correct = c.correct;
+    icon.dataset.label = c.label;
     icon.setAttribute('tabindex', '0');
     icon.setAttribute('role', 'button');
     icon.setAttribute('aria-label', c.label);
@@ -1126,7 +1175,7 @@ function populateLibrary(stageIdx, moveFocus = false) {
         if (icon.dataset.correct === 'true') {
           handleCorrect();
         } else {
-          handleWrong();
+          handleWrong(icon.dataset.label);
         }
       }
     });
@@ -1150,7 +1199,7 @@ const ghost = document.getElementById('ghost');
 function onPointerDown(e) {
   e.preventDefault();
   const el = e.currentTarget;
-  dragState = { el, correct: el.dataset.correct === 'true' };
+  dragState = { el, correct: el.dataset.correct === 'true', label: el.dataset.label };
   el.classList.add('dragging');
   el.closest('.choice-wrap')?.classList.add('dragging-wrap');
 
@@ -1203,7 +1252,7 @@ function onPointerUp(e) {
     if (dragState.correct) {
       handleCorrect();
     } else {
-      handleWrong();
+      handleWrong(dragState.label);
     }
   }
 
@@ -1245,7 +1294,15 @@ function handleCorrect() {
 }
 
 // ── Wrong drop ────────────────────────────────────────────────────
-function handleWrong() {
+function handleWrong(label) {
+  const choice = STAGES[currentStage - 1].choices.find(c => c.label === label);
+  const fb = choice?.feedback;
+  document.getElementById('wrong-modal-title').textContent = label || 'Wrong Part';
+  document.querySelector('#wrong-card .wrong-sub').textContent =
+    fb?.sub ?? "That component doesn't belong in this section of the system.";
+  document.querySelector('#wrong-card .wrong-body').textContent =
+    fb?.body ?? "Using the wrong part in a plumbing system can cause leaks, pressure failure, or contamination.";
+
   mistakes++;
   updateHUD();
   const zone = document.getElementById(`zone-${currentStage}`);
