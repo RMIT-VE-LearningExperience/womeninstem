@@ -446,7 +446,7 @@
 
     /* Welcome screen — matches crane-operator style */
     #welcome-screen {
-      position: fixed; inset: 0; z-index: 400;
+      position: fixed; inset: 0; z-index: 1001;
       background: #193e75;
       display: flex;
       align-items: center;
@@ -462,32 +462,24 @@
       max-width: 250px;
       height: auto;
       pointer-events: none;
-      z-index: 402;
+      z-index: 1002;
     }
 
     #welcome-container {
       position: relative;
       width: 100%;
       max-width: 400px;
-      z-index: 401;
     }
 
     #welcome-card {
       background: #efefef;
       border-radius: 16px;
       width: 100%;
-      height: 80%;
+      height: 80vh;
       position: relative;
-      padding: 0;
+      padding: 56px 28px 28px;
       overflow: hidden;
       box-shadow: 0 18px 50px rgba(0,0,0,0.25);
-    }
-
-    #welcome-card .welcome-text-area {
-      position: absolute;
-      inset: 0;
-      padding: 56px 28px 110px;
-      overflow-y: auto;
     }
 
     #welcome-back { display: none; }
@@ -589,6 +581,30 @@
       transition: transform 0.1s;
     }
     #play-again-btn:hover { transform: scale(1.05); }
+
+    /* ── Accessibility ── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+    .choice:focus-visible {
+      outline: 3px solid #F5C942;
+      outline-offset: 4px;
+      border-color: rgba(245,201,66,0.9);
+    }
+    button:focus-visible {
+      outline: 3px solid #F5C942;
+      outline-offset: 3px;
+    }
+    #library-hint {
+      position: absolute;
+      bottom: 6px; left: 0; right: 0;
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      text-align: center;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -598,7 +614,7 @@
     <!-- HUD -->
     <div id="hud">
       <!-- Stage counter -->
-      <svg id="stageCounter" width="128" height="28" viewBox="0 0 128 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg id="stageCounter" width="128" height="28" viewBox="0 0 128 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <clipPath id="stageClip"><rect width="128" height="28" rx="10"/></clipPath>
         </defs>
@@ -611,7 +627,7 @@
       </svg>
 
       <!-- Improper Fitting bar (fills right-to-left) -->
-      <svg id="mistakeBar" width="192" height="28" viewBox="0 0 192 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg id="mistakeBar" width="192" height="28" viewBox="0 0 192 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <clipPath id="mistakeOuterClip"><rect width="192" height="28" rx="10"/></clipPath>
           <clipPath id="mistakeClip"><rect x="136" y="0" width="56" height="28"/></clipPath>
@@ -826,12 +842,13 @@
     <div class="tutorial-character-wrap">
       <img class="tutorial-character" src="images/plumber.svg" alt="Plumber">
     </div>
-    <p class="tutorial-text" id="tutorial-text">Select the correct pipe material for a cold water supply. Drag it to the highlighted gap in the system.</p>
+    <p class="tutorial-text" id="tutorial-text" aria-live="polite" aria-atomic="true">Select the correct pipe material for a cold water supply. Drag it to the highlighted gap in the system.</p>
   </div>
 
   <!-- Library panel -->
-  <div id="library">
+  <div id="library" role="region" aria-label="Part selection — Tab to browse, Enter or Space to place">
     <!-- choices injected by JS -->
+    <span id="library-hint" aria-hidden="true">Tab · Enter to select</span>
   </div>
 
 </div>
@@ -878,10 +895,10 @@
 <button id="helpBtn" aria-label="Help">?</button>
 
 <!-- Help modal -->
-<div id="help-modal">
+<div id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
   <div class="modal-box">
-    <button id="help-modal-close" aria-label="Close">&#10005;</button>
-    <h2>How to Play</h2>
+    <button id="help-modal-close" aria-label="Close help">&#10005;</button>
+    <h2 id="help-modal-title">How to Play</h2>
     <p>You're a plumber on a real job site. Connect the right pipe components to keep the water flowing safely.</p>
     <ul>
       <li>Look at the highlighted gap in the system</li>
@@ -894,9 +911,9 @@
 </div>
 
 <!-- Wrong-part modal -->
-<div id="wrong-modal">
+<div id="wrong-modal" role="dialog" aria-modal="true" aria-labelledby="wrong-modal-title">
   <div id="wrong-card">
-    <h2>Wrong Part</h2>
+    <h2 id="wrong-modal-title">Wrong Part</h2>
     <p class="wrong-sub">That component doesn't belong in this section of the system.</p>
     <p class="wrong-body">Using the wrong part in a plumbing system can cause leaks, pressure failure, or contamination. Always verify the correct fitting before installation on a real job site.</p>
     <button id="try-again-btn">TRY<br>AGAIN</button>
@@ -904,20 +921,23 @@
 </div>
 
 <!-- Game-over modal -->
-<div id="gameover-modal">
+<div id="gameover-modal" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
   <div id="gameover-card">
-    <h2>Game Over</h2>
+    <h2 id="gameover-title">Game Over</h2>
     <p>You made too many mistakes on this job site.<br>Review the correct parts and try again!</p>
     <button id="gameover-try-btn">TRY<br>AGAIN</button>
   </div>
 </div>
 
 <!-- Win screen -->
-<div id="win-screen">
-  <h2>Well done!</h2>
+<div id="win-screen" role="dialog" aria-modal="true" aria-labelledby="win-title">
+  <h2 id="win-title">Well done!</h2>
   <p>All pipes are connected correctly.</p>
   <button id="play-again-btn">Play Again</button>
 </div>
+
+<!-- Screen-reader live region for game announcements -->
+<div id="announce" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
 
 <script>
 // ── Stage data ────────────────────────────────────────────────────
@@ -996,8 +1016,37 @@ function updateAspect() {
 window.addEventListener('resize', updateAspect);
 updateAspect();
 
+// ── Accessibility helpers ─────────────────────────────────────────
+function announce(text) {
+  const el = document.getElementById('announce');
+  el.textContent = '';
+  requestAnimationFrame(() => { el.textContent = text; });
+}
+
+function focusFirstChoice() {
+  requestAnimationFrame(() => {
+    const first = document.querySelector('#library .choice');
+    if (first) first.focus();
+  });
+}
+
+function trapFocus(modal) {
+  modal.addEventListener('keydown', function(e) {
+    if (e.key !== 'Tab') return;
+    const focusable = Array.from(modal.querySelectorAll('button, [tabindex="0"], a, input, select, textarea'));
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+}
+
 // ── Populate library ──────────────────────────────────────────────
-function populateLibrary(stageIdx) {
+function populateLibrary(stageIdx, moveFocus = false) {
   const stage = STAGES[stageIdx - 1];
   setTutorialText(stageIdx);
 
@@ -1018,21 +1067,39 @@ function populateLibrary(stageIdx) {
     const icon = document.createElement('div');
     icon.className = 'choice';
     icon.dataset.correct = c.correct;
+    icon.setAttribute('tabindex', '0');
+    icon.setAttribute('role', 'button');
+    icon.setAttribute('aria-label', c.label);
+
     const img = document.createElement('img');
     img.src = c.img;
-    img.alt = c.label;
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
     img.style.cssText = 'width:100%;height:100%;object-fit:contain;pointer-events:none;';
     icon.appendChild(img);
     icon.addEventListener('pointerdown', onPointerDown);
+    icon.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (icon.dataset.correct === 'true') {
+          handleCorrect();
+        } else {
+          handleWrong();
+        }
+      }
+    });
 
     const lbl = document.createElement('span');
     lbl.className = 'choice-label';
     lbl.textContent = c.label;
+    lbl.setAttribute('aria-hidden', 'true');
 
     wrap.appendChild(icon);
     wrap.appendChild(lbl);
     lib.appendChild(wrap);
   });
+
+  if (moveFocus) focusFirstChoice();
 }
 
 // ── Drag & Drop ───────────────────────────────────────────────────
@@ -1125,6 +1192,8 @@ function handleCorrect() {
     pieces.forEach((el, i) => el.setAttribute('fill', origFills[i]));
   }, 1100);
 
+  announce(`Correct! Stage ${currentStage} of ${STAGES.length} complete.`);
+
   correctTimer = setTimeout(() => {
     correctTimer = null;
     advanceStage();
@@ -1154,15 +1223,22 @@ function handleWrong() {
     completion.style.display = 'none';
     zone.style.display = '';
     if (mistakes >= MAX_MISTAKES) {
-      document.getElementById('gameover-modal').classList.add('visible');
+      announce('Game over. Too many mistakes. Try again!');
+      const modal = document.getElementById('gameover-modal');
+      modal.classList.add('visible');
+      requestAnimationFrame(() => document.getElementById('gameover-try-btn').focus());
     } else {
-      document.getElementById('wrong-modal').classList.add('visible');
+      announce(`Wrong part. ${mistakes} mistake${mistakes > 1 ? 's' : ''} of ${MAX_MISTAKES} allowed.`);
+      const modal = document.getElementById('wrong-modal');
+      modal.classList.add('visible');
+      requestAnimationFrame(() => document.getElementById('try-again-btn').focus());
     }
   }, 700);
 }
 
 document.getElementById('try-again-btn').addEventListener('click', () => {
   document.getElementById('wrong-modal').classList.remove('visible');
+  focusFirstChoice();
 });
 
 // ── Advance stage ─────────────────────────────────────────────────
@@ -1170,12 +1246,15 @@ function advanceStage() {
   if (currentStage >= STAGES.length) {
     document.getElementById('win-screen').style.display = 'flex';
     document.getElementById('library').style.display = 'none';
+    announce('Well done! All three stages complete. All pipes connected correctly.');
+    requestAnimationFrame(() => document.getElementById('play-again-btn').focus());
     return;
   }
   currentStage++;
   updateHUD();
   document.getElementById(`zone-${currentStage}`).style.display = '';
-  populateLibrary(currentStage);
+  announce(`Stage ${currentStage} of ${STAGES.length}. ${TUTORIAL_TEXT[currentStage - 1]}`);
+  populateLibrary(currentStage, true);
 }
 
 // ── Init ──────────────────────────────────────────────────────────
@@ -1208,7 +1287,7 @@ document.getElementById('play-again-btn').addEventListener('click', () => {
       });
     }
   }
-  populateLibrary(1);
+  populateLibrary(1, true);
 });
 
 document.getElementById('gameover-try-btn').addEventListener('click', () => {
@@ -1232,13 +1311,15 @@ document.getElementById('gameover-try-btn').addEventListener('click', () => {
       });
     }
   }
-  populateLibrary(1);
+  populateLibrary(1, true);
 });
 
 // ── Welcome screen ────────────────────────────────────────────────
 function dismissWelcome() {
   document.getElementById('welcome-screen').style.display = 'none';
   document.getElementById('welcome-plumber').style.display = 'none';
+  announce('Game started. ' + TUTORIAL_TEXT[0]);
+  focusFirstChoice();
 }
 document.getElementById('ready-btn').addEventListener('click', dismissWelcome);
 document.getElementById('welcome-close').addEventListener('click', dismissWelcome);
@@ -1246,16 +1327,42 @@ document.getElementById('welcome-close').addEventListener('click', dismissWelcom
 // Help modal
 document.getElementById('helpBtn').addEventListener('click', () => {
   document.getElementById('help-modal').classList.add('visible');
+  requestAnimationFrame(() => document.getElementById('help-modal-close').focus());
 });
 document.getElementById('help-modal-close').addEventListener('click', () => {
   document.getElementById('help-modal').classList.remove('visible');
+  document.getElementById('helpBtn').focus();
 });
 document.getElementById('help-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) e.currentTarget.classList.remove('visible');
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('visible');
+    document.getElementById('helpBtn').focus();
+  }
 });
 
-// Init HUD
+// Escape key — close any open modal
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const helpModal = document.getElementById('help-modal');
+  const wrongModal = document.getElementById('wrong-modal');
+  if (helpModal.classList.contains('visible')) {
+    helpModal.classList.remove('visible');
+    document.getElementById('helpBtn').focus();
+  } else if (wrongModal.classList.contains('visible')) {
+    wrongModal.classList.remove('visible');
+    focusFirstChoice();
+  }
+});
+
+// Trap focus inside each modal
+trapFocus(document.getElementById('help-modal'));
+trapFocus(document.getElementById('wrong-modal'));
+trapFocus(document.getElementById('gameover-modal'));
+trapFocus(document.getElementById('win-screen'));
+
+// Init HUD and set initial focus on the welcome Ready button
 updateHUD();
+requestAnimationFrame(() => document.getElementById('ready-btn').focus());
 </script>
 <script src="../../nav.js"></script>
 </body>
