@@ -1443,6 +1443,7 @@ function startOnboarding() {
   ring.style.height = `${maxBottom - minTop + pad * 2}px`;
   requestAnimationFrame(() => ring.classList.add('show'));
   placeOnboardingHint({ left: minLeft - pad, top: minTop - pad, width: maxRight - minLeft + pad * 2, bottom: maxBottom + pad }, 'Drag a part', TUTORIAL_TEXT[0]);
+  wraps.forEach(w => { w.style.animation = 'none'; });
   onboardingRaf = requestAnimationFrame(trackOnboardingRing);
 }
 
@@ -1456,6 +1457,11 @@ function finishOnboarding() {
   if (hint) hint.classList.remove('show');
   const library = document.getElementById('library');
   if (library) library.style.zIndex = '';
+  document.querySelectorAll('#library .choice-wrap').forEach((el, idx) => {
+    if (!el.classList.contains('dragging-wrap')) {
+      el.style.animation = `choice-bob 3s ease-in-out infinite ${idx * 0.22}s`;
+    }
+  });
 }
 
 let floatTimer = null;
