@@ -1280,14 +1280,9 @@ function populateLibrary(stageIdx, moveFocus = false) {
   lib.querySelectorAll('.choice-wrap').forEach(el => el.remove());
 
   const choices = [...stage.choices];
-  if (stageIdx === 1) {
-    const correctIdx = choices.findIndex(c => c.correct);
-    if (correctIdx > 0) choices.unshift(...choices.splice(correctIdx, 1));
-  } else {
-    for (let i = choices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [choices[i], choices[j]] = [choices[j], choices[i]];
-    }
+  for (let i = choices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [choices[i], choices[j]] = [choices[j], choices[i]];
   }
 
   choices.forEach((c, idx) => {
@@ -1377,17 +1372,24 @@ function placeOnboardingHint(targetEl, text) {
 }
 
 function trackOnboardingRing() {
-  const firstChoice = document.querySelector('#library .choice');
-  if (!firstChoice) return;
+  const choices = document.querySelectorAll('#library .choice');
+  if (!choices.length) return;
   const ring = document.getElementById('plumbRing');
   if (ring && ring.classList.contains('show')) {
-    const r = firstChoice.getBoundingClientRect();
-    const pad = 6;
-    ring.style.left = `${r.left - pad}px`;
-    ring.style.top = `${r.top - pad}px`;
-    ring.style.width = `${r.width + pad * 2}px`;
-    ring.style.height = `${r.height + pad * 2}px`;
-    placeOnboardingHint(firstChoice, 'Drag me');
+    let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
+    choices.forEach(c => {
+      const r = c.getBoundingClientRect();
+      minLeft = Math.min(minLeft, r.left);
+      minTop = Math.min(minTop, r.top);
+      maxRight = Math.max(maxRight, r.right);
+      maxBottom = Math.max(maxBottom, r.bottom);
+    });
+    const pad = 12;
+    ring.style.left = `${minLeft - pad}px`;
+    ring.style.top = `${minTop - pad}px`;
+    ring.style.width = `${maxRight - minLeft + pad * 2}px`;
+    ring.style.height = `${maxBottom - minTop + pad * 2}px`;
+    placeOnboardingHint(choices[0], 'Drag a part');
   }
   onboardingRaf = requestAnimationFrame(trackOnboardingRing);
 }
@@ -1395,22 +1397,28 @@ function trackOnboardingRing() {
 function startOnboarding() {
   if (onboardingShown) return;
   onboardingShown = true;
-  const firstChoice = document.querySelector('#library .choice');
-  if (!firstChoice) return;
+  const choices = document.querySelectorAll('#library .choice');
+  if (!choices.length) return;
   const backdrop = ensureOnboardingEl('plumbBackdrop', 'onboarding-backdrop');
   backdrop.style.zIndex = '49';
-  firstChoice.closest('.choice-wrap').style.position = 'relative';
-  firstChoice.closest('.choice-wrap').style.zIndex = '51';
+  document.getElementById('library').style.zIndex = '51';
   requestAnimationFrame(() => backdrop.classList.add('show'));
   const ring = ensureOnboardingEl('plumbRing', 'onboarding-focus-ring');
-  const r = firstChoice.getBoundingClientRect();
-  const pad = 6;
-  ring.style.left = `${r.left - pad}px`;
-  ring.style.top = `${r.top - pad}px`;
-  ring.style.width = `${r.width + pad * 2}px`;
-  ring.style.height = `${r.height + pad * 2}px`;
+  let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
+  choices.forEach(c => {
+    const r = c.getBoundingClientRect();
+    minLeft = Math.min(minLeft, r.left);
+    minTop = Math.min(minTop, r.top);
+    maxRight = Math.max(maxRight, r.right);
+    maxBottom = Math.max(maxBottom, r.bottom);
+  });
+  const pad = 12;
+  ring.style.left = `${minLeft - pad}px`;
+  ring.style.top = `${minTop - pad}px`;
+  ring.style.width = `${maxRight - minLeft + pad * 2}px`;
+  ring.style.height = `${maxBottom - minTop + pad * 2}px`;
   requestAnimationFrame(() => ring.classList.add('show'));
-  placeOnboardingHint(firstChoice, 'Drag me');
+  placeOnboardingHint(choices[0], 'Drag a part');
   onboardingRaf = requestAnimationFrame(trackOnboardingRing);
 }
 
@@ -1422,10 +1430,8 @@ function finishOnboarding() {
   if (ring) ring.classList.remove('show');
   const hint = document.getElementById('plumbHint');
   if (hint) hint.classList.remove('show');
-  document.querySelectorAll('#library .choice-wrap').forEach(el => {
-    el.style.position = '';
-    el.style.zIndex = '';
-  });
+  const library = document.getElementById('library');
+  if (library) library.style.zIndex = '';
 }
 
 let floatTimer = null;
