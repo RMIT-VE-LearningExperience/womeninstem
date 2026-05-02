@@ -1355,11 +1355,11 @@ function ensureOnboardingEl(id, cls) {
   return el;
 }
 
-function placeOnboardingHint(targetEl, text) {
+function placeOnboardingHint(targetOrRect, text) {
   const hint = ensureOnboardingEl('plumbHint', 'onboarding-hint');
   if (hint.textContent !== text) hint.textContent = text;
   hint.classList.add('show');
-  const r = targetEl.getBoundingClientRect();
+  const r = targetOrRect.getBoundingClientRect ? targetOrRect.getBoundingClientRect() : targetOrRect;
   const gap = 12;
   const hw = hint.offsetWidth || 80;
   const hh = hint.offsetHeight || 32;
@@ -1372,13 +1372,13 @@ function placeOnboardingHint(targetEl, text) {
 }
 
 function trackOnboardingRing() {
-  const choices = document.querySelectorAll('#library .choice');
-  if (!choices.length) return;
+  const wraps = document.querySelectorAll('#library .choice-wrap');
+  if (!wraps.length) return;
   const ring = document.getElementById('plumbRing');
   if (ring && ring.classList.contains('show')) {
     let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
-    choices.forEach(c => {
-      const r = c.getBoundingClientRect();
+    wraps.forEach(w => {
+      const r = w.getBoundingClientRect();
       minLeft = Math.min(minLeft, r.left);
       minTop = Math.min(minTop, r.top);
       maxRight = Math.max(maxRight, r.right);
@@ -1389,7 +1389,7 @@ function trackOnboardingRing() {
     ring.style.top = `${minTop - pad}px`;
     ring.style.width = `${maxRight - minLeft + pad * 2}px`;
     ring.style.height = `${maxBottom - minTop + pad * 2}px`;
-    placeOnboardingHint(choices[0], 'Drag a part');
+    placeOnboardingHint({ left: minLeft - pad, top: minTop - pad, width: maxRight - minLeft + pad * 2, bottom: maxBottom + pad }, 'Drag a part');
   }
   onboardingRaf = requestAnimationFrame(trackOnboardingRing);
 }
@@ -1397,16 +1397,16 @@ function trackOnboardingRing() {
 function startOnboarding() {
   if (onboardingShown) return;
   onboardingShown = true;
-  const choices = document.querySelectorAll('#library .choice');
-  if (!choices.length) return;
+  const wraps = document.querySelectorAll('#library .choice-wrap');
+  if (!wraps.length) return;
   const backdrop = ensureOnboardingEl('plumbBackdrop', 'onboarding-backdrop');
   backdrop.style.zIndex = '49';
   document.getElementById('library').style.zIndex = '51';
   requestAnimationFrame(() => backdrop.classList.add('show'));
   const ring = ensureOnboardingEl('plumbRing', 'onboarding-focus-ring');
   let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
-  choices.forEach(c => {
-    const r = c.getBoundingClientRect();
+  wraps.forEach(w => {
+    const r = w.getBoundingClientRect();
     minLeft = Math.min(minLeft, r.left);
     minTop = Math.min(minTop, r.top);
     maxRight = Math.max(maxRight, r.right);
@@ -1418,7 +1418,7 @@ function startOnboarding() {
   ring.style.width = `${maxRight - minLeft + pad * 2}px`;
   ring.style.height = `${maxBottom - minTop + pad * 2}px`;
   requestAnimationFrame(() => ring.classList.add('show'));
-  placeOnboardingHint(choices[0], 'Drag a part');
+  placeOnboardingHint({ left: minLeft - pad, top: minTop - pad, width: maxRight - minLeft + pad * 2, bottom: maxBottom + pad }, 'Drag a part');
   onboardingRaf = requestAnimationFrame(trackOnboardingRing);
 }
 
