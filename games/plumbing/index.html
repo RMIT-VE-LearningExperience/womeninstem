@@ -385,33 +385,73 @@
     #gameover-try-btn:hover { transform: scale(1.06); }
 
     /* Help modal */
+    /* Help modal — matches crane-operator style */
     #help-modal {
-      display: none;
-      position: fixed; inset: 0; z-index: 600;
+      position: fixed; inset: 0;
       background: rgba(0,0,0,0.7);
-      align-items: center; justify-content: center;
-      padding: 20px;
+      display: none; align-items: center; justify-content: center;
+      z-index: 600; padding: 20px;
     }
-    #help-modal.visible { display: flex; }
-    #help-modal .modal-box {
-      background: #fff;
-      border-radius: 16px;
+    #help-modal.active { display: flex; }
+    #help-modal .modal {
+      background: #fff; border-radius: 16px;
       padding: 32px 24px 24px;
-      width: 90vw; max-width: 480px;
+      width: 90vw; max-width: 500px;
       max-height: 80vh; overflow-y: auto;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
       position: relative;
     }
-    #help-modal h2 {
-      color: #193E75; font-size: 22px; font-weight: 900;
-      margin-bottom: 16px; text-align: center;
+    #help-modal .modal h2 {
+      color: #193E75; font-size: 24px; font-weight: 900;
+      margin-bottom: 20px; text-align: center;
     }
-    #help-modal p { color: #333; font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
-    #help-modal ul { color: #333; font-size: 15px; line-height: 1.8; padding-left: 20px; margin-bottom: 12px; }
-    #help-modal-close {
+    #help-modal .modal-close {
       position: absolute; top: 12px; right: 12px;
-      background: none; border: none; font-size: 28px;
-      color: #999; cursor: pointer; line-height: 1;
+      background: none; border: none; font-size: 32px;
+      color: #999; cursor: pointer;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+    #help-modal .modal-close:hover { color: #193E75; }
+    #help-modal .slide-container { min-height: 200px; }
+    #help-modal .slide { display: none; }
+    #help-modal .slide.active { display: block; }
+    #help-modal .slide p {
+      font-size: 15px; line-height: 1.6; color: #1a2744; margin-bottom: 16px;
+    }
+    #help-modal .slide p:last-child { margin-bottom: 0; }
+    #help-modal .slide strong { font-weight: 700; color: #193E75; }
+    #help-modal .slide ul, #help-modal .slide ol {
+      margin-left: 20px; margin-bottom: 16px;
+    }
+    #help-modal .slide li {
+      font-size: 15px; line-height: 1.6; color: #1a2744; margin-bottom: 8px;
+    }
+    #help-modal .modal-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-top: 24px;
+    }
+    #help-modal .modal-btn {
+      padding: 10px 20px; border-radius: 8px;
+      border: 2px solid #193E75; background: #fff;
+      color: #193E75; font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+    }
+    #help-modal .modal-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    #help-modal .modal-btn:not(:disabled):hover { background: #f0f0f0; }
+    #help-modal .modal-btn:not(:disabled):active { transform: scale(0.95); }
+    #help-modal .modal-btn-primary {
+      background: #F5C942; border-color: #F5C942; color: #193E75;
+    }
+    #help-modal .modal-btn-primary:not(:disabled):hover { background: #f7d05f; }
+    #help-modal .slide-dots { display: flex; gap: 8px; align-items: center; }
+    #help-modal .slide-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #ccc; cursor: pointer; transition: all 0.2s;
+    }
+    #help-modal .slide-dot.active {
+      background: #193E75; width: 24px; border-radius: 4px;
     }
 
     /* Wrong-part modal */
@@ -1055,17 +1095,33 @@
 
 <!-- Help modal -->
 <div id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
-  <div class="modal-box">
-    <button id="help-modal-close" aria-label="Close help">&#10005;</button>
+  <div class="modal">
     <h2 id="help-modal-title">How to Play</h2>
-    <p>You're a plumber on a real job site. Connect the right pipe components to keep the water flowing safely.</p>
-    <ul>
-      <li>Look at the highlighted gap in the system</li>
-      <li>Choose the correct part from the library below</li>
-      <li>Drag it to the highlighted drop zone</li>
-      <li>Complete all 3 stages to finish the job</li>
-    </ul>
-    <p>Using the wrong part can cause leaks, pressure failure, or contamination — always verify before installation!</p>
+    <div class="slide-container">
+      <div class="slide active" data-slide="0">
+        <p><strong>Your Goal:</strong> You're a plumber on a real job site. Connect the correct pipe components to keep the water flowing safely.</p>
+        <p>There are 3 stages to complete. Each one asks you to identify and install the right part for that section of the system.</p>
+      </div>
+      <div class="slide" data-slide="1">
+        <p><strong>How to Play:</strong></p>
+        <ul>
+          <li>Look at the <strong>highlighted connection point</strong> in the diagram</li>
+          <li>Choose the correct part from the <strong>library at the bottom</strong></li>
+          <li>Drag it to the <strong>highlighted drop zone</strong> to install it</li>
+        </ul>
+      </div>
+      <div class="slide" data-slide="2">
+        <p><strong>Watch Out:</strong></p>
+        <p>You have <strong>3 chances</strong> — each wrong part counts as a mistake. Make 3 mistakes and the job is failed.</p>
+        <p>Using the wrong part can cause leaks, pressure failure, or contamination. Always verify before installation!</p>
+      </div>
+    </div>
+    <div class="modal-nav">
+      <button class="modal-btn" id="help-prev-btn">← Back</button>
+      <div class="slide-dots" id="help-slide-dots"></div>
+      <button class="modal-btn modal-btn-primary" id="help-next-btn">Next →</button>
+    </div>
+    <button class="modal-close" id="help-modal-close" aria-label="Close help">×</button>
   </div>
 </div>
 
@@ -1739,28 +1795,64 @@ document.getElementById('ready-btn').addEventListener('click', dismissWelcome);
 document.getElementById('welcome-close').addEventListener('click', dismissWelcome);
 
 // Help modal
-document.getElementById('helpBtn').addEventListener('click', () => {
-  document.getElementById('help-modal').classList.add('visible');
-  requestAnimationFrame(() => document.getElementById('help-modal-close').focus());
-});
-document.getElementById('help-modal-close').addEventListener('click', () => {
-  document.getElementById('help-modal').classList.remove('visible');
-  document.getElementById('helpBtn').focus();
-});
-document.getElementById('help-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) {
-    e.currentTarget.classList.remove('visible');
+// ── Help modal slides ─────────────────────────────────────────────
+(function() {
+  const slides = Array.from(document.querySelectorAll('#help-modal .slide'));
+  const dotsContainer = document.getElementById('help-slide-dots');
+  const prevBtn = document.getElementById('help-prev-btn');
+  const nextBtn = document.getElementById('help-next-btn');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(idx) {
+    slides[current].classList.remove('active');
+    dotsContainer.children[current].classList.remove('active');
+    current = idx;
+    slides[current].classList.add('active');
+    dotsContainer.children[current].classList.add('active');
+    prevBtn.disabled = current === 0;
+    nextBtn.textContent = current === slides.length - 1 ? 'Done' : 'Next →';
+    nextBtn.classList.toggle('modal-btn-primary', true);
+  }
+
+  prevBtn.addEventListener('click', () => { if (current > 0) goTo(current - 1); });
+  nextBtn.addEventListener('click', () => {
+    if (current < slides.length - 1) goTo(current + 1);
+    else closeHelpModal();
+  });
+
+  goTo(0);
+
+  function openHelpModal() {
+    goTo(0);
+    document.getElementById('help-modal').classList.add('active');
+    requestAnimationFrame(() => document.getElementById('help-modal-close').focus());
+  }
+  function closeHelpModal() {
+    document.getElementById('help-modal').classList.remove('active');
     document.getElementById('helpBtn').focus();
   }
-});
+
+  document.getElementById('helpBtn').addEventListener('click', openHelpModal);
+  document.getElementById('help-modal-close').addEventListener('click', closeHelpModal);
+  document.getElementById('help-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeHelpModal();
+  });
+})();
 
 // Escape key — close any open modal
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   const helpModal = document.getElementById('help-modal');
   const wrongModal = document.getElementById('wrong-modal');
-  if (helpModal.classList.contains('visible')) {
-    helpModal.classList.remove('visible');
+  if (helpModal.classList.contains('active')) {
+    helpModal.classList.remove('active');
     document.getElementById('helpBtn').focus();
   } else if (wrongModal.classList.contains('visible')) {
     wrongModal.classList.remove('visible');
