@@ -1722,6 +1722,7 @@ body.embed-popup-mode .info-panel {
 .badge-salary {
     background: #e8b830;
     color: #000000;
+    justify-content: flex-start;
 }
 
 .badge-style {
