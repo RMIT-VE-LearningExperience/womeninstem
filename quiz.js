@@ -305,6 +305,21 @@ function createResultCard(career, index) {
     card.appendChild(badge);
     card.appendChild(infoWrapper);
 
+    // Make card clickable → open career popup
+    card.style.cursor = 'pointer';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `View ${career.name} career details`);
+    card.addEventListener('click', () => {
+        window.location.href = `career-explorer.html?openCareer=${encodeURIComponent(career.name)}`;
+    });
+    card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            window.location.href = `career-explorer.html?openCareer=${encodeURIComponent(career.name)}`;
+        }
+    });
+
     return card;
 }
 

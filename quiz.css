@@ -467,7 +467,13 @@ h2 {
 }
 
 .result-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.result-card:focus-visible {
+    outline: 3px solid rgba(160, 194, 255, 0.9);
+    outline-offset: 2px;
 }
 
 .result-card:nth-child(1) { animation-delay: 0ms; }
