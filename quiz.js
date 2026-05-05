@@ -456,6 +456,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'closeCareerPopup') closeCareerPopup();
+    });
+
     await loadCareerData();
 
     if (!careersData || !careersData.roles) {
