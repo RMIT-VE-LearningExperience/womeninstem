@@ -693,8 +693,8 @@ function switchView(view) {
     }
 }
 
-// Initialize on desktop
-if (window.innerWidth >= 769) {
+// Initialize on desktop — skip floating view if opening a specific career via URL
+if (window.innerWidth >= 769 && !pageURLParams.get('openCareer')) {
     switchView('floating');
 } else {
     switchView('cards');
