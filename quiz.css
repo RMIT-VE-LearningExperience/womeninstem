@@ -771,6 +771,53 @@ h2 {
     }
 }
 
+/* ===================================
+   CAREER POPUP (iframe overlay)
+   =================================== */
+.story-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 22, 44, 0.66);
+    backdrop-filter: blur(2px);
+    z-index: 2500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+}
+
+.story-popup-overlay.visible {
+    display: flex;
+}
+
+.story-popup-shell {
+    position: relative;
+    width: min(1410px, calc(100vw - 36px));
+    height: min(94vh, 960px);
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.story-popup-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+body.story-popup-open {
+    overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+    .story-popup-overlay { padding: 8px; }
+    .story-popup-shell {
+        width: calc(100vw - 12px);
+        height: calc(100vh - 12px);
+        border-radius: 14px;
+    }
+}
+
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
     * {

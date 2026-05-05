@@ -32,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="quiz.css?v=3.0.4">
+    <link rel="stylesheet" href="quiz.css?v=3.0.5">
     <link rel="stylesheet" href="nav.css?v=1.1.6">
 
     <!-- Google Analytics GA4 -->
@@ -193,6 +193,13 @@
         </div>
     </div>
 
+    <!-- Career popup (iframe overlay, same pattern as explore-stories.html) -->
+    <div class="story-popup-overlay" id="careerPopupOverlay" hidden>
+        <div class="story-popup-shell" role="dialog" aria-modal="true" aria-label="Career details">
+            <iframe class="story-popup-frame" id="careerPopupFrame" title="Career details"></iframe>
+        </div>
+    </div>
+
     <footer class="quiz-footer">
         <span>Made possible by</span>
         <div class="quiz-footer-divider" aria-hidden="true"></div>
@@ -200,7 +207,7 @@
         <a href="https://bigbuild.vic.gov.au/" target="_blank" rel="noopener noreferrer"><img src="images/M80_Ring_Road.svg" alt="Big Build M80 Ring Road" loading="lazy"></a>
     </footer>
 
-    <script src="quiz.js?v=3.0.3"></script>
+    <script src="quiz.js?v=3.0.4"></script>
     <script src="nav.js?v=1.0.0"></script>
 </body>
 </html>
