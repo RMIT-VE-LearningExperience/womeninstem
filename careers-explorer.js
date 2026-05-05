@@ -2344,7 +2344,8 @@ function openCareerFromURLParam() {
 
     showCareerInfo(career);
 
-    // Highlight matching card in grid if visible.
+    // Highlight matching card and scroll the grid into view so that
+    // closing the popup reveals the cards (not just the hero section).
     const cards = document.querySelectorAll('.career-card');
     cards.forEach(card => {
         if (card.dataset.careerName === career.name) {
@@ -2353,6 +2354,11 @@ function openCareerFromURLParam() {
             selectedCareer.classList.add('clicked');
         }
     });
+
+    if (!isEmbedPopup) {
+        const grid = document.getElementById('careersGrid');
+        if (grid) grid.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
 }
 
 // Load quiz results from localStorage

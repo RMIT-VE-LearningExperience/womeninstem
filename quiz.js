@@ -305,16 +305,18 @@ function createResultCard(career, index) {
     card.appendChild(badge);
     card.appendChild(infoWrapper);
 
-    // Make card clickable → open career popup overlay
+    // Make card clickable → navigate to career explorer with popup open
     card.style.cursor = 'pointer';
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
     card.setAttribute('aria-label', `View ${career.name} career details`);
-    card.addEventListener('click', () => openCareerPopup(career.name, card));
+    card.addEventListener('click', () => {
+        window.location.href = `career-explorer.html?openCareer=${encodeURIComponent(career.name)}`;
+    });
     card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            openCareerPopup(career.name, card);
+            window.location.href = `career-explorer.html?openCareer=${encodeURIComponent(career.name)}`;
         }
     });
 
@@ -393,48 +395,9 @@ function retakeQuiz() {
 }
 
 // ===================================
-// CAREER POPUP (iframe overlay)
-// ===================================
-let lastCareerTrigger = null;
-
-function openCareerPopup(roleName, triggerEl) {
-    const overlay = document.getElementById('careerPopupOverlay');
-    const frame = document.getElementById('careerPopupFrame');
-    if (!overlay || !frame) return;
-
-    lastCareerTrigger = triggerEl || null;
-    const params = new URLSearchParams({ openCareer: roleName, embedPopup: '1' });
-    frame.src = `career-explorer.html?${params.toString()}`;
-    overlay.hidden = false;
-    overlay.classList.add('visible');
-    document.body.classList.add('story-popup-open');
-}
-
-function closeCareerPopup() {
-    const overlay = document.getElementById('careerPopupOverlay');
-    const frame = document.getElementById('careerPopupFrame');
-    if (!overlay || !frame) return;
-
-    overlay.classList.remove('visible');
-    overlay.hidden = true;
-    document.body.classList.remove('story-popup-open');
-    frame.src = 'about:blank';
-
-    if (lastCareerTrigger && typeof lastCareerTrigger.focus === 'function') {
-        lastCareerTrigger.focus();
-    }
-    lastCareerTrigger = null;
-}
-
-// ===================================
 // KEYBOARD ACCESSIBILITY
 // ===================================
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        const overlay = document.getElementById('careerPopupOverlay');
-        if (overlay && overlay.classList.contains('visible')) closeCareerPopup();
-        return;
-    }
     if (e.key === 'Enter' || e.key === ' ') {
         const focused = document.activeElement;
         if (focused.classList.contains('answer-btn') || focused.classList.contains('btn')) {
@@ -448,17 +411,6 @@ document.addEventListener('keydown', (e) => {
 // ===================================
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ DOM loaded, initializing quiz...');
-
-    const careerPopupOverlay = document.getElementById('careerPopupOverlay');
-    if (careerPopupOverlay) {
-        careerPopupOverlay.addEventListener('click', (e) => {
-            if (e.target === careerPopupOverlay) closeCareerPopup();
-        });
-    }
-
-    window.addEventListener('message', (e) => {
-        if (e.data && e.data.type === 'closeCareerPopup') closeCareerPopup();
-    });
 
     await loadCareerData();
 
