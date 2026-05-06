@@ -2011,7 +2011,8 @@ function populateCareerPanel(career) {
 
     requestAnimationFrame(refreshActiveExpandContentHeights);
 
-    // Show the panel and overlay
+    // Show the panel and overlay; lock background for screen readers
+    lockBackground();
     infoPanel.classList.add('visible');
     infoPanel.setAttribute('aria-hidden', 'false');
     const overlay = document.getElementById('infoPanelOverlay');
@@ -2221,12 +2222,30 @@ if (compareActionBtn) {
 }
 
 // Event Listeners
+// Inert helpers — lock/unlock everything behind the modal for screen readers
+const MODAL_IDS = new Set(['infoPanel', 'infoPanelOverlay', 'backBtn']);
+
+function lockBackground() {
+    Array.from(document.body.children).forEach(el => {
+        if (!MODAL_IDS.has(el.id) && el.tagName !== 'SCRIPT') {
+            el.setAttribute('inert', '');
+        }
+    });
+}
+
+function unlockBackground() {
+    Array.from(document.body.children).forEach(el => {
+        el.removeAttribute('inert');
+    });
+}
+
 function closeInfoPanel() {
     if (isEmbedPopup && window.parent && window.parent !== window) {
         window.parent.postMessage({ type: 'closeCareerPopup' }, '*');
         return;
     }
 
+    unlockBackground();
     infoPanel.classList.remove('visible');
     infoPanel.setAttribute('aria-hidden', 'true');
     const overlay = document.getElementById('infoPanelOverlay');
