@@ -1768,13 +1768,25 @@ function updateBackButton() {
     const panel = document.getElementById('infoPanel');
     if (!backBtn) return;
 
-    if (careerHistory.length > 0) {
-        backBtn.style.display = 'flex';
-        // Position to the left of the actual modal element
-        const rect = panel.getBoundingClientRect();
-        backBtn.style.left = (rect.left - 56) + 'px';
-    } else {
+    if (careerHistory.length === 0) {
         backBtn.style.display = 'none';
+        return;
+    }
+
+    backBtn.style.display = 'flex';
+    const rect = panel.getBoundingClientRect();
+    const isMobile = window.innerWidth <= 1024;
+
+    if (isMobile) {
+        // Overlaid inside the panel header top-left (sits over the purple header)
+        backBtn.style.left = (rect.left + 14) + 'px';
+        backBtn.style.top = (rect.top + 14) + 'px';
+        backBtn.style.transform = 'none';
+    } else {
+        // Outside the modal, vertically centred, no circle
+        backBtn.style.left = (rect.left - 44) + 'px';
+        backBtn.style.top = (rect.top + rect.height / 2) + 'px';
+        backBtn.style.transform = 'translateY(-50%)';
     }
 }
 

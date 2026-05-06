@@ -32,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="careers-explorer.css?v=1.4.19">
+    <link rel="stylesheet" href="careers-explorer.css?v=1.4.20">
     <link rel="stylesheet" href="nav.css?v=1.1.7">
 
     <!-- Google Analytics GA4 -->
@@ -156,13 +156,13 @@
     <!-- Info Panel Overlay -->
     <div class="info-panel-overlay" id="infoPanelOverlay" aria-hidden="true"></div>
 
+    <!-- Back navigation arrow (outside modal, positioned via JS) -->
+    <button class="back-btn" id="backBtn" aria-label="Go back to previous career">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
+    </button>
+
     <!-- Info Panel (Centered Modal) -->
     <div class="info-panel" id="infoPanel" role="dialog" aria-modal="true" aria-labelledby="careerTitle" aria-describedby="careerOverview" aria-hidden="true">
-        <!-- Back navigation button (appears when navigating via career pathway links) -->
-        <button class="back-btn" id="backBtn" aria-label="Go back to previous career">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor"/></svg>
-        </button>
-
         <!-- Close Button -->
         <button class="close-btn" id="closeBtn" aria-label="Close career details" data-initial-focus>
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor"/></svg>
@@ -391,7 +391,7 @@
         </div>
     </div>
 
-    <script src="careers-explorer.js?v=2.7.21"></script>
+    <script src="careers-explorer.js?v=2.7.22"></script>
     <script>
     (function() {
         const fab = document.getElementById('gamesFab');

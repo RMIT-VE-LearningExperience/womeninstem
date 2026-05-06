@@ -1486,62 +1486,56 @@ body {
 /* ===================================
    BACK BUTTON (outside left side, vertically centered)
    =================================== */
+/* Back arrow — outside the modal on desktop, overlaid top-left on mobile */
 .back-btn {
     position: fixed;
-    top: 50%;
-    width: 44px;
-    height: 44px;
-    background: white;
+    /* top and left are set by JS */
+    width: 36px;
+    height: 36px;
+    background: transparent;
     border: none;
-    border-radius: 50%;
+    border-radius: 0;
     cursor: pointer;
     color: #1a365d;
     display: none;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
-    transition: all 0.2s ease;
+    padding: 0;
+    transition: color 0.15s ease, transform 0.15s ease;
     z-index: 3002;
-    transform: translateY(-50%);
-    /* left is calculated by JS: panel.getBoundingClientRect().left - 56 */
 }
 
 .back-btn:hover {
-    background: #f0f4ff;
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+    color: #2563eb;
+    transform: translateX(-3px);
 }
 
 .back-btn:active {
-    transform: translateY(-50%) scale(0.95);
+    transform: translateX(-1px) scale(0.9);
 }
 
 .back-btn:focus-visible {
     outline: 3px solid #ffd54a;
     outline-offset: 2px;
+    border-radius: 4px;
 }
 
-/* On mobile/tablet: absolute inside the panel, top-left corner */
+/* On mobile: small frosted circle overlaid on the panel header */
 @media (max-width: 1024px) {
     .back-btn {
-        position: absolute;
-        top: 16px;
-        left: 16px;
-        right: auto;
-        transform: none;
-        z-index: 11;
         width: 36px;
         height: 36px;
-        background: rgba(255, 255, 255, 0.18);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
         color: white;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(8px);
+        transition: background 0.15s ease, transform 0.15s ease;
     }
 
     .back-btn:hover {
-        background: rgba(255, 255, 255, 0.32);
-        transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        background: rgba(255, 255, 255, 0.35);
+        color: white;
+        transform: scale(1.08);
     }
 
     .back-btn:active {
