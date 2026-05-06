@@ -27,6 +27,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="nav.css?v=1.1.7">
     <link rel="stylesheet" href="secondary-pages.css?v=1.0.6">
+    <link rel="stylesheet" href="mini-games-dashboard.css?v=1.0.0">
 
     <!-- Google Analytics GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y3QTYBPXW"></script>
@@ -108,6 +109,35 @@
         </footer>
     </main>
 
+    <button class="games-fab" id="gamesFab" aria-label="Open mini games">
+        <img src="images/game.svg" alt="Mini games">
+    </button>
+
+    <div class="dashboard-overlay" id="dashboardOverlay" role="dialog" aria-modal="true" aria-labelledby="dashboardTitle" aria-describedby="dashboardDesc" aria-hidden="true">
+        <div class="dashboard-scrim" id="dashboardScrim"></div>
+        <button class="dashboard-close" id="dashboardClose" data-initial-focus>
+            Close Dashboard
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+        </button>
+        <div class="dashboard-panel">
+            <div class="dashboard-inner">
+                <div class="dashboard-header">
+                    <div class="dashboard-title" id="dashboardTitle">PLAY<br>MINI GAMES</div>
+                    <p id="dashboardDesc" class="dashboard-desc">Choose a mini game to play, or close this dashboard.</p>
+                    <div class="dashboard-badge">
+                        <span class="dashboard-badge-dot">3</span>
+                        <span class="dashboard-badge-count">GAMES AVAILABLE</span>
+                    </div>
+                </div>
+                <div class="game-carousel" data-mini-games-drawer></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="mini-games-drawer.js?v=1.0.0"></script>
+    <script src="mini-games-dashboard.js?v=1.0.0"></script>
     <script src="nav.js?v=1.0.0"></script>
 </body>
 </html>

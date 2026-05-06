@@ -284,13 +284,18 @@ body.nav-open .page-corner-logo {
 }
 
 .nav-drawer .nav-link[href*="rmit.edu.au"] .nav-link-label::after,
-.nav-drawer .nav-link[href*="bigbuild.vic.gov.au"] .nav-link-label::after {
+.nav-drawer .nav-link[href*="bigbuild.vic.gov.au"] .nav-link-label::after,
+.nav-drawer .nav-link-survey .nav-link-label::after {
     content: "↗";
     font-size: 15px;
     line-height: 1;
     color: #1f4888;
     opacity: 0.9;
     margin-left: 10px;
+}
+
+.nav-drawer .nav-link-survey:hover .nav-link-label::after {
+    color: #ffffff;
 }
 
 .nav-link:hover {
