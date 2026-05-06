@@ -1496,7 +1496,7 @@ body {
     border: none;
     border-radius: 0;
     cursor: pointer;
-    color: #1a365d;
+    color: #ffffff;
     display: none;
     align-items: center;
     justify-content: center;
@@ -1506,7 +1506,8 @@ body {
 }
 
 .back-btn:hover {
-    color: #2563eb;
+    color: #ffffff;
+    opacity: 0.75;
     transform: translateX(-3px);
 }
 
