@@ -2232,6 +2232,10 @@ function closeInfoPanel() {
 
 closeBtn.addEventListener('click', closeInfoPanel);
 
+// Back button — navigate to previous career in history
+const backBtn = document.getElementById('backBtn');
+if (backBtn) backBtn.addEventListener('click', goBackCareer);
+
 // Close info panel on Escape key
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && infoPanel.classList.contains('visible')) {
@@ -2431,5 +2435,6 @@ window.addEventListener('resize', () => {
         }
 
         previousWidth = currentWidth;
+        updateBackButton();
     }, 250);
 });
