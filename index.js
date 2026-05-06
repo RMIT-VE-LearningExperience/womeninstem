@@ -20,6 +20,7 @@ function navigateToGames() {
     const fab = document.getElementById('gamesFab');
     if (overlay) {
         overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
         if (fab) {
             fab.classList.add('hidden');
         }

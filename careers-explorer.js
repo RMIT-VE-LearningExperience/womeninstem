@@ -1726,6 +1726,7 @@ function toggleExpandBar(bar) {
 
     const isOpening = !bar.classList.contains('active');
     bar.classList.toggle('active', isOpening);
+    bar.setAttribute('aria-expanded', isOpening ? 'true' : 'false');
     setExpandContentState(content, isOpening);
 }
 
@@ -1736,6 +1737,11 @@ function setupExpandableSections() {
         bar.addEventListener('click', () => toggleExpandBar(bar));
         bar.setAttribute('role', 'button');
         bar.setAttribute('tabindex', '0');
+        bar.setAttribute('aria-expanded', bar.classList.contains('active') ? 'true' : 'false');
+        const content = bar.nextElementSibling;
+        if (content && content.id) {
+            bar.setAttribute('aria-controls', content.id);
+        }
         bar.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -1931,7 +1937,7 @@ function populateCareerPanel(career) {
             const header = card.querySelector('.level-header');
             header.setAttribute('role', 'button');
             header.setAttribute('tabindex', '0');
-            header.setAttribute('aria-expanded', 'false');
+            header.setAttribute('aria-expanded', card.classList.contains('active') ? 'true' : 'false');
             const toggleLevel = () => {
                 card.classList.toggle('active');
                 header.setAttribute('aria-expanded', card.classList.contains('active') ? 'true' : 'false');
@@ -1990,12 +1996,14 @@ function populateCareerPanel(career) {
         if (content && content.classList.contains('expand-content')) {
             setExpandContentState(content, false);
         }
+        bar.setAttribute('aria-expanded', 'false');
     });
 
     // Always-open sections
     const educationBar = document.getElementById('educationBar');
     if (educationBar) {
         educationBar.classList.add('active');
+        educationBar.setAttribute('aria-expanded', 'true');
         const educationContent = educationBar.nextElementSibling;
         if (educationContent && educationContent.classList.contains('expand-content')) {
             setExpandContentState(educationContent, true);
@@ -2004,6 +2012,7 @@ function populateCareerPanel(career) {
 
     if (pathwayBar && pathwayBar.style.display !== 'none') {
         pathwayBar.classList.add('active');
+        pathwayBar.setAttribute('aria-expanded', 'true');
         if (pathwayContent && pathwayContent.classList.contains('expand-content')) {
             setExpandContentState(pathwayContent, true);
         }
@@ -2281,6 +2290,7 @@ closeComparisonBtn.addEventListener('click', () => {
 pauseBtn.addEventListener('click', () => {
     isPaused = !isPaused;
     pauseBtn.classList.toggle('paused');
+    pauseBtn.setAttribute('aria-label', isPaused ? 'Play animation' : 'Pause animation');
 });
 
 // Video legend click to filter
@@ -2312,7 +2322,7 @@ bindKeyboardActivate(videoLegend, toggleVideoFilter);
 if (exploreCenter) {
     exploreCenter.setAttribute('role', 'button');
     exploreCenter.setAttribute('tabindex', '0');
-    exploreCenter.setAttribute('aria-label', 'Switch to card view');
+    exploreCenter.setAttribute('aria-label', 'Explore careers (switch to card view)');
     const activateExploreCenter = () => {
         switchView('cards');
     };

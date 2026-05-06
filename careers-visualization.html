@@ -483,7 +483,7 @@
 </head>
 <body>
     <div class="container">
-        <button class="pause-btn" id="pauseBtn"></button>
+        <button class="pause-btn" id="pauseBtn" aria-label="Pause animation"></button>
 
         <div class="explore-center">
             <div class="explore-text">Explore</div>
@@ -888,6 +888,7 @@
         pauseBtn.addEventListener('click', () => {
             isPaused = !isPaused;
             pauseBtn.classList.toggle('paused');
+            pauseBtn.setAttribute('aria-label', isPaused ? 'Play animation' : 'Pause animation');
         });
 
         // Initialize careers
