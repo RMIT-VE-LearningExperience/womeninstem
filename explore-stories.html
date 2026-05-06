@@ -33,7 +33,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="nav.css?v=1.1.6">
+    <link rel="stylesheet" href="nav.css?v=1.1.7">
     <style>
         :root {
             --navy: #234a87;
@@ -239,6 +239,12 @@
             cursor: pointer;
             transition: transform 0.25s ease, filter 0.25s ease;
             transform-origin: center;
+            border: none;
+            padding: 0;
+            text-align: left;
+            font: inherit;
+            display: block;
+            width: 100%;
         }
 
         .story-card:hover {
@@ -457,9 +463,16 @@
         @media (max-width: 768px) {
             .stories-footer-divider { display: none; }
         }
+
+        .sr-only {
+            position: absolute; width: 1px; height: 1px;
+            padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
     </style>
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <nav class="nav-drawer" id="navDrawer">
         <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
         <a href="index.html" class="nav-link nav-link-home"><span class="nav-link-label">Home</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/home.svg" alt=""></span></a>
@@ -482,7 +495,7 @@
         <img src="images/menu.svg" alt="Menu icon">
     </button>
 
-    <main class="stories-shell">
+    <main id="main-content" class="stories-shell">
         <div class="stories-topbar">
             <svg class="video-top-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="2" y="3" width="20" height="18" rx="2.8" stroke="currentColor" stroke-width="2"/>
@@ -519,7 +532,8 @@
             </div>
         </section>
 
-        <section class="cards-area">
+        <section class="cards-area" aria-labelledby="stories-list-heading">
+            <h2 class="sr-only" id="stories-list-heading">Stories</h2>
             <div class="stories-grid" id="storiesGrid"></div>
             <div class="empty-state" id="storiesEmpty" hidden>No video stories match your filter.</div>
         </section>
@@ -643,7 +657,7 @@
                 : `<div class="avatar" aria-hidden="true"></div>`;
 
             return `
-                <article class="story-card" style="--card-color:${cardColor};" data-role="${role.name}" role="button" tabindex="0" aria-label="Open ${role.name} profile">
+                <button class="story-card" style="--card-color:${cardColor};" data-role="${role.name}" type="button" aria-label="Open ${role.name} profile">
                     <div class="story-card-top">
                         <div class="story-head" style="background:${cardColor};">
                             ${thumbHtml}
@@ -655,8 +669,8 @@
                         </div>
                     </div>
                     <p class="story-quote">${quote}</p>
-                    <button class="story-read" data-role="${role.name}">READ MORE</button>
-                </article>
+                    <span class="story-read" aria-hidden="true">READ MORE</span>
+                </button>
             `;
         }
 
@@ -680,21 +694,6 @@
                 const role = videoRoles.find((item) => item.name === card.dataset.role);
                 if (!role) return;
                 card.addEventListener('click', () => openStoryPopup(role.name, card));
-                card.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        openStoryPopup(role.name, card);
-                    }
-                });
-            });
-
-            storiesGrid.querySelectorAll('.story-read').forEach((btn) => {
-                btn.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    const role = videoRoles.find((item) => item.name === btn.dataset.role);
-                    if (!role) return;
-                    openStoryPopup(role.name, btn);
-                });
             });
         }
 

@@ -32,8 +32,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="careers-explorer.css?v=1.4.17">
-    <link rel="stylesheet" href="nav.css?v=1.1.6">
+    <link rel="stylesheet" href="careers-explorer.css?v=1.4.18">
+    <link rel="stylesheet" href="nav.css?v=1.1.7">
 
     <!-- Google Analytics GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y3QTYBPXW"></script>
@@ -45,6 +45,7 @@
     </script>
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <nav class="nav-drawer" id="navDrawer">
         <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
         <a href="index.html" class="nav-link nav-link-home"><span class="nav-link-label">Home</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/home.svg" alt=""></span></a>
@@ -91,6 +92,9 @@
         <div class="video-legend-icon"></div>
         <div class="video-legend-text">Video Stories</div>
     </div>
+
+    <main id="main-content">
+    <h1 class="visually-hidden">Career Explorer</h1>
 
     <!-- Floating View -->
     <div class="floating-view active" id="floatingView">
@@ -146,6 +150,8 @@
             <p>No careers match your filters. Try adjusting your criteria.</p>
         </div>
     </div>
+
+    </main>
 
     <!-- Info Panel Overlay -->
     <div class="info-panel-overlay" id="infoPanelOverlay" aria-hidden="true"></div>

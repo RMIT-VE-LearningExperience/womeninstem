@@ -2733,10 +2733,23 @@ function drawHook() {
   if (!hookedCrate && gameState === 'playing') {
     const nearby = findNearestCrate();
     if (nearby) {
+      // Faint glow at hook tip
       ctx.beginPath();
       ctx.arc(hx, hy + HOOK_HEIGHT, 20, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(245,198,66,0.15)';
       ctx.fill();
+
+      // Visible pulse outline on the crate itself
+      const t = performance.now() / 1000;
+      const pulse = 0.6 + Math.sin(t * 6) * 0.3;
+      ctx.save();
+      ctx.strokeStyle = `rgba(245,201,66,${pulse.toFixed(3)})`;
+      ctx.lineWidth = 3;
+      ctx.shadowColor = 'rgba(245,201,66,0.7)';
+      ctx.shadowBlur = 8;
+      const pad = 4;
+      ctx.strokeRect(nearby.x - pad, nearby.y - pad, nearby.w + pad * 2, nearby.h + pad * 2);
+      ctx.restore();
     }
   }
 }
@@ -2919,16 +2932,28 @@ function drawDropZone() {
   }
   ctx.globalAlpha = 1;
 
-  ctx.fillStyle = `rgba(60,166,60,${alpha.toFixed(3)})`;
+  // Brighten drop zone when hooked crate is over it and ready to release
+  const readyToRelease = hookedCrate &&
+    (hookedCrate.x + hookedCrate.w / 2) > dz.x &&
+    (hookedCrate.x + hookedCrate.w / 2) < dz.x + dz.width &&
+    (hookedCrate.y + hookedCrate.h) >= DROP_ZONE_TOP_Y();
+  const dzAlpha = readyToRelease ? Math.min(1, alpha * 1.8) : alpha;
+  const dzColor = readyToRelease ? `rgba(80,220,80,${dzAlpha.toFixed(3)})` : `rgba(60,166,60,${dzAlpha.toFixed(3)})`;
+  if (readyToRelease) {
+    ctx.shadowColor = 'rgba(80,220,80,0.6)';
+    ctx.shadowBlur = 14;
+  }
+  ctx.fillStyle = dzColor;
   ctx.beginPath();
   ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
   ctx.fill();
+  ctx.shadowBlur = 0;
 
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 12px "Chakra Petch", monospace';
+  ctx.fillStyle = readyToRelease ? '#fff' : '#fff';
+  ctx.font = readyToRelease ? 'bold 13px "Chakra Petch", monospace' : 'bold 12px "Chakra Petch", monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('DROP ZONE', cx, cy);
+  ctx.fillText(readyToRelease ? '✓ RELEASE HERE' : 'DROP ZONE', cx, cy);
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.restore();

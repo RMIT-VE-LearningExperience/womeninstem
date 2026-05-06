@@ -9,6 +9,11 @@
     box-sizing: border-box;
 }
 
+:focus-visible {
+    outline: 3px solid rgba(160, 194, 255, 0.9);
+    outline-offset: 3px;
+}
+
 html, body {
     width: 100%;
     height: 100%;

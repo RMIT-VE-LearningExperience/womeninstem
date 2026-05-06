@@ -32,8 +32,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="quiz.css?v=3.0.7">
-    <link rel="stylesheet" href="nav.css?v=1.1.6">
+    <link rel="stylesheet" href="quiz.css?v=3.0.8">
+    <link rel="stylesheet" href="nav.css?v=1.1.7">
 
     <!-- Google Analytics GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y3QTYBPXW"></script>
@@ -45,6 +45,7 @@
     </script>
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <nav class="nav-drawer" id="navDrawer">
         <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
         <a href="index.html" class="nav-link nav-link-home"><span class="nav-link-label">Home</span><span class="nav-link-icon" aria-hidden="true"><img src="images/menu_icons/home.svg" alt=""></span></a>
@@ -71,6 +72,7 @@
         <img src="images/menu.svg" alt="Menu icon">
     </button>
 
+    <main id="main-content">
     <!-- Intro Screen -->
     <div class="screen active" id="intro">
         <div class="container">
@@ -180,7 +182,7 @@
     <div class="screen" id="results">
         <div class="container">
             <div class="results-panel">
-                <h1>YOUR BEST CAREER MATCHES</h1>
+                <h2>YOUR BEST CAREER MATCHES</h2>
                 <p class="results-intro">Based on your answers, here are the construction careers that best align with your interests:</p>
                 <div class="results-grid" id="resultsGrid">
                     <!-- Results dynamically inserted by JavaScript -->
@@ -192,6 +194,8 @@
             </div>
         </div>
     </div>
+
+    </main>
 
     <footer class="quiz-footer">
         <span>Made possible by</span>
