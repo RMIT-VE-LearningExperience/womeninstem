@@ -26,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="nav.css?v=1.1.7">
-    <link rel="stylesheet" href="secondary-pages.css?v=1.0.6">
+    <link rel="stylesheet" href="secondary-pages.css?v=1.0.7">
 
     <!-- Google Analytics GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y3QTYBPXW"></script>
@@ -81,8 +81,10 @@
         </section>
 
         <section class="page-main">
-            <div class="games-grid">
-                <a class="game-card" href="games/construction-planner/" style="--game-color:#659bb0;">
+            <div class="games-grid" role="group" aria-label="Mini games">
+                <div class="games-kb-hint" aria-hidden="true">Use arrow keys to browse · Enter to open</div>
+
+                <a class="game-card" href="games/construction-planner/" style="--game-color:#659bb0;" tabindex="0">
                     <div class="game-preview" style="background:#659bb0;">
                         <img src="images/minigames_thumnails/crewplanner.png" alt="Crew Planner preview" loading="lazy">
                     </div>
@@ -93,7 +95,7 @@
                     </div>
                 </a>
 
-                <a class="game-card" href="games/crane-operator/" style="--game-color:#7ea67e;">
+                <a class="game-card" href="games/crane-operator/" style="--game-color:#7ea67e;" tabindex="-1">
                     <div class="game-preview" style="background:#7ea67e;">
                         <img src="images/minigames_thumnails/crane.png" alt="Crane Operator preview" loading="lazy">
                     </div>
@@ -104,7 +106,7 @@
                     </div>
                 </a>
 
-                <a class="game-card" href="games/plumbing/" style="--game-color:#193E75;">
+                <a class="game-card" href="games/plumbing/" style="--game-color:#193E75;" tabindex="-1">
                     <div class="game-preview" style="background:#193E75;">
                         <img src="images/minigames_thumnails/pipeconnect.png" alt="Pipe Connect preview" loading="lazy">
                     </div>
@@ -128,10 +130,59 @@
 
     <script src="nav.js?v=1.0.0"></script>
     <script>
-        document.querySelectorAll('.game-card').forEach(function(card) {
+        // ── Keyboard user detection ──────────────────────────────
+        let isKeyboardUser = false;
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                isKeyboardUser = true;
+                document.body.classList.add('keyboard-user');
+            }
+        });
+        window.addEventListener('mousedown', function() {
+            isKeyboardUser = false;
+            document.body.classList.remove('keyboard-user');
+        });
+
+        // ── Roving tabindex for the games grid ───────────────────
+        const cards = Array.from(document.querySelectorAll('.game-card'));
+
+        function setActive(index) {
+            cards.forEach(function(c, i) {
+                c.setAttribute('tabindex', i === index ? '0' : '-1');
+            });
+            cards[index].focus();
+        }
+
+        cards.forEach(function(card, index) {
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setActive((index + 1) % cards.length);
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setActive((index - 1 + cards.length) % cards.length);
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    setActive(0);
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    setActive(cards.length - 1);
+                }
+            });
+
+            // Keep the roving index in sync if a card is focused by mouse/click
+            card.addEventListener('focus', function() {
+                cards.forEach(function(c, i) {
+                    c.setAttribute('tabindex', i === index ? '0' : '-1');
+                });
+            });
+
+            // GA tracking
             card.addEventListener('click', function() {
                 var title = card.querySelector('.game-title');
-                gtag('event', 'game_card_click', { event_category: 'mini_games', event_label: title ? title.textContent.trim() : card.href });
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'game_card_click', { event_category: 'mini_games', event_label: title ? title.textContent.trim() : card.href });
+                }
             });
         });
     </script>

@@ -471,6 +471,37 @@ body.page-secondary.mini-games-page .page-main {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 22px;
     align-items: stretch;
+    position: relative;
+}
+
+/* Keyboard hint — only visible to keyboard users when grid has focus */
+.games-kb-hint {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7a99;
+    letter-spacing: 0.02em;
+    padding: 4px 0 2px;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease, height 0.2s ease, padding 0.2s ease;
+    pointer-events: none;
+}
+
+body.keyboard-user .games-grid:focus-within .games-kb-hint {
+    opacity: 1;
+    height: 1.6em;
+    padding: 0 0 12px;
+}
+
+/* Focused card state for keyboard users */
+.game-card:focus-visible {
+    outline: 3px solid #1a365d;
+    outline-offset: 3px;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(26, 54, 93, 0.18);
 }
 
 .game-card {
