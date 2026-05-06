@@ -12,7 +12,9 @@
         const overlay = document.getElementById('dashboardOverlay');
         const closeBtn = document.getElementById('dashboardClose');
         const scrim = document.getElementById('dashboardScrim');
-        const carousel = document.querySelector('.game-carousel');
+        const carousel = document.querySelector('#dashboardOverlay .game-carousel');
+        let leftArrow = null;
+        let rightArrow = null;
         let lastFocusedBeforeDashboard = null;
         let isDragging = false;
         let startX = 0;
@@ -25,6 +27,7 @@
             overlay.classList.add('active');
             overlay.setAttribute('aria-hidden', 'false');
             fab.classList.add('hidden');
+            updateScrollArrows();
 
             window.setTimeout(function () {
                 const focusables = getFocusableElements(overlay);
@@ -33,6 +36,7 @@
                     target.setAttribute('tabindex', '-1');
                 }
                 target.focus({ preventScroll: true });
+                updateScrollArrows();
             }, 0);
         }
 
@@ -109,6 +113,67 @@
 
         if (!carousel) return;
 
+        function createArrow(direction) {
+            const button = document.createElement('button');
+            const isLeft = direction === 'left';
+            button.type = 'button';
+            button.className = 'game-scroll-arrow game-scroll-arrow-' + direction;
+            button.setAttribute('aria-label', isLeft ? 'Show previous mini games' : 'Show next mini games');
+            button.innerHTML = isLeft
+                ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>'
+                : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8.59 16.59 1.41 1.41 6-6-6-6-1.41 1.41L13.17 12z"/></svg>';
+            return button;
+        }
+
+        function ensureArrowShell() {
+            let shell = carousel.parentElement;
+            if (!shell || !shell.classList.contains('game-carousel-shell')) {
+                shell = document.createElement('div');
+                shell.className = 'game-carousel-shell';
+                carousel.parentNode.insertBefore(shell, carousel);
+                shell.appendChild(carousel);
+            }
+
+            leftArrow = createArrow('left');
+            rightArrow = createArrow('right');
+            shell.appendChild(leftArrow);
+            shell.appendChild(rightArrow);
+        }
+
+        function updateScrollArrows() {
+            if (!carousel || !leftArrow || !rightArrow) return;
+            const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+            const hasOverflow = maxScroll > 2;
+            const hasLeftCrop = carousel.scrollLeft > 2;
+            const hasRightCrop = carousel.scrollLeft < maxScroll - 2;
+
+            leftArrow.classList.toggle('visible', hasOverflow && hasLeftCrop);
+            rightArrow.classList.toggle('visible', hasOverflow && hasRightCrop);
+        }
+
+        function scrollCarousel(direction) {
+            const distance = Math.max(220, Math.floor(carousel.clientWidth * 0.75));
+            carousel.scrollBy({
+                left: direction === 'left' ? -distance : distance,
+                behavior: 'smooth'
+            });
+            window.setTimeout(updateScrollArrows, 260);
+        }
+
+        ensureArrowShell();
+        updateScrollArrows();
+
+        leftArrow.addEventListener('click', function () {
+            scrollCarousel('left');
+        });
+
+        rightArrow.addEventListener('click', function () {
+            scrollCarousel('right');
+        });
+
+        carousel.addEventListener('scroll', updateScrollArrows, { passive: true });
+        window.addEventListener('resize', updateScrollArrows);
+
         carousel.addEventListener('mousedown', function (event) {
             if (window.matchMedia('(max-width: 640px)').matches) return;
             isDragging = true;
@@ -137,6 +202,7 @@
             const x = event.clientX - rect.left;
             const walk = (x - startX) * 1.2;
             carousel.scrollLeft = scrollLeft - walk;
+            updateScrollArrows();
         });
     }
 

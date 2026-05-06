@@ -203,6 +203,58 @@
     flex: 1 1 auto;
 }
 
+.game-carousel-shell {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.game-carousel-shell .game-carousel {
+    width: 100%;
+}
+
+.game-scroll-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: #1e1b4b;
+    color: #ffffff;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transform: translateY(-50%);
+    box-shadow: 0 8px 18px rgba(30, 27, 75, 0.2);
+}
+
+.game-scroll-arrow.visible {
+    display: flex;
+}
+
+.game-scroll-arrow:hover {
+    background: #315283;
+}
+
+.game-scroll-arrow-left {
+    left: 8px;
+}
+
+.game-scroll-arrow-right {
+    right: 8px;
+}
+
+.game-scroll-arrow svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
 .game-carousel > .game-card {
     flex: 0 0 auto;
     min-width: 220px;
@@ -406,6 +458,10 @@
         gap: 16px;
         overflow-x: auto;
         overflow-y: hidden;
+    }
+
+    .game-carousel-shell {
+        width: 100%;
     }
 
     .game-card {
