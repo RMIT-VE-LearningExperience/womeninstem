@@ -84,7 +84,7 @@
             <div class="games-grid" role="group" aria-label="Mini games">
                 <div class="games-kb-hint" aria-hidden="true">Use arrow keys to browse · Enter to open</div>
 
-                <a class="game-card" href="games/construction-planner/" style="--game-color:#659bb0;" tabindex="0">
+                <a class="game-card" href="games/construction-planner/" style="--game-color:#659bb0;">
                     <div class="game-preview" style="background:#659bb0;">
                         <img src="images/minigames_thumnails/crewplanner.png" alt="Crew Planner preview" loading="lazy">
                     </div>
@@ -95,7 +95,7 @@
                     </div>
                 </a>
 
-                <a class="game-card" href="games/crane-operator/" style="--game-color:#7ea67e;" tabindex="-1">
+                <a class="game-card" href="games/crane-operator/" style="--game-color:#7ea67e;">
                     <div class="game-preview" style="background:#7ea67e;">
                         <img src="images/minigames_thumnails/crane.png" alt="Crane Operator preview" loading="lazy">
                     </div>
@@ -106,7 +106,7 @@
                     </div>
                 </a>
 
-                <a class="game-card" href="games/plumbing/" style="--game-color:#193E75;" tabindex="-1">
+                <a class="game-card" href="games/plumbing/" style="--game-color:#193E75;">
                     <div class="game-preview" style="background:#193E75;">
                         <img src="images/minigames_thumnails/pipeconnect.png" alt="Pipe Connect preview" loading="lazy">
                     </div>
@@ -130,6 +130,13 @@
 
     <script src="nav.js?v=1.0.0"></script>
     <script>
+        // ── Roving tabindex: initialise immediately so JS owns the state ──
+        // (not relying on HTML attributes, which may be stale in CDN cache)
+        const cards = Array.from(document.querySelectorAll('.game-card'));
+        cards.forEach(function(c, i) {
+            c.setAttribute('tabindex', i === 0 ? '0' : '-1');
+        });
+
         // ── Keyboard user detection ──────────────────────────────
         let isKeyboardUser = false;
         window.addEventListener('keydown', function(e) {
@@ -144,7 +151,6 @@
         });
 
         // ── Roving tabindex for the games grid ───────────────────
-        const cards = Array.from(document.querySelectorAll('.game-card'));
 
         function setActive(index) {
             cards.forEach(function(c, i) {
