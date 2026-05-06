@@ -352,13 +352,17 @@
             color: var(--ink);
         }
 
+        .story-read-wrap {
+            text-align: center;
+            margin-top: 12px;
+        }
+
         .story-read {
-            margin: 0 auto;
-            display: block;
+            display: inline-block;
             border: none;
             background: var(--yellow);
             color: var(--ink);
-            font: 900 16px/1 'Inter', sans-serif;
+            font: 700 15px/1 'Inter', sans-serif;
             border-radius: 16px;
             padding: 12px 28px;
             cursor: pointer;
@@ -669,7 +673,7 @@
                         </div>
                     </div>
                     <p class="story-quote">${quote}</p>
-                    <span class="story-read" aria-hidden="true">READ MORE</span>
+                    <div class="story-read-wrap" aria-hidden="true"><span class="story-read">READ MORE</span></div>
                 </button>
             `;
         }
