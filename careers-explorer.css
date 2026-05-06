@@ -2537,29 +2537,51 @@ body.embed-popup-mode .info-panel {
 .dashboard-panel {
     position: relative;
     z-index: 2;
-    background: #f5f6ff;
-    border-radius: 24px 24px 0 0;
-    padding: 24px;
-    box-shadow: none;
+    padding: 0 0 20px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dashboard-overlay.active .dashboard-panel {
+    transform: translateY(0);
+}
+
+.dashboard-overlay.active .dashboard-close {
+    animation: fadeDown 0.35s ease 0.15s both;
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .dashboard-inner {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 24px;
+    margin: 0 16px;
+    padding: 28px 24px 20px 24px;
     display: flex;
-    gap: 24px;
     align-items: center;
     flex-wrap: nowrap;
+    gap: 28px;
     overflow: hidden;
+    scroll-padding-right: 24px;
+    border: 10px solid rgb(242 242 249);
 }
 
 .dashboard-header {
-    min-width: 200px;
+    flex: 0 0 auto;
+    min-width: 160px;
+    text-align: left;
 }
 
 .dashboard-title {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 900;
     color: #1e1b4b;
-    line-height: 1;
+    line-height: 1.05;
     text-transform: uppercase;
     margin-bottom: 12px;
 }
@@ -2607,11 +2629,20 @@ body.embed-popup-mode .info-panel {
 
 .game-carousel {
     display: flex;
-    gap: 18px;
+    align-items: center;
+    gap: 28px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 6px 16px 6px 6px;
-    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    padding-top: 3px;
+    flex: 1 1 auto;
+}
+
+.game-carousel > .game-card {
+    flex: 0 0 auto;
+    min-width: 220px;
 }
 
 .game-carousel.dragging {
@@ -2619,12 +2650,7 @@ body.embed-popup-mode .info-panel {
 }
 
 .game-carousel::-webkit-scrollbar {
-    height: 8px;
-}
-
-.game-carousel::-webkit-scrollbar-thumb {
-    background: rgba(26, 54, 93, 0.2);
-    border-radius: 999px;
+    display: none;
 }
 
 .game-card {
@@ -2733,16 +2759,18 @@ body.embed-popup-mode .info-panel {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 .progress-bar-bg {
+    flex: 1;
+    height: 16px;
     background: #22c55e;
-    padding: 4px 10px;
-    border-radius: 999px;
-    display: inline-flex;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 2px 8px;
+    display: flex;
     align-items: center;
-    justify-content: center;
 }
 
 .progress-bar-bg.locked-bar {
@@ -2750,26 +2778,21 @@ body.embed-popup-mode .info-panel {
 }
 
 .progress-text {
-    font-size: 10px;
-    font-weight: 800;
+    font-size: 9px;
+    font-weight: 700;
     color: #1e1b4b;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
 }
 
 .status-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-}
-
-.status-icon svg {
-    width: 12px;
-    height: 12px;
-    fill: currentColor;
+    flex: 0 0 auto;
 }
 
 .status-icon.ready {
@@ -2777,23 +2800,65 @@ body.embed-popup-mode .info-panel {
 }
 
 .status-icon.not-ready {
-    background: #f87171;
+    background: #ef4444;
 }
 
-@media (max-width: 767px) {
-    .dashboard-panel {
-        padding: 20px;
+.status-icon svg {
+    width: 10px;
+    height: 10px;
+    fill: white;
+}
+
+@media (min-width: 641px) {
+    .game-carousel {
+        cursor: grab;
     }
+
+    .game-carousel.dragging {
+        cursor: grabbing;
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-panel {
+        padding: 0 0 12px;
+    }
+
     .dashboard-inner {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        gap: 16px;
+        margin: 0 12px;
+        padding: 24px 16px 16px;
+        max-height: 70vh;
+        max-height: 70dvh;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
+
     .dashboard-header {
-        min-width: unset;
+        min-width: auto;
+        text-align: left;
     }
+
+    .dashboard-title {
+        font-size: 32px;
+    }
+
     .game-carousel {
-        width: 100%;
-        padding-right: 8px;
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .game-card {
+        width: 220px;
+    }
+
+    .game-card-slots {
+        gap: 10px;
     }
 }
 
