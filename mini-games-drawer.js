@@ -3,7 +3,7 @@
         {
             id: 'crew-planner',
             name: 'CREW PLANNER',
-            href: 'games/construction-planner/',
+            href: 'games/construction-planner/index.html',
             thumbnail: 'images/minigames_thumnails/crewplanner.png',
             thumbnailAlt: 'Crew Planner preview',
             status: 'PLAY NOW',
@@ -12,7 +12,7 @@
         {
             id: 'crane-operator',
             name: 'CRANE OPERATOR',
-            href: 'games/crane-operator/',
+            href: 'games/crane-operator/index.html',
             thumbnail: 'images/minigames_thumnails/crane.png',
             thumbnailAlt: 'Crane Operator preview',
             status: 'PLAY NOW',
@@ -21,9 +21,18 @@
         {
             id: 'pipe-connect',
             name: 'PIPE CONNECT',
-            href: 'games/plumbing/',
+            href: 'games/plumbing/index.html',
             thumbnail: 'images/minigames_thumnails/pipeconnect.png',
             thumbnailAlt: 'Pipe Connect preview',
+            status: 'PLAY NOW',
+            available: true
+        },
+        {
+            id: 'hazard-hunt',
+            name: 'HAZARD HUNT',
+            href: 'games/hazard-hunt/index.html',
+            thumbnail: 'images/minigames_thumnails/hazardhunt.png',
+            thumbnailAlt: 'Hazard Hunt preview',
             status: 'PLAY NOW',
             available: true
         }

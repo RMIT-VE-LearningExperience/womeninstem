@@ -27,7 +27,7 @@ function navigateToGames() {
         return;
     }
     // Fallback if overlay isn't present
-    window.location.href = 'games/construction-planner/';
+    window.location.href = 'games/construction-planner/index.html';
 }
 
 // ===================================
@@ -43,15 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         careerBtn.addEventListener('click', () => {
             gtag('event', 'click', { event_category: 'homepage', event_label: 'career_explorer_cta' });
             navigateToCareersExplorer();
-        });
-    }
-
-    // About button
-    const aboutBtn = document.querySelector('.btn-about');
-    if (aboutBtn) {
-        aboutBtn.addEventListener('click', () => {
-            gtag('event', 'click', { event_category: 'homepage', event_label: 'about_cta' });
-            navigateToAbout();
         });
     }
 

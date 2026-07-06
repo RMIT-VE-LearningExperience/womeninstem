@@ -2,78 +2,88 @@
 <html lang="en-AU">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Hazard Hunt</title>
-    <meta name="description" content="Inspect a construction site, find OH&S hazards, and make the site safe.">
+    <meta name="description" content="Inspect a building under construction, find OH&S hazards, and make the site safe.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../../nav.css?v=1.1.7">
 </head>
 <body>
-    <main class="app-shell">
-        <section class="game-column">
-            <div class="topbar">
-                <a class="back-link" href="../../mini-games.html">Back to Mini Games</a>
-                <button class="fullscreen-btn" id="fullscreen-btn" type="button">Fullscreen: F</button>
-            </div>
-            <canvas id="game-canvas" width="960" height="540" aria-label="Hazard Hunt game canvas"></canvas>
-        </section>
+    <nav class="nav-drawer" id="navDrawer" aria-label="Main navigation">
+        <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
+        <a href="../../index.html" class="nav-link nav-link-home"><span class="nav-link-label">Home</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/home.svg" alt=""></span></a>
+        <a href="../../about.html" class="nav-link nav-link-about"><span class="nav-link-label">About</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/about.svg" alt=""></span></a>
+        <a href="../../career-explorer.html" class="nav-link nav-link-career"><span class="nav-link-label">Career Explorer</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/careerexplorer.svg" alt=""></span></a>
+        <a href="../../explore-stories.html" class="nav-link nav-link-videos"><span class="nav-link-label">Video Stories</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/videos.svg" alt=""></span></a>
+        <a href="../../mini-games.html" class="nav-link nav-link-games active"><span class="nav-link-label">Mini Games</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/minigame.svg" alt=""></span></a>
+        <a href="../../credits.html" class="nav-link nav-link-credits"><span class="nav-link-label">Credits</span><span class="nav-link-icon" aria-hidden="true"><img src="../../images/menu_icons/credits.svg" alt=""></span></a>
+    </nav>
+    <div class="nav-scrim" id="navScrim"></div>
+    <button class="menu-btn help-menu-btn" id="helpBtn" aria-label="Help" title="Help">
+        <svg viewBox="0 0 50.9 84.5" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path class="help-mark" d="M49.2,15.3c-1.2-3-3-5.7-5.3-8-3.3-3.3-9.2-7.3-18.5-7.3s-6.6.5-9.5,1.6c-2.7,1-5.2,2.5-7.4,4.4C4.9,9.1,2.1,13.4.4,18.3c-1.2,3.4.6,7.1,4,8.3s7.1-.6,8.3-4c.7-2,2-4.7,4.4-6.8,2.3-1.9,5-2.9,8.5-2.9s7,1.2,9.3,3.5c2.2,2.3,3.2,5.2,3.2,7.1,0,3.2-1,5-1.8,6.1-1.2,1.7-3,3.2-5,4.9-2.6,2.1-5.5,4.5-7.6,8-3,4.8-4.6,9.7-4.6,14.5s2.9,6.5,6.5,6.5,6.5-2.9,6.5-6.5.5-4.1,2.6-7.5c1.1-1.7,2.9-3.2,5-4.9,4.8-4,11.3-9.4,11.4-20.8,0-2.7-.6-5.6-1.7-8.4h0Z"/>
+            <path class="help-mark" d="M32.6,77c0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2s0-.1,0-.2c0,0,0-.1,0-.2,0-.1,0-.2,0-.3,0-.1,0-.2,0-.3,0-.1,0-.2-.1-.3s0-.2-.1-.3c0-.1,0-.2-.1-.3,0-.1,0-.2-.2-.3,0,0-.1-.2-.2-.3,0,0-.1-.2-.2-.3,0,0,0,0,0-.1,0,0,0,0,0-.1,0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1-.1,0,0,0,0-.1-.1,0,0,0,0-.1-.1,0,0,0,0-.1-.1s0,0-.1-.1,0,0-.1-.1c0,0,0,0-.1-.1s0,0-.1-.1c0,0,0,0-.1,0s0,0-.2,0c0,0-.2-.1-.3-.2,0,0-.2-.1-.3-.2,0,0-.2-.1-.3-.2-.1,0-.2,0-.3-.1s-.2,0-.3-.1-.2,0-.3-.1-.2,0-.3,0c-.1,0-.2,0-.3,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0s-.1,0-.2,0c0,0-.1,0-.2,0s-.1,0-.2,0h-.7c0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0s-.1,0-.2,0c0,0-.1,0-.2,0-.1,0-.2,0-.3,0s-.2,0-.3,0-.2,0-.3.1-.2,0-.3.1c-.1,0-.2,0-.3.1-.1,0-.2,0-.3.2,0,0-.2.1-.3.2,0,0-.2.1-.3.2,0,0,0,0-.1,0,0,0,0,0-.1,0,0,0,0,0-.1.1s0,0-.1.1,0,0-.1.1c0,0,0,0-.1.1s0,0-.1.1,0,0-.1.1,0,0-.1.1c0,0,0,0-.1.1,0,0,0,0-.1.1,0,0,0,0-.1.1,0,0,0,0-.1.1s0,0-.1.1c0,0,0,0,0,.1s0,0,0,.1c0,0-.1.2-.2.3,0,0-.1.2-.2.3,0,0-.1.2-.2.3,0,.1,0,.2-.1.3s0,.2-.1.3,0,.2-.1.3,0,.2,0,.3c0,.1,0,.2,0,.3,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2s0,.1,0,.2c0,0,0,.1,0,.2,0,0,0,.1,0,.2v.7c0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2s0,.1,0,.2c0,0,0,.1,0,.2,0,.1,0,.2,0,.3,0,.1,0,.2,0,.3,0,.1,0,.2.1.3s0,.2.1.3,0,.2.1.3c0,.1,0,.2.2.3s.1.2.2.3c0,0,.1.2.2.3,0,0,0,0,0,.2,0,0,0,0,0,.1,0,0,0,0,.1.1s0,0,.1.1,0,0,.1.1,0,0,.1.1c0,0,0,0,.1.1,0,0,0,0,.1.1s0,0,.1.1c0,0,0,0,.1.1s0,0,.1.1,0,0,.1.1c0,0,0,0,.1.1s0,0,.1.1c0,0,0,0,.1,0s0,0,.1,0c0,0,.2.1.3.2,0,0,.2.1.3.2,0,0,.2.1.3.2.1,0,.2,0,.3.1s.2,0,.3.1.2,0,.3.1.2,0,.3,0c.1,0,.2,0,.3,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0s.1,0,.2,0c0,0,.1,0,.2,0,0,0,.1,0,.2,0h.7c0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0,0,0,.1,0,.2,0s.1,0,.2,0c0,0,.1,0,.2,0,.1,0,.2,0,.3,0s.2,0,.3,0,.2,0,.3-.1.2,0,.3-.1c.1,0,.2,0,.3-.1.1,0,.2,0,.3-.2,0,0,.2-.1.3-.2,0,0,.2-.1.3-.2,0,0,0,0,.2,0,0,0,0,0,.1,0,0,0,0,0,.1-.1s0,0,.1-.1,0,0,.1-.1c0,0,0,0,.1-.1s0,0,.1-.1,0,0,.1-.1,0,0,.1-.1c0,0,0,0,.1-.1,0,0,0,0,.1-.1,0,0,0,0,.1-.1,0,0,0,0,.1-.1s0,0,.1-.1c0,0,0,0,0-.1s0,0,0-.2c0,0,.1-.2.2-.3,0,0,.1-.2.2-.3,0,0,.1-.2.2-.3,0-.1,0-.2.1-.3,0-.1,0-.2.1-.3s0-.2.1-.3,0-.2,0-.3c0-.1,0-.2,0-.3,0,0,0-.1,0-.2,0,0,0-.1,0-.2,0,0,0-.1,0-.2s0-.1,0-.2c0,0,0-.1,0-.2,0,0,0-.1,0-.2v-.7h0Z"/>
+        </svg>
+    </button>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" title="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 
-        <aside class="hud-panel">
-            <div class="brand">
-                <p class="eyebrow">Construction Safety</p>
-                <h1>Hazard Hunt</h1>
-                <p>Walk the site, stop unsafe conditions, and clear the checklist before risk or time runs out.</p>
-            </div>
+    <canvas id="game-canvas" aria-label="Hazard Hunt game canvas"></canvas>
 
-            <div class="stats-grid">
-                <article>
-                    <span class="stat-label">Hazards Secured</span>
-                    <strong id="hazards-found">0 / 5</strong>
-                </article>
-                <article>
-                    <span class="stat-label">Risk Meter</span>
-                    <strong id="risk-meter">0%</strong>
-                </article>
-                <article>
-                    <span class="stat-label">Time Left</span>
-                    <strong id="time-left">90s</strong>
-                </article>
-                <article>
-                    <span class="stat-label">Current Zone</span>
-                    <strong id="zone-label">Site entry</strong>
-                </article>
-            </div>
+    <!-- HUD: stat chips -->
+    <div id="hud" role="group" aria-label="Game status">
+        <div class="hud-chip">
+            <span class="hud-label">Hazards</span>
+            <strong id="hazards-found">0 / 5</strong>
+        </div>
+        <div class="hud-chip">
+            <span class="hud-label">Risk</span>
+            <strong id="risk-meter">0%</strong>
+        </div>
+        <div class="hud-chip">
+            <span class="hud-label">Time</span>
+            <strong id="time-left">90s</strong>
+        </div>
+        <div class="hud-chip">
+            <span class="hud-label">Zone</span>
+            <strong id="zone-label">Ground level</strong>
+        </div>
+    </div>
 
-            <div class="status-card">
-                <h2>Status</h2>
-                <p id="status-text">Inspect each flashing hazard. Stand nearby and press space to secure it.</p>
-            </div>
+    <!-- Checklist -->
+    <div id="checklist" role="region" aria-label="Hazard checklist">
+        <h2>Checklist</h2>
+        <ul id="hazard-list"></ul>
+    </div>
 
-            <div class="checklist-card">
-                <h2>Checklist</h2>
-                <ul id="hazard-list"></ul>
-            </div>
+    <!-- Status bar -->
+    <div id="status-bar" role="status" aria-live="polite" aria-atomic="true">
+        <span id="status-text">Inspect each flashing hazard. Stand nearby and press space to secure it.</span>
+    </div>
 
-            <div class="controls-card">
-                <h2>Controls</h2>
-                <p>Move: Arrow keys or WASD</p>
-                <p>Secure hazard: Space or Enter</p>
-                <p>Flag hazard: Click the flashing zone</p>
-                <p>Pause: P</p>
-                <p>Fullscreen: F</p>
-            </div>
-        </aside>
-    </main>
+    <!-- Controls hint -->
+    <div id="controls-hint" role="region" aria-label="Keyboard controls">
+        <span><b>&larr; &rarr;</b> Move</span>
+        <span><b>&uarr; &darr;</b> Climb</span>
+        <span><b>Space</b> Secure</span>
+        <span><b>P</b> Pause</span>
+        <span><b>F</b> Fullscreen</span>
+    </div>
 
-    <section class="overlay visible" id="start-overlay">
+    <section class="overlay visible" id="start-overlay" role="dialog" aria-modal="true" aria-labelledby="start-title">
         <div class="overlay-card">
             <p class="eyebrow">Safety Briefing</p>
-            <h2>Make The Site Safe</h2>
-            <p>You are the site safety spotter. Search the slab, scaffolds, trench, and plant area for active hazards before the crew starts work.</p>
+            <h2 id="start-title">Make The Site Safe</h2>
+            <p>You are the safety officer on a building under construction. Walk every level, climb the ladders, and secure all hazards before the crew starts work.</p>
             <ul>
-                <li>Find all 5 hazards.</li>
+                <li>Find all 5 hazards across the ground, upper floors, and roof deck.</li>
+                <li>Climb ladders with Up / Down to move between levels.</li>
                 <li>Standing too close to an active hazard raises the risk meter.</li>
                 <li>If risk hits 100% or time runs out, the round fails.</li>
             </ul>
@@ -81,7 +91,7 @@
         </div>
     </section>
 
-    <section class="overlay" id="end-overlay">
+    <section class="overlay" id="end-overlay" role="dialog" aria-modal="true" aria-labelledby="end-title">
         <div class="overlay-card">
             <p class="eyebrow" id="end-kicker">Round Complete</p>
             <h2 id="end-title">Site secured</h2>
@@ -90,6 +100,48 @@
         </div>
     </section>
 
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <h2>How to Play</h2>
+            <div class="slide-container">
+                <div class="slide active" data-slide="0">
+                    <p><strong>Your Goal:</strong> Inspect the construction site, find all 5 OH&amp;S hazards, and secure them before the crew starts work.</p>
+                    <p>Move through every level of the building, watch the risk meter, and make the site safe before time runs out.</p>
+                </div>
+                <div class="slide" data-slide="1">
+                    <p><strong>Controls:</strong></p>
+                    <ul>
+                        <li><strong>Left / Right:</strong> Walk along the current level</li>
+                        <li><strong>Up / Down:</strong> Climb ladders between levels when you are nearby</li>
+                        <li><strong>Spacebar / Enter:</strong> Secure a hazard when you are standing close to it</li>
+                        <li><strong>P:</strong> Pause or resume the shift</li>
+                    </ul>
+                </div>
+                <div class="slide" data-slide="2">
+                    <p><strong>Tips:</strong></p>
+                    <ol>
+                        <li>Start on the ground level and work your way up through the ladders</li>
+                        <li>Use the checklist to track which hazards are still active</li>
+                        <li>When the status bar names a hazard, press Space to secure it</li>
+                        <li>Keep moving so you can clear every zone before the timer reaches zero</li>
+                    </ol>
+                </div>
+                <div class="slide" data-slide="3">
+                    <p><strong>Watch Out:</strong></p>
+                    <p>Standing too close to an active hazard raises the risk meter. If risk reaches 100%, the inspection fails.</p>
+                    <p>Secure all hazards before time expires to complete the shift safely.</p>
+                </div>
+            </div>
+            <div class="modal-nav">
+                <button class="modal-btn" id="prevSlide">← Back</button>
+                <div class="slide-dots" id="slideDots"></div>
+                <button class="modal-btn modal-btn-primary" id="nextSlide">Next →</button>
+            </div>
+            <button class="modal-close" type="button" onclick="closeHelp()">×</button>
+        </div>
+    </div>
+
     <script src="game.js"></script>
+    <script src="../../nav.js?v=1.0.0"></script>
 </body>
 </html>

@@ -15,68 +15,156 @@
         endTitle: document.getElementById("end-title"),
         endSummary: document.getElementById("end-summary"),
         startBtn: document.getElementById("start-btn"),
-        restartBtn: document.getElementById("restart-btn"),
-        fullscreenBtn: document.getElementById("fullscreen-btn")
+        restartBtn: document.getElementById("restart-btn")
     };
 
-    const world = { width: 960, height: 540 };
+    // ── Fullscreen canvas + camera ────────────────────────────
+    const VIEW_H = 400; // world units visible vertically (≈ one storey + part of the next)
+    const camera = { x: 0, y: 0, zoom: 1 };
+
+    function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.round(window.innerWidth * dpr);
+        canvas.height = Math.round(window.innerHeight * dpr);
+        camera.zoom = canvas.height / VIEW_H;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function cameraTarget() {
+        const p = state.player;
+        const viewW = canvas.width / camera.zoom;
+        const viewH = canvas.height / camera.zoom;
+        let tx = p.x;
+        let ty = p.y - 120; // frame the character in the lower part of the view
+        tx = Math.max(viewW / 2, Math.min(world.width - viewW / 2, tx));
+        ty = Math.max(viewH / 2, Math.min(world.height - viewH / 2, ty));
+        if (viewW >= world.width) tx = world.width / 2;
+        if (viewH >= world.height) ty = world.height / 2;
+        return { tx, ty };
+    }
+
+    function updateCamera(dt, snap) {
+        const { tx, ty } = cameraTarget();
+        if (snap) { camera.x = tx; camera.y = ty; return; }
+        const k = 1 - Math.exp(-6 * dt);
+        camera.x += (tx - camera.x) * k;
+        camera.y += (ty - camera.y) * k;
+    }
+
+    // ── World: coordinates match the background image (1672 × 941) ──
+    const world = { width: 1672, height: 941 };
+
     const colors = {
-        sky: "#c7e3ef",
-        dirt: "#b89160",
-        slab: "#d9dde2",
-        fence: "#e16a30",
-        scaffold: "#4e6171",
-        steel: "#738998",
+        steel: "#5a7080",
+        steelDark: "#46596a",
         hazard: "#ffb000",
         danger: "#c64738",
         safe: "#1f7a53",
-        worker: "#173553"
+        spill: "#3d4a55",
+        cone: "#e16a30",
+        sign: "#e8c66c",
+        barricade: "#e16a30",
+        holeDark: "#2b333b"
     };
 
-    const baseHazards = [
-        { id: "spill", label: "Oil spill by generator", detail: "Slip hazard beside plant equipment.", x: 248, y: 408, radius: 56, zone: "Plant zone", type: "spill" },
-        { id: "cable", label: "Live cable across walkway", detail: "Trip and electric shock risk.", x: 410, y: 344, radius: 56, zone: "Walkway", type: "cable" },
-        { id: "trench", label: "Open trench without barricade", detail: "Fall hazard at excavation edge.", x: 570, y: 440, radius: 62, zone: "Excavation", type: "trench" },
-        { id: "ladder", label: "Unsecured ladder", detail: "Access equipment is not tied off.", x: 730, y: 258, radius: 54, zone: "Scaffold bay", type: "ladder" },
-        { id: "edge", label: "Missing edge protection", detail: "Unprotected slab edge above lower level.", x: 852, y: 154, radius: 64, zone: "Slab edge", type: "edge" }
+    // Walkable floors, measured off the background art.
+    const floors = [
+        { id: "ground", label: "Ground level", y: 740, xMin: 290, xMax: 1310 },
+        { id: "l1", label: "Level 1", y: 556, xMin: 345, xMax: 1285 },
+        { id: "l2", label: "Level 2", y: 378, xMin: 345, xMax: 1285 },
+        { id: "roof", label: "Roof deck", y: 196, xMin: 345, xMax: 1300 }
     ];
 
+    // Ladders connect floor index lower -> upper at a fixed x.
+    const ladders = [
+        { x: 520, lower: 0, upper: 1 },
+        { x: 900, lower: 1, upper: 2 },
+        { x: 1180, lower: 2, upper: 3 }
+    ];
+    const LADDER_GRAB_RANGE = 46;
+
+    const baseHazards = [
+        { id: "spill", label: "Liquid spill near scaffold", detail: "Slip hazard at the scaffold access point.", floor: 0, x: 400, radius: 70, type: "spill" },
+        { id: "cable", label: "Live cable across walkway", detail: "Trip and electric shock risk on Level 1.", floor: 1, x: 700, radius: 70, type: "cable" },
+        { id: "hole", label: "Unguarded floor penetration", detail: "Open service hole in the Level 2 slab.", floor: 2, x: 1050, radius: 72, type: "hole" },
+        { id: "ladder", label: "Untied access ladder", detail: "The Level 1 access ladder is not tied off at the top.", floor: 1, x: 900, radius: 60, type: "laddertie" },
+        { id: "edge", label: "Missing edge protection", detail: "Unprotected edge on the roof deck.", floor: 3, x: 1270, radius: 76, type: "edge" }
+    ];
+
+    // ── Sprites ───────────────────────────────────────────────
+    const SPRITE_H = 150; // character height in world units
+    const frameNames = ["idle", "walk1", "walk2", "walk3", "walk4", "climb1_masked", "climb2_masked", "crouch"];
+    const sprites = {};
+    const bg = new Image();
+    bg.src = "img/background.png";
+    frameNames.forEach((n) => {
+        const img = new Image();
+        img.src = "img/sprites/" + n + ".png";
+        sprites[n] = img;
+    });
+
+    // Hazard art: [type][active|secured] -> {img, w} (w = render width in world units)
+    const hazardArt = {
+        spill: { active: { file: "spill_active", w: 130 }, secured: { file: "spill_secured", w: 175 } },
+        cable: { active: { file: "cable_active", w: 140 }, secured: { file: "cable_secured", w: 150 } },
+        hole: { active: { file: "hole_active", w: 145 }, secured: { file: "hole_secured", w: 165 } },
+        ladder: { active: { file: "ladder_active", w: 135 }, secured: { file: "ladder_secured", w: 135 } },
+        edge: { active: { file: "edge_active", w: 165 }, secured: { file: "edge_secured", w: 165 } }
+    };
+    Object.values(hazardArt).forEach((pair) => {
+        Object.values(pair).forEach((v) => {
+            v.img = new Image();
+            v.img.src = "img/sprites/" + v.file + ".png";
+        });
+    });
+
+    // ── State ─────────────────────────────────────────────────
     const state = {
         mode: "menu",
-        player: { x: 120, y: 430, radius: 14, speed: 220, facing: "right" },
+        player: {
+            x: 340,
+            floor: 0,
+            y: floors[0].y,
+            speed: 320,
+            facing: 1,
+            climbing: null,   // ladder object while climbing
+            walkPhase: 0,
+            moving: false,
+            securingTimer: 0
+        },
         hazards: [],
         found: 0,
         timer: 90,
         risk: 0,
         statusText: "Inspect each flashing hazard. Stand nearby and press space to secure it.",
-        zoneLabel: "Site entry",
         nearestHazardId: null,
         pause: false,
         pulse: 0,
         pressed: Object.create(null),
-        pressedOnce: Object.create(null),
         lastTimestamp: 0
     };
 
     function resetGame() {
         state.mode = "menu";
-        state.player.x = 120;
-        state.player.y = 430;
-        state.player.facing = "right";
-        state.hazards = baseHazards.map((hazard) => ({ ...hazard, found: false }));
+        state.finishing = false;
+        const p = state.player;
+        p.x = 340; p.floor = 0; p.y = floors[0].y;
+        p.facing = 1; p.climbing = null; p.walkPhase = 0; p.moving = false; p.securingTimer = 0;
+        state.hazards = baseHazards.map((h) => ({ ...h, found: false }));
         state.found = 0;
         state.timer = 90;
         state.risk = 0;
         state.pause = false;
         state.pulse = 0;
-        state.zoneLabel = "Site entry";
         state.nearestHazardId = null;
         state.statusText = "Inspect each flashing hazard. Stand nearby and press space to secure it.";
         state.lastTimestamp = 0;
         ui.startOverlay.classList.add("visible");
         ui.endOverlay.classList.remove("visible");
-        syncUi();
-        render();
+        ui.startBtn.focus();
+        updateCamera(0, true);
+        syncUi(null);
     }
 
     function startGame() {
@@ -84,483 +172,457 @@
         state.pause = false;
         ui.startOverlay.classList.remove("visible");
         ui.endOverlay.classList.remove("visible");
-        state.statusText = "Shift live. Clear the flashing hazards before the crew enters the site.";
-        syncUi();
-        render();
+        state.statusText = "Shift live. Walk the floors and climb ladders to reach every hazard.";
+        syncUi(null);
     }
 
     function finishGame(win) {
         state.mode = win ? "won" : "lost";
         ui.endOverlay.classList.add("visible");
+        ui.restartBtn.focus();
         ui.endKicker.textContent = win ? "Shift Complete" : "Site Unsafe";
         ui.endTitle.textContent = win ? "All hazards secured" : "Hazard control failed";
         ui.endSummary.textContent = win
             ? `You secured ${state.found} of ${state.hazards.length} hazards with ${Math.round(state.risk)}% residual risk and ${Math.ceil(state.timer)}s left.`
-            : `You secured ${state.found} of ${state.hazards.length} hazards before ${state.timer <= 0 ? "time expired" : "risk reached 100%."}`;
-        state.statusText = win
-            ? "Site handed over safely."
-            : "Reset the shift and inspect the remaining hazards earlier.";
-        syncUi();
-        render();
+            : `You secured ${state.found} of ${state.hazards.length} hazards before ${state.timer <= 0 ? "time expired." : "risk reached 100%."}`;
+        state.statusText = win ? "Great inspection. The crew can start work safely." : "Reset the site and run the inspection again.";
+        syncUi(null);
     }
 
-    function setPressed(code, value) {
-        if (value && !state.pressed[code]) {
-            state.pressedOnce[code] = true;
+    // ── Helpers ───────────────────────────────────────────────
+    function currentFloor() { return floors[state.player.floor]; }
+
+    function nearestHazard() {
+        let best = null, bestDist = Infinity;
+        for (const h of state.hazards) {
+            if (h.found || h.floor !== state.player.floor || state.player.climbing) continue;
+            const d = Math.abs(h.x - state.player.x);
+            if (d < h.radius + 40 && d < bestDist) { bestDist = d; best = h; }
         }
-        state.pressed[code] = value;
+        return best;
     }
 
-    function consumePress(code) {
-        if (!state.pressedOnce[code]) {
-            return false;
+    function ladderAtPlayer() {
+        const p = state.player;
+        for (const l of ladders) {
+            if (Math.abs(l.x - p.x) <= LADDER_GRAB_RANGE && (p.floor === l.lower || p.floor === l.upper)) return l;
         }
-        state.pressedOnce[code] = false;
-        return true;
+        return null;
     }
 
-    function activeHazards() {
-        return state.hazards.filter((hazard) => !hazard.found);
-    }
-
-    function secureHazard(hazard) {
-        hazard.found = true;
+    function secureNearestHazard() {
+        const h = nearestHazard();
+        if (!h || state.finishing) return;
+        h.found = true;
         state.found += 1;
-        state.risk = Math.max(0, state.risk - 18);
-        state.statusText = `${hazard.label} secured. ${state.hazards.length - state.found} hazards remaining.`;
-        if (state.found === state.hazards.length) {
-            finishGame(true);
+        state.risk = Math.max(0, state.risk - 12);
+        state.player.securingTimer = 0.6;
+        state.statusText = `Secured: ${h.label}. ${state.hazards.length - state.found} remaining.`;
+        if (state.found >= state.hazards.length) {
+            // let the player see the last fix before the end modal appears
+            state.finishing = true;
+            state.statusText = `Secured: ${h.label}. Site clear!`;
+            setTimeout(() => finishGame(true), 1800);
+        }
+        syncUi(null);
+    }
+
+    // ── Input ─────────────────────────────────────────────────
+    const keyMap = {
+        ArrowLeft: "left", a: "left", A: "left",
+        ArrowRight: "right", d: "right", D: "right",
+        ArrowUp: "up", w: "up", W: "up",
+        ArrowDown: "down", s: "down", S: "down"
+    };
+
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && document.getElementById("helpModal").classList.contains("active")) {
+            window.closeHelp();
+            e.preventDefault();
+            return;
+        }
+        if (e.key === "f" || e.key === "F") { toggleFullscreen(); return; }
+        if (state.mode !== "playing") {
+            if ((e.key === " " || e.key === "Enter") && state.mode === "menu") { startGame(); e.preventDefault(); }
+            return;
+        }
+        if (e.key === "p" || e.key === "P") { state.pause = !state.pause; state.statusText = state.pause ? "Paused." : "Back on shift."; syncUi(null); return; }
+        const mapped = keyMap[e.key];
+        if (mapped) { state.pressed[mapped] = true; e.preventDefault(); }
+        if ((e.key === " " || e.key === "Enter") && !state.pause) { secureNearestHazard(); e.preventDefault(); }
+    });
+    window.addEventListener("keyup", (e) => {
+        const mapped = keyMap[e.key];
+        if (mapped) state.pressed[mapped] = false;
+    });
+
+    canvas.addEventListener("click", (e) => {
+        if (state.mode !== "playing" || state.pause) return;
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const z = camera.zoom;
+        const wx = ((e.clientX - rect.left) * dpr - canvas.width / 2) / z + camera.x;
+        const wy = ((e.clientY - rect.top) * dpr - canvas.height / 2) / z + camera.y;
+        const h = nearestHazard();
+        if (h && Math.abs(wx - h.x) < h.radius && Math.abs(wy - floors[h.floor].y) < 160) secureNearestHazard();
+    });
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+        else document.exitFullscreen && document.exitFullscreen();
+    }
+    ui.startBtn.addEventListener("click", startGame);
+    ui.restartBtn.addEventListener("click", resetGame);
+
+    // ── Help modal ────────────────────────────────────────────
+    let currentSlide = 0;
+    const totalSlides = 4;
+
+    function showHelp() {
+        goToSlide(0);
+        document.getElementById("helpModal").classList.add("active");
+    }
+
+    window.closeHelp = function closeHelp() {
+        document.getElementById("helpModal").classList.remove("active");
+    };
+
+    function goToSlide(index) {
+        currentSlide = index;
+
+        document.querySelectorAll(".slide").forEach((slide, i) => {
+            slide.classList.toggle("active", i === currentSlide);
+        });
+
+        const dotsContainer = document.getElementById("slideDots");
+        dotsContainer.innerHTML = "";
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement("div");
+            dot.className = "slide-dot" + (i === currentSlide ? " active" : "");
+            dot.addEventListener("click", () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+
+        document.getElementById("prevSlide").disabled = currentSlide === 0;
+        const nextBtn = document.getElementById("nextSlide");
+        if (currentSlide === totalSlides - 1) {
+            nextBtn.textContent = "Got it!";
+            nextBtn.onclick = window.closeHelp;
+        } else {
+            nextBtn.textContent = "Next \u2192";
+            nextBtn.onclick = () => goToSlide(currentSlide + 1);
         }
     }
 
-    function getNearestHazard() {
-        let best = null;
-        let bestDistance = Infinity;
-        for (const hazard of activeHazards()) {
-            const distance = Math.hypot(hazard.x - state.player.x, hazard.y - state.player.y);
-            if (distance < bestDistance) {
-                best = hazard;
-                bestDistance = distance;
-            }
-        }
-        return { hazard: best, distance: bestDistance };
-    }
+    document.getElementById("prevSlide").addEventListener("click", () => {
+        if (currentSlide > 0) goToSlide(currentSlide - 1);
+    });
 
+    document.getElementById("helpModal").addEventListener("click", (e) => {
+        if (e.target.id === "helpModal") window.closeHelp();
+    });
+
+    document.getElementById("helpBtn").addEventListener("click", showHelp);
+    goToSlide(0);
+
+    // ── Update ────────────────────────────────────────────────
     function update(dt) {
-        if (state.mode !== "playing" || state.pause) {
-            return;
-        }
+        const p = state.player;
+        state.pulse += dt * 4;
 
-        state.pulse += dt * 3.2;
-        state.timer = Math.max(0, state.timer - dt);
+        if (p.securingTimer > 0) p.securingTimer -= dt;
 
-        const moveX = (state.pressed.ArrowRight || state.pressed.KeyD ? 1 : 0) - (state.pressed.ArrowLeft || state.pressed.KeyA ? 1 : 0);
-        const moveY = (state.pressed.ArrowDown || state.pressed.KeyS ? 1 : 0) - (state.pressed.ArrowUp || state.pressed.KeyW ? 1 : 0);
-        const length = Math.hypot(moveX, moveY) || 1;
-        const velocityX = (moveX / length) * state.player.speed;
-        const velocityY = (moveY / length) * state.player.speed;
+        if (p.climbing) {
+            const l = p.climbing;
+            const topY = floors[l.upper].y;
+            const botY = floors[l.lower].y;
+            const climbSpeed = 210;
+            if (state.pressed.up) p.y -= climbSpeed * dt;
+            if (state.pressed.down) p.y += climbSpeed * dt;
+            if (state.pressed.up || state.pressed.down) p.walkPhase += dt * 6;
+            if (p.y <= topY) { p.y = topY; p.floor = l.upper; p.climbing = null; }
+            else if (p.y >= botY) { p.y = botY; p.floor = l.lower; p.climbing = null; }
+        } else {
+            const f = currentFloor();
+            let dir = 0;
+            if (state.pressed.left) dir -= 1;
+            if (state.pressed.right) dir += 1;
+            p.moving = dir !== 0 && p.securingTimer <= 0;
+            if (p.moving) {
+                p.x += dir * p.speed * dt;
+                p.facing = dir;
+                p.walkPhase += dt * 9;
+                p.x = Math.max(f.xMin, Math.min(f.xMax, p.x));
+            }
+            p.y = f.y;
 
-        state.player.x = clamp(state.player.x + velocityX * dt, 40, world.width - 40);
-        state.player.y = clamp(state.player.y + velocityY * dt, 54, world.height - 42);
-
-        if (Math.abs(velocityX) > 1 || Math.abs(velocityY) > 1) {
-            if (Math.abs(velocityX) >= Math.abs(velocityY)) {
-                state.player.facing = velocityX >= 0 ? "right" : "left";
-            } else {
-                state.player.facing = velocityY >= 0 ? "down" : "up";
+            const l = ladderAtPlayer();
+            if (l) {
+                if (state.pressed.up && p.floor === l.lower) { p.climbing = l; p.x = l.x; }
+                else if (state.pressed.down && p.floor === l.upper) { p.climbing = l; p.x = l.x; p.y = floors[l.upper].y + 4; }
             }
         }
 
-        const nearest = getNearestHazard();
-        state.nearestHazardId = nearest.hazard ? nearest.hazard.id : null;
-        state.zoneLabel = nearest.hazard && nearest.distance < 120 ? nearest.hazard.zone : deriveZoneFromPosition();
-        const inspectPressed = consumePress("Space") || consumePress("Enter");
+        // Timer + risk (frozen while the winning shot plays out)
+        if (state.finishing) { syncUi(nearestHazard()); return; }
+        state.timer -= dt;
+        if (state.timer <= 0) { state.timer = 0; finishGame(false); return; }
 
-        let exposure = 0;
-        for (const hazard of activeHazards()) {
-            const distance = Math.hypot(hazard.x - state.player.x, hazard.y - state.player.y);
-            if (distance < hazard.radius + 28) {
-                exposure += 15 * dt;
-            }
+        let nearActive = false;
+        for (const h of state.hazards) {
+            if (!h.found && h.floor === p.floor && !p.climbing && Math.abs(h.x - p.x) < h.radius) nearActive = true;
         }
-        const recovery = exposure === 0 ? 7 * dt : 0;
-        state.risk = clamp(state.risk + exposure - recovery, 0, 100);
+        if (nearActive) state.risk = Math.min(100, state.risk + 9 * dt);
+        else state.risk = Math.max(0, state.risk - 2 * dt);
+        if (state.risk >= 100) { state.risk = 100; finishGame(false); return; }
 
-        if (inspectPressed && nearest.hazard && nearest.distance <= nearest.hazard.radius + 18) {
-            secureHazard(nearest.hazard);
-        } else if (inspectPressed) {
-            state.statusText = "No immediate hazard to secure. Move closer to a flashing risk zone.";
-        }
-
-        if (state.timer <= 0 || state.risk >= 100) {
-            finishGame(false);
-        }
-
-        syncUi();
+        const near = nearestHazard();
+        state.nearestHazardId = near ? near.id : null;
+        syncUi(near);
     }
 
-    function deriveZoneFromPosition() {
-        if (state.player.x < 260) return "Site entry";
-        if (state.player.x < 470) return "Walkway";
-        if (state.player.y > 370) return "Excavation";
-        if (state.player.x > 700 && state.player.y < 220) return "Slab edge";
-        return "Scaffold bay";
+    // ── Render ────────────────────────────────────────────────
+    function render() {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.fillStyle = "#c7e3ef"; // sky beyond the artwork bounds
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const z = camera.zoom;
+        ctx.setTransform(z, 0, 0, z, canvas.width / 2 - camera.x * z, canvas.height / 2 - camera.y * z);
+
+        // dirt beyond the artwork's left/right edges so the ground never floats
+        ctx.fillStyle = "#b98d4f";
+        ctx.fillRect(-world.width, 781, world.width * 3, world.height);
+
+        if (bg.complete && bg.naturalWidth) ctx.drawImage(bg, 0, 0, world.width, world.height);
+        drawLadders();
+        for (const h of state.hazards) drawHazard(h);
+        drawPlayer();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
-    function clamp(value, min, max) {
-        return Math.min(max, Math.max(min, value));
-    }
-
-    function syncUi() {
-        ui.found.textContent = `${state.found} / ${state.hazards.length}`;
-        ui.risk.textContent = `${Math.round(state.risk)}%`;
-        ui.time.textContent = `${Math.ceil(state.timer)}s`;
-        ui.zone.textContent = state.zoneLabel;
-        ui.status.textContent = state.pause ? "Paused. Press P to resume." : state.statusText;
-        ui.list.innerHTML = state.hazards
-            .map((hazard) => `
-                <li>
-                    <span>${hazard.label}</span>
-                    <span class="hazard-tag ${hazard.found ? "safe" : ""}">${hazard.found ? "Secured" : "Active"}</span>
-                </li>
-            `)
-            .join("");
-    }
-
-    function drawBackground() {
-        ctx.clearRect(0, 0, world.width, world.height);
-
-        const sky = ctx.createLinearGradient(0, 0, 0, 220);
-        sky.addColorStop(0, colors.sky);
-        sky.addColorStop(1, "#eaf3f7");
-        ctx.fillStyle = sky;
-        ctx.fillRect(0, 0, world.width, 220);
-
-        ctx.fillStyle = colors.dirt;
-        ctx.fillRect(0, 220, world.width, world.height - 220);
-
-        ctx.fillStyle = colors.slab;
-        ctx.fillRect(115, 120, 690, 255);
-
-        ctx.fillStyle = "#b9c3cb";
-        ctx.fillRect(115, 112, 690, 18);
-
-        ctx.fillStyle = "#f3f3ef";
-        ctx.fillRect(0, 302, 530, 54);
-
-        ctx.strokeStyle = "#9ca6ad";
-        ctx.lineWidth = 5;
-        ctx.setLineDash([16, 12]);
-        ctx.beginPath();
-        ctx.moveTo(16, 329);
-        ctx.lineTo(520, 329);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.fillStyle = colors.fence;
-        ctx.fillRect(0, 94, world.width, 14);
-        for (let x = 20; x < world.width; x += 42) {
-            ctx.fillRect(x, 94, 10, 38);
-        }
-
-        ctx.fillStyle = colors.steel;
-        for (let x = 600; x <= 760; x += 44) {
-            ctx.fillRect(x, 150, 10, 165);
-            ctx.fillRect(x - 10, 150, 32, 10);
-        }
-        for (let y = 180; y <= 300; y += 36) {
-            ctx.fillRect(595, y, 180, 8);
-        }
-
-        ctx.fillStyle = "#8e6f46";
-        ctx.fillRect(535, 398, 120, 78);
-        ctx.fillStyle = "#6e4d29";
-        ctx.fillRect(560, 420, 70, 36);
-
-        ctx.fillStyle = "#9d7041";
-        ctx.fillRect(180, 340, 80, 60);
-        ctx.fillStyle = "#5e6e77";
-        ctx.fillRect(205, 304, 30, 42);
-    }
-
-    function drawHazard(hazard) {
-        if (hazard.found) {
-            ctx.fillStyle = "rgba(31, 122, 83, 0.18)";
-            ctx.beginPath();
-            ctx.arc(hazard.x, hazard.y, hazard.radius - 10, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = colors.safe;
-            ctx.beginPath();
-            ctx.arc(hazard.x, hazard.y, 12, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(hazard.x - 6, hazard.y);
-            ctx.lineTo(hazard.x - 1, hazard.y + 6);
-            ctx.lineTo(hazard.x + 8, hazard.y - 7);
-            ctx.stroke();
-            return;
-        }
-
-        const pulse = 0.55 + Math.sin(state.pulse + hazard.x * 0.01) * 0.18;
-        ctx.fillStyle = `rgba(255, 176, 0, ${0.18 + pulse * 0.2})`;
-        ctx.beginPath();
-        ctx.arc(hazard.x, hazard.y, hazard.radius + pulse * 8, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (hazard.type === "spill") {
-            ctx.fillStyle = "#2e3942";
-            ctx.beginPath();
-            ctx.ellipse(hazard.x, hazard.y, 30, 18, 0.2, 0, Math.PI * 2);
-            ctx.fill();
-        } else if (hazard.type === "cable") {
-            ctx.strokeStyle = colors.danger;
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.moveTo(hazard.x - 34, hazard.y + 12);
-            ctx.bezierCurveTo(hazard.x - 10, hazard.y - 18, hazard.x + 8, hazard.y + 18, hazard.x + 34, hazard.y - 8);
-            ctx.stroke();
-        } else if (hazard.type === "trench") {
-            ctx.fillStyle = "#58412b";
-            ctx.fillRect(hazard.x - 42, hazard.y - 22, 84, 44);
-        } else if (hazard.type === "ladder") {
-            ctx.strokeStyle = "#b87b2d";
-            ctx.lineWidth = 5;
-            ctx.beginPath();
-            ctx.moveTo(hazard.x - 16, hazard.y + 30);
-            ctx.lineTo(hazard.x - 4, hazard.y - 30);
-            ctx.lineTo(hazard.x + 16, hazard.y + 30);
-            ctx.stroke();
-            for (let i = -18; i <= 18; i += 12) {
-                ctx.beginPath();
-                ctx.moveTo(hazard.x - 10, hazard.y + i);
-                ctx.lineTo(hazard.x + 10, hazard.y + i);
-                ctx.stroke();
-            }
-        } else if (hazard.type === "edge") {
-            ctx.strokeStyle = colors.danger;
+    function drawLadders() {
+        const tieHazard = state.hazards.find((h) => h.type === "laddertie");
+        for (const l of ladders) {
+            const yTop = floors[l.upper].y;
+            const yBot = floors[l.lower].y;
+            ctx.strokeStyle = colors.steel;
             ctx.lineWidth = 7;
             ctx.beginPath();
-            ctx.moveTo(hazard.x - 46, hazard.y + 18);
-            ctx.lineTo(hazard.x + 36, hazard.y - 16);
+            ctx.moveTo(l.x - 18, yBot); ctx.lineTo(l.x - 18, yTop - 26);
+            ctx.moveTo(l.x + 18, yBot); ctx.lineTo(l.x + 18, yTop - 26);
             ctx.stroke();
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = colors.steelDark;
+            for (let y = yBot - 22; y > yTop - 22; y -= 30) {
+                ctx.beginPath();
+                ctx.moveTo(l.x - 18, y); ctx.lineTo(l.x + 18, y);
+                ctx.stroke();
+            }
+            // tie-off bands: every ladder is tied except the hazard ladder until secured
+            const tied = l !== ladders[1] || (tieHazard && tieHazard.found);
+            if (tied) {
+                ctx.fillStyle = colors.cone;
+                ctx.fillRect(l.x - 25, yTop - 22, 14, 11);
+                ctx.fillRect(l.x + 11, yTop - 22, 14, 11);
+            }
+        }
+    }
+
+    function drawHazard(h) {
+        const y = floors[h.floor].y;
+        const pulse = 0.5 + 0.5 * Math.sin(state.pulse);
+
+        if (!h.found) {
+            ctx.save();
+            ctx.globalAlpha = 0.25 + 0.3 * pulse;
+            ctx.fillStyle = colors.hazard;
+            ctx.beginPath();
+            ctx.ellipse(h.x, y - 4, h.radius, 22, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
         }
 
-        ctx.fillStyle = colors.danger;
+        const art = hazardArt[h.type] && hazardArt[h.type][h.found ? "secured" : "active"];
+        if (art && art.img.complete && art.img.naturalWidth) {
+            const iw = art.w;
+            const ih = art.img.naturalHeight * (iw / art.img.naturalWidth);
+            ctx.drawImage(art.img, h.x - iw / 2, y - ih + 8, iw, ih);
+        } else switch (h.type) {
+            case "spill":
+                if (!h.found) {
+                    ctx.fillStyle = colors.spill;
+                    ctx.beginPath();
+                    ctx.ellipse(h.x, y - 4, 52, 13, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    drawSign(h.x, y);
+                    ctx.fillStyle = "#c9cdd2";
+                    ctx.fillRect(h.x - 44, y - 10, 52, 8);
+                }
+                break;
+            case "cable":
+                ctx.strokeStyle = h.found ? colors.steelDark : "#22303a";
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                if (!h.found) {
+                    ctx.moveTo(h.x - 70, y - 4);
+                    ctx.quadraticCurveTo(h.x, y - 34, h.x + 70, y - 4);
+                    ctx.stroke();
+                } else {
+                    ctx.moveTo(h.x - 70, y - 4); ctx.lineTo(h.x + 70, y - 4);
+                    ctx.stroke();
+                    ctx.fillStyle = colors.cone;
+                    ctx.fillRect(h.x - 36, y - 16, 72, 12); // cable ramp cover
+                }
+                break;
+            case "hole":
+                ctx.fillStyle = colors.holeDark;
+                ctx.fillRect(h.x - 45, y - 8, 90, 10);
+                if (h.found) { drawBarricade(h.x - 62, y); drawBarricade(h.x + 62, y); }
+                break;
+            case "laddertie": {
+                // the hazard IS the L1->L2 access ladder; drawLadders renders the
+                // tie bands once secured, so only the loose strap is drawn here
+                const l = ladders[1];
+                const topY = floors[l.upper].y;
+                if (!h.found) {
+                    ctx.strokeStyle = colors.cone;
+                    ctx.lineWidth = 5;
+                    ctx.beginPath();
+                    ctx.moveTo(l.x + 18, topY - 18);
+                    ctx.quadraticCurveTo(l.x + 36, topY + 10, l.x + 27, topY + 42);
+                    ctx.stroke();
+                }
+                break;
+            }
+            case "edge":
+                if (!h.found) {
+                    ctx.strokeStyle = colors.danger;
+                    ctx.lineWidth = 5;
+                    ctx.setLineDash([14, 10]);
+                    ctx.beginPath();
+                    ctx.moveTo(h.x - 66, y - 8); ctx.lineTo(h.x + 66, y - 8);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                } else {
+                    ctx.strokeStyle = colors.hazard;
+                    ctx.lineWidth = 6;
+                    ctx.beginPath();
+                    ctx.moveTo(h.x - 66, y - 6); ctx.lineTo(h.x - 66, y - 52);
+                    ctx.moveTo(h.x + 66, y - 6); ctx.lineTo(h.x + 66, y - 52);
+                    ctx.moveTo(h.x - 66, y - 48); ctx.lineTo(h.x + 66, y - 48);
+                    ctx.moveTo(h.x - 66, y - 24); ctx.lineTo(h.x + 66, y - 24);
+                    ctx.stroke();
+                }
+                break;
+        }
+
+        if (h.found) {
+            ctx.fillStyle = colors.safe;
+            ctx.beginPath();
+            ctx.arc(h.x, y - 96, 13, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(h.x - 5, y - 96); ctx.lineTo(h.x - 1, y - 91); ctx.lineTo(h.x + 6, y - 102);
+            ctx.stroke();
+        } else if (state.nearestHazardId === h.id) {
+            const label = "SPACE to secure";
+            ctx.font = "700 15px Inter, sans-serif";
+            const tw = ctx.measureText(label).width;
+            const padX = 16, padY = 9;
+            const pw = tw + padX * 2;
+            const ph = 15 + padY * 2;
+            const px = h.x - pw / 2;
+            const py = y - SPRITE_H - 26 - ph; // clear of the character's head
+            ctx.fillStyle = "rgba(23, 53, 83, 0.92)";
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(px, py, pw, ph, ph / 2);
+            else ctx.rect(px, py, pw, ph);
+            ctx.fill();
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(label, h.x, py + ph / 2 + 1);
+            ctx.textBaseline = "alphabetic";
+        }
+    }
+
+    function drawSign(x, y) {
+        ctx.fillStyle = colors.sign;
         ctx.beginPath();
-        ctx.moveTo(hazard.x, hazard.y - 46);
-        ctx.lineTo(hazard.x - 16, hazard.y - 20);
-        ctx.lineTo(hazard.x + 16, hazard.y - 20);
+        ctx.moveTo(x + 26, y - 46); ctx.lineTo(x + 8, y - 4); ctx.lineTo(x + 44, y - 4);
         ctx.closePath();
         ctx.fill();
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 18px Inter";
-        ctx.textAlign = "center";
-        ctx.fillText("!", hazard.x, hazard.y - 25);
+    }
+
+    function drawBarricade(x, y) {
+        ctx.fillStyle = colors.barricade;
+        ctx.fillRect(x - 16, y - 40, 32, 8);
+        ctx.fillRect(x - 16, y - 24, 32, 8);
+        ctx.fillStyle = colors.steelDark;
+        ctx.fillRect(x - 14, y - 42, 5, 42);
+        ctx.fillRect(x + 9, y - 42, 5, 42);
+    }
+
+    function playerFrame() {
+        const p = state.player;
+        if (p.climbing) return (Math.floor(p.walkPhase) % 2 === 0) ? "climb1_masked" : "climb2_masked";
+        if (p.securingTimer > 0) return "crouch";
+        if (p.moving) {
+            const cycle = ["walk1", "walk2", "walk3", "walk4"];
+            return cycle[Math.floor(p.walkPhase) % 4];
+        }
+        return "idle";
     }
 
     function drawPlayer() {
-        ctx.fillStyle = "#ffd46b";
-        ctx.beginPath();
-        ctx.arc(state.player.x, state.player.y - 18, 12, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = colors.worker;
-        ctx.fillRect(state.player.x - 11, state.player.y - 8, 22, 34);
-        ctx.fillStyle = "#ff8f42";
-        ctx.fillRect(state.player.x - 16, state.player.y - 2, 32, 7);
-
-        ctx.strokeStyle = "#0c1822";
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(state.player.x - 6, state.player.y + 26);
-        ctx.lineTo(state.player.x - 10, state.player.y + 42);
-        ctx.moveTo(state.player.x + 6, state.player.y + 26);
-        ctx.lineTo(state.player.x + 10, state.player.y + 42);
-        ctx.moveTo(state.player.x - 10, state.player.y + 4);
-        ctx.lineTo(state.player.x - 22, state.player.y + 18);
-        ctx.moveTo(state.player.x + 10, state.player.y + 4);
-        ctx.lineTo(state.player.x + 22, state.player.y + 18);
-        ctx.stroke();
+        const p = state.player;
+        const name = playerFrame();
+        const img = sprites[name];
+        if (!img || !img.complete || !img.naturalWidth) return;
+        const h = name === "crouch" ? SPRITE_H * 0.62 : SPRITE_H;
+        const w = img.naturalWidth * (h / img.naturalHeight);
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        if (p.facing === -1) ctx.scale(-1, 1);
+        ctx.drawImage(img, -w / 2, -h, w, h);
+        ctx.restore();
     }
 
-    function drawPrompt() {
-        const nearest = getNearestHazard();
-        if (!nearest.hazard || nearest.distance > nearest.hazard.radius + 12 || state.mode !== "playing") {
-            return;
-        }
+    // ── HUD sync ──────────────────────────────────────────────
+    function syncUi(near) {
+        ui.found.textContent = `${state.found} / ${state.hazards.length}`;
+        ui.risk.textContent = `${Math.round(state.risk)}%`;
+        ui.time.textContent = `${Math.ceil(state.timer)}s`;
+        const f = currentFloor();
+        ui.zone.textContent = state.player.climbing ? "On ladder" : f.label;
+        ui.status.textContent = near && !near.found ? `${near.label} — ${near.detail}` : state.statusText;
 
-        ctx.fillStyle = "rgba(16, 34, 47, 0.78)";
-        ctx.beginPath();
-        roundRect(ctx, nearest.hazard.x - 92, nearest.hazard.y - 86, 184, 34, 12);
-        ctx.fill();
-        ctx.fillStyle = "#fff";
-        ctx.font = "700 14px Inter";
-        ctx.textAlign = "center";
-        ctx.fillText("Press Space to secure", nearest.hazard.x, nearest.hazard.y - 64);
-    }
-
-    function drawHudBars() {
-        ctx.fillStyle = "rgba(16, 34, 47, 0.75)";
-        roundRect(ctx, 22, 18, 240, 54, 16);
-        ctx.fill();
-
-        ctx.fillStyle = "#fff";
-        ctx.font = "700 14px Inter";
-        ctx.textAlign = "left";
-        ctx.fillText(`Checklist ${state.found}/${state.hazards.length}`, 38, 40);
-        ctx.fillText(`Risk ${Math.round(state.risk)}%`, 38, 60);
-
-        ctx.fillStyle = "rgba(255,255,255,0.18)";
-        roundRect(ctx, 140, 48, 100, 8, 4);
-        ctx.fill();
-        ctx.fillStyle = state.risk > 65 ? colors.danger : colors.hazard;
-        roundRect(ctx, 140, 48, state.risk, 8, 4);
-        ctx.fill();
-    }
-
-    function roundRect(context, x, y, width, height, radius) {
-        context.beginPath();
-        context.moveTo(x + radius, y);
-        context.arcTo(x + width, y, x + width, y + height, radius);
-        context.arcTo(x + width, y + height, x, y + height, radius);
-        context.arcTo(x, y + height, x, y, radius);
-        context.arcTo(x, y, x + width, y, radius);
-        context.closePath();
-    }
-
-    function render() {
-        drawBackground();
-        for (const hazard of state.hazards) {
-            drawHazard(hazard);
-        }
-        drawPlayer();
-        drawPrompt();
-        drawHudBars();
-
-        if (state.pause && state.mode === "playing") {
-            ctx.fillStyle = "rgba(16, 34, 47, 0.35)";
-            ctx.fillRect(0, 0, world.width, world.height);
-            ctx.fillStyle = "#fff";
-            ctx.font = "800 34px Inter";
-            ctx.textAlign = "center";
-            ctx.fillText("Paused", world.width / 2, world.height / 2);
+        ui.list.innerHTML = "";
+        for (const h of state.hazards) {
+            const li = document.createElement("li");
+            li.textContent = h.label;
+            li.className = h.found ? "done" : "";
+            li.setAttribute("aria-label", `${h.label}${h.found ? ", secured" : ", not secured"}`);
+            ui.list.appendChild(li);
         }
     }
 
-    function gameLoop(timestamp) {
-        if (!state.lastTimestamp) {
-            state.lastTimestamp = timestamp;
-        }
-        const dt = Math.min(0.033, (timestamp - state.lastTimestamp) / 1000);
-        state.lastTimestamp = timestamp;
-        update(dt);
+    // ── Main loop ─────────────────────────────────────────────
+    function loop(ts) {
+        if (!state.lastTimestamp) state.lastTimestamp = ts;
+        const dt = Math.min(0.05, (ts - state.lastTimestamp) / 1000);
+        state.lastTimestamp = ts;
+        if (state.mode === "playing" && !state.pause) update(dt);
+        updateCamera(dt);
         render();
-        window.requestAnimationFrame(gameLoop);
+        requestAnimationFrame(loop);
     }
-
-    function toggleFullscreen() {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-            return;
-        }
-        document.documentElement.requestFullscreen().catch(() => {});
-    }
-
-    function renderGameToText() {
-        const nearest = getNearestHazard();
-        return JSON.stringify({
-            mode: state.mode,
-            paused: state.pause,
-            coordinateSystem: "origin top-left; x increases right; y increases down; units are canvas pixels",
-            player: {
-                x: Math.round(state.player.x),
-                y: Math.round(state.player.y),
-                radius: state.player.radius,
-                zone: state.zoneLabel
-            },
-            timerSeconds: Number(state.timer.toFixed(2)),
-            riskPercent: Math.round(state.risk),
-            hazardsFound: state.found,
-            hazardsTotal: state.hazards.length,
-            nearestHazard: nearest.hazard ? {
-                id: nearest.hazard.id,
-                label: nearest.hazard.label,
-                x: nearest.hazard.x,
-                y: nearest.hazard.y,
-                distance: Number(nearest.distance.toFixed(1))
-            } : null,
-            activeHazards: activeHazards().map((hazard) => ({
-                id: hazard.id,
-                label: hazard.label,
-                x: hazard.x,
-                y: hazard.y,
-                radius: hazard.radius,
-                zone: hazard.zone
-            })),
-            statusText: state.statusText
-        });
-    }
-
-    ui.startBtn.addEventListener("click", startGame);
-    ui.restartBtn.addEventListener("click", () => {
-        resetGame();
-    });
-    ui.fullscreenBtn.addEventListener("click", toggleFullscreen);
-
-    document.addEventListener("keydown", (event) => {
-        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(event.code)) {
-            event.preventDefault();
-        }
-        if (event.code === "KeyF") {
-            toggleFullscreen();
-        }
-        if (event.code === "KeyP" && state.mode === "playing") {
-            state.pause = !state.pause;
-            state.statusText = state.pause ? "Paused. Press P to resume." : "Shift resumed.";
-            syncUi();
-        }
-        setPressed(event.code, true);
-    });
-
-    document.addEventListener("keyup", (event) => {
-        setPressed(event.code, false);
-    });
-
-    document.addEventListener("fullscreenchange", () => {
-        ui.fullscreenBtn.textContent = document.fullscreenElement ? "Exit Fullscreen: Esc" : "Fullscreen: F";
-    });
-
-    canvas.addEventListener("click", (event) => {
-        if (state.mode !== "playing") {
-            return;
-        }
-        const bounds = canvas.getBoundingClientRect();
-        const scaleX = world.width / bounds.width;
-        const scaleY = world.height / bounds.height;
-        const x = (event.clientX - bounds.left) * scaleX;
-        const y = (event.clientY - bounds.top) * scaleY;
-        const clicked = activeHazards().find((hazard) => Math.hypot(hazard.x - x, hazard.y - y) <= hazard.radius + 10);
-
-        if (clicked) {
-            secureHazard(clicked);
-        } else {
-            state.statusText = "That area is clear. Click a flashing hazard zone or walk closer and press space.";
-        }
-        syncUi();
-        render();
-    });
-
-    window.render_game_to_text = renderGameToText;
-    window.advanceTime = async function advanceTime(ms) {
-        const steps = Math.max(1, Math.round(ms / (1000 / 60)));
-        for (let index = 0; index < steps; index += 1) {
-            update(1 / 60);
-        }
-        render();
-    };
 
     resetGame();
-    window.requestAnimationFrame(gameLoop);
+    updateCamera(0, true);
+    requestAnimationFrame(loop);
 })();

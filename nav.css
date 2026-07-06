@@ -229,11 +229,6 @@ body.nav-open .page-corner-logo {
     color: #7ea67e;
 }
 
-.nav-link-survey .nav-link-icon {
-    background: #f3d8b3;
-    color: #e39f58;
-}
-
 .nav-link-credits .nav-link-icon {
     background: #f1e2af;
     color: #e8c66c;
@@ -259,7 +254,6 @@ body.nav-open .page-corner-logo {
 .nav-drawer .nav-link-career { order: 50; }
 .nav-drawer .nav-link-videos { order: 60; }
 .nav-drawer .nav-link-games { order: 70; }
-.nav-drawer .nav-link-survey { order: 80; }
 .nav-drawer .nav-link-credits { order: 90; }
 
 /* About submenu links */
@@ -284,18 +278,13 @@ body.nav-open .page-corner-logo {
 }
 
 .nav-drawer .nav-link[href*="rmit.edu.au"] .nav-link-label::after,
-.nav-drawer .nav-link[href*="bigbuild.vic.gov.au"] .nav-link-label::after,
-.nav-drawer .nav-link-survey .nav-link-label::after {
+.nav-drawer .nav-link[href*="bigbuild.vic.gov.au"] .nav-link-label::after {
     content: "↗";
     font-size: 15px;
     line-height: 1;
     color: #1f4888;
     opacity: 0.9;
     margin-left: 10px;
-}
-
-.nav-drawer .nav-link-survey:hover .nav-link-label::after {
-    color: #ffffff;
 }
 
 .nav-link:hover {

@@ -153,6 +153,7 @@ let stackIndex = 0;
 let careerHistory = []; // Navigation history stack for back button
 let hoveredFloatingItem = null;
 let hasPlayedFloatingEntrance = false;
+let floatingAnimationStarted = false;
 
 // DOM Elements
 const floatingView = document.getElementById('floatingView');
@@ -932,6 +933,7 @@ function initFloatingView({ stagger = (!hasPlayedFloatingEntrance && currentView
     floatingContainer.innerHTML = '';
     careerElements = [];
     hoveredFloatingItem = null;
+    floatingView.classList.toggle('floating-paused', isPaused);
 
     const shouldStagger = stagger && filteredCareers.length > 0;
 
@@ -946,7 +948,10 @@ function initFloatingView({ stagger = (!hasPlayedFloatingEntrance && currentView
         hasPlayedFloatingEntrance = true;
     }
 
-    animate();
+    if (!floatingAnimationStarted) {
+        floatingAnimationStarted = true;
+        requestAnimationFrame(animate);
+    }
 }
 
 function animate() {
@@ -1691,6 +1696,10 @@ function getYouTubeVideoId(url) {
     return null;
 }
 
+function isLocalVideoUrl(url) {
+    return typeof url === 'string' && /\.(mp4|webm|ogg)(\?.*)?$/i.test(url.trim());
+}
+
 // Function to toggle expandable bar
 function setExpandContentState(content, shouldOpen) {
     if (!content || !content.classList.contains('expand-content')) return;
@@ -1857,19 +1866,34 @@ function populateCareerPanel(career) {
         `;
         videoContainer.style.display = 'block';
 
-        // Right column: embedded video
-        const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}?rel=0` : sourceUrl;
-        panelTopRight.innerHTML = `
-            <div class="video-feature">
-                <iframe
-                    src="${embedUrl}"
-                    title="Video for ${career.name}"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                    style="width:100%;aspect-ratio:16/9;border-radius:10px;border:none;display:block;">
-                </iframe>
-            </div>
-        `;
+        if (isLocalVideoUrl(sourceUrl)) {
+            panelTopRight.innerHTML = `
+                <div class="video-feature">
+                    <video
+                        src="${sourceUrl}"
+                        title="Video for ${career.name}"
+                        controls
+                        playsinline
+                        preload="metadata"
+                        style="width:100%;aspect-ratio:16/9;border-radius:10px;border:none;display:block;background:#000;">
+                    </video>
+                </div>
+            `;
+        } else {
+            // Right column: embedded video
+            const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}?rel=0` : sourceUrl;
+            panelTopRight.innerHTML = `
+                <div class="video-feature">
+                    <iframe
+                        src="${embedUrl}"
+                        title="Video for ${career.name}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        style="width:100%;aspect-ratio:16/9;border-radius:10px;border:none;display:block;">
+                    </iframe>
+                </div>
+            `;
+        }
         panelTopSection.classList.add('has-video');
 
         const bioTextElement = videoContainer.querySelector('.video-bio-text');
@@ -2248,19 +2272,32 @@ function unlockBackground() {
     });
 }
 
+function stopPanelMedia() {
+    infoPanel.querySelectorAll('video').forEach(video => {
+        video.pause();
+        video.currentTime = 0;
+        video.removeAttribute('src');
+        video.load();
+    });
+    infoPanel.querySelectorAll('iframe').forEach(frame => {
+        frame.src = '';
+    });
+}
+
 function closeInfoPanel() {
     if (isEmbedPopup && window.parent && window.parent !== window) {
+        stopPanelMedia();
         window.parent.postMessage({ type: 'closeCareerPopup' }, '*');
         return;
     }
 
+    stopPanelMedia();
     unlockBackground();
     infoPanel.classList.remove('visible');
     infoPanel.setAttribute('aria-hidden', 'true');
     const overlay = document.getElementById('infoPanelOverlay');
     if (overlay) overlay.classList.remove('visible');
     closePopupFocusTrap(infoPanel);
-    infoPanel.querySelectorAll('iframe').forEach(f => { f.src = ''; });
     if (selectedCareer) {
         selectedCareer.classList.remove('clicked');
         selectedCareer = null;
@@ -2290,6 +2327,7 @@ closeComparisonBtn.addEventListener('click', () => {
 pauseBtn.addEventListener('click', () => {
     isPaused = !isPaused;
     pauseBtn.classList.toggle('paused');
+    floatingView.classList.toggle('floating-paused', isPaused);
     pauseBtn.setAttribute('aria-label', isPaused ? 'Play animation' : 'Pause animation');
 });
 
