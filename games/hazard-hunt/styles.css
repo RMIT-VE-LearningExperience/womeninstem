@@ -22,6 +22,7 @@ body {
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
+    touch-action: none;
 }
 
 #game-canvas {
@@ -131,7 +132,7 @@ body {
 /* ── Checklist (top right) ────────────────────────────── */
 #checklist {
     position: fixed;
-    top: 70px;
+    top: 120px;
     right: 14px;
     z-index: 50;
     background: rgba(255, 255, 255, 0.92);
@@ -231,6 +232,183 @@ body {
 #controls-hint b {
     color: var(--accent);
     margin-right: 4px;
+}
+
+/* ── Mobile controls ─────────────────────────────────── */
+.mobile-checklist,
+.mobile-controls {
+    display: none;
+}
+
+.mobile-checklist {
+    position: fixed;
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(122px + env(safe-area-inset-bottom));
+    z-index: 58;
+    pointer-events: none;
+    flex-direction: column-reverse;
+}
+
+.mobile-checklist-toggle {
+    width: 100%;
+    min-height: 42px;
+    border: 2px solid rgba(23, 53, 83, 0.14);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--navy);
+    font: inherit;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 14px;
+    box-shadow: 0 8px 18px rgba(16, 34, 47, 0.16);
+    backdrop-filter: blur(6px);
+    pointer-events: auto;
+}
+
+.mobile-checklist-toggle span {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.68rem;
+    color: var(--accent-strong);
+}
+
+.mobile-checklist-panel {
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 2px solid rgba(23, 53, 83, 0.14);
+    border-radius: 14px;
+    padding: 10px 14px;
+    box-shadow: 0 10px 24px rgba(16, 34, 47, 0.2);
+    backdrop-filter: blur(6px);
+    pointer-events: auto;
+}
+
+.mobile-checklist-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.mobile-checklist-panel li {
+    color: var(--navy);
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.25;
+    padding-left: 18px;
+    position: relative;
+}
+
+.mobile-checklist-panel li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 2px solid rgba(23, 53, 83, 0.28);
+    background: #fff;
+}
+
+.mobile-checklist-panel li.done {
+    opacity: 0.58;
+    text-decoration: line-through;
+}
+
+.mobile-checklist-panel li.done::before {
+    background: var(--safe);
+    border-color: var(--safe);
+}
+
+.mobile-controls {
+    position: fixed;
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 60;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.mobile-dpad {
+    width: 152px;
+    height: 106px;
+    display: grid;
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(2, 48px);
+    gap: 5px;
+    pointer-events: auto;
+}
+
+.touch-btn,
+.touch-action-btn,
+.touch-pause-btn {
+    border: 2px solid rgba(23, 53, 83, 0.16);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    color: #193E75;
+    font: inherit;
+    font-weight: 900;
+    box-shadow: 0 8px 18px rgba(16, 34, 47, 0.18);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+}
+
+.touch-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.touch-btn-up { grid-column: 2; grid-row: 1; }
+.touch-btn-left { grid-column: 1; grid-row: 2; }
+.touch-btn-right { grid-column: 3; grid-row: 2; }
+.touch-btn-down { grid-column: 2; grid-row: 2; }
+
+.touch-btn.active,
+.touch-action-btn.active,
+.touch-pause-btn[aria-pressed="true"] {
+    transform: translateY(1px) scale(0.98);
+    background: #F5C942;
+    color: #193E75;
+}
+
+.touch-action-btn {
+    min-width: 116px;
+    min-height: 58px;
+    border-radius: 18px;
+    padding: 0 18px;
+    background: #F5C942;
+    color: #193E75;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.touch-action-btn:disabled {
+    opacity: 0.48;
+    background: rgba(255, 255, 255, 0.92);
+    color: rgba(25, 62, 117, 0.55);
+    cursor: not-allowed;
+}
+
+.touch-pause-btn {
+    min-width: 74px;
+    min-height: 48px;
+    padding: 0 14px;
+    font-size: 0.78rem;
 }
 
 /* ── Overlays ─────────────────────────────────────────── */
@@ -476,26 +654,160 @@ a:focus-visible {
 }
 
 /* ── Small screens ────────────────────────────────────── */
-@media (max-width: 720px) {
+@media (max-width: 720px), (hover: none) and (pointer: coarse) {
     #helpBtn {
-        top: 12px;
-        right: 84px;
+        top: max(12px, env(safe-area-inset-top));
+        right: calc(max(12px, env(safe-area-inset-right)) + 72px);
+        width: 56px;
+        height: 56px;
     }
 
     #menuBtn {
-        top: 12px;
-        right: 12px;
+        top: max(12px, env(safe-area-inset-top));
+        right: max(12px, env(safe-area-inset-right));
+        width: 56px;
+        height: 56px;
     }
 
-    #checklist {
-        display: none;
+    #hud {
+        top: max(10px, env(safe-area-inset-top));
+        left: max(10px, env(safe-area-inset-left));
+        max-width: calc(100vw - 156px - env(safe-area-inset-right));
+        gap: 5px;
     }
 
+    .hud-chip {
+        min-width: 58px;
+        border-radius: 10px;
+        padding: 5px 8px;
+    }
+
+    .hud-label {
+        font-size: 0.52rem;
+        letter-spacing: 0.07em;
+    }
+
+    .hud-chip strong {
+        font-size: 0.86rem;
+    }
+
+    #checklist,
     #controls-hint {
         display: none;
     }
 
+    .mobile-checklist,
+    .mobile-controls {
+        display: flex;
+    }
+
     #status-bar {
-        bottom: 12px;
+        left: max(12px, env(safe-area-inset-left));
+        right: max(12px, env(safe-area-inset-right));
+        bottom: calc(172px + env(safe-area-inset-bottom));
+        transform: none;
+        max-width: none;
+        padding: 8px 12px;
+        border-radius: 12px;
+        font-size: 0.78rem;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .overlay {
+        padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    }
+
+    .overlay-card {
+        border-radius: 20px;
+        padding: 22px;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 620px) and (hover: none) and (pointer: coarse) {
+    #hud {
+        max-width: calc(100vw - 146px);
+    }
+
+    .hud-chip {
+        min-width: 52px;
+        padding: 4px 7px;
+    }
+
+    #status-bar {
+        left: 190px;
+        right: calc(max(12px, env(safe-area-inset-right)) + 150px);
+        bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    .mobile-controls {
+        left: max(10px, env(safe-area-inset-left));
+        right: auto;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        width: 168px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .mobile-dpad {
+        width: 142px;
+        height: 98px;
+        grid-template-columns: repeat(3, 44px);
+        grid-template-rows: repeat(2, 44px);
+    }
+
+    .touch-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .touch-action-btn {
+        min-width: 142px;
+        min-height: 44px;
+        border-radius: 14px;
+    }
+
+    .touch-pause-btn {
+        position: fixed;
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(12px, env(safe-area-inset-bottom));
+        min-width: 68px;
+        min-height: 44px;
+    }
+
+    .mobile-checklist {
+        left: 190px;
+        right: calc(max(12px, env(safe-area-inset-right)) + 80px);
+        bottom: calc(58px + env(safe-area-inset-bottom));
+    }
+
+    .mobile-checklist-toggle {
+        min-height: 36px;
+        padding: 6px 12px;
+    }
+
+    .mobile-checklist-panel ul {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 721px) and (orientation: portrait) and (hover: none) and (pointer: coarse) {
+    .mobile-controls {
+        left: 28px;
+        right: 28px;
+        bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+
+    .mobile-checklist {
+        left: 28px;
+        right: 28px;
+        bottom: calc(132px + env(safe-area-inset-bottom));
+    }
+
+    #status-bar {
+        bottom: calc(182px + env(safe-area-inset-bottom));
     }
 }

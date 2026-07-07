@@ -15,20 +15,52 @@
         endTitle: document.getElementById("end-title"),
         endSummary: document.getElementById("end-summary"),
         startBtn: document.getElementById("start-btn"),
-        restartBtn: document.getElementById("restart-btn")
+        restartBtn: document.getElementById("restart-btn"),
+        mobileControls: document.getElementById("mobile-controls"),
+        secureBtn: document.getElementById("secure-btn"),
+        pauseBtn: document.getElementById("pause-btn"),
+        mobileChecklistToggle: document.getElementById("mobile-checklist-toggle"),
+        mobileChecklistPanel: document.getElementById("mobile-checklist-panel"),
+        mobileProgress: document.getElementById("mobile-progress"),
+        mobileList: document.getElementById("mobile-hazard-list")
     };
 
     // ── Fullscreen canvas + camera ────────────────────────────
-    const VIEW_H = 400; // world units visible vertically (≈ one storey + part of the next)
+    const BASE_VIEW_H = 400; // world units visible vertically on desktop
+    const MOBILE_PORTRAIT_VIEW_W = 720;
+    const MOBILE_LANDSCAPE_VIEW_H = 440;
     const camera = { x: 0, y: 0, zoom: 1 };
+    let gameReady = false;
+    const inputMode = {
+        touch: window.matchMedia("(hover: none) and (pointer: coarse)").matches || navigator.maxTouchPoints > 0
+    };
+    if (inputMode.touch) document.body.classList.add("touch-device");
+
+    function isTouchLayout() {
+        return inputMode.touch || window.innerWidth <= 720;
+    }
+
+    function isPortrait() {
+        return window.innerHeight >= window.innerWidth;
+    }
 
     function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
         canvas.width = Math.round(window.innerWidth * dpr);
         canvas.height = Math.round(window.innerHeight * dpr);
-        camera.zoom = canvas.height / VIEW_H;
+        if (isTouchLayout() && isPortrait()) {
+            camera.zoom = canvas.width / MOBILE_PORTRAIT_VIEW_W;
+        } else if (isTouchLayout()) {
+            camera.zoom = canvas.height / MOBILE_LANDSCAPE_VIEW_H;
+        } else {
+            camera.zoom = canvas.height / BASE_VIEW_H;
+        }
+        if (!gameReady) return;
+        updateCamera(0, true);
+        render();
     }
     window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 120));
     resizeCanvas();
 
     function cameraTarget() {
@@ -36,7 +68,7 @@
         const viewW = canvas.width / camera.zoom;
         const viewH = canvas.height / camera.zoom;
         let tx = p.x;
-        let ty = p.y - 120; // frame the character in the lower part of the view
+        let ty = isTouchLayout() ? p.y - 88 : p.y - 120; // leave space for mobile controls
         tx = Math.max(viewW / 2, Math.min(world.width - viewW / 2, tx));
         ty = Math.max(viewH / 2, Math.min(world.height - viewH / 2, ty));
         if (viewW >= world.width) tx = world.width / 2;
@@ -137,7 +169,7 @@
         found: 0,
         timer: 90,
         risk: 0,
-        statusText: "Inspect each flashing hazard. Stand nearby and press space to secure it.",
+        statusText: "Inspect each flashing hazard. Stand nearby and secure it.",
         nearestHazardId: null,
         pause: false,
         pulse: 0,
@@ -158,7 +190,7 @@
         state.pause = false;
         state.pulse = 0;
         state.nearestHazardId = null;
-        state.statusText = "Inspect each flashing hazard. Stand nearby and press space to secure it.";
+        state.statusText = "Inspect each flashing hazard. Stand nearby and secure it.";
         state.lastTimestamp = 0;
         ui.startOverlay.classList.add("visible");
         ui.endOverlay.classList.remove("visible");
@@ -189,8 +221,20 @@
         syncUi(null);
     }
 
+    function togglePause() {
+        if (state.mode !== "playing") return;
+        state.pause = !state.pause;
+        state.statusText = state.pause ? "Paused." : "Back on shift.";
+        releaseMovement();
+        syncUi(nearestHazard());
+    }
+
     // ── Helpers ───────────────────────────────────────────────
     function currentFloor() { return floors[state.player.floor]; }
+
+    function actionPrompt() {
+        return isTouchLayout() ? "Tap Secure" : "SPACE to secure";
+    }
 
     function nearestHazard() {
         let best = null, bestDist = Infinity;
@@ -246,7 +290,7 @@
             if ((e.key === " " || e.key === "Enter") && state.mode === "menu") { startGame(); e.preventDefault(); }
             return;
         }
-        if (e.key === "p" || e.key === "P") { state.pause = !state.pause; state.statusText = state.pause ? "Paused." : "Back on shift."; syncUi(null); return; }
+        if (e.key === "p" || e.key === "P") { togglePause(); return; }
         const mapped = keyMap[e.key];
         if (mapped) { state.pressed[mapped] = true; e.preventDefault(); }
         if ((e.key === " " || e.key === "Enter") && !state.pause) { secureNearestHazard(); e.preventDefault(); }
@@ -256,15 +300,22 @@
         if (mapped) state.pressed[mapped] = false;
     });
 
-    canvas.addEventListener("click", (e) => {
-        if (state.mode !== "playing" || state.pause) return;
+    function canvasToWorld(e) {
         const rect = canvas.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
         const z = camera.zoom;
-        const wx = ((e.clientX - rect.left) * dpr - canvas.width / 2) / z + camera.x;
-        const wy = ((e.clientY - rect.top) * dpr - canvas.height / 2) / z + camera.y;
+        return {
+            wx: ((e.clientX - rect.left) * dpr - canvas.width / 2) / z + camera.x,
+            wy: ((e.clientY - rect.top) * dpr - canvas.height / 2) / z + camera.y
+        };
+    }
+
+    canvas.addEventListener("pointerup", (e) => {
+        if (state.mode !== "playing" || state.pause) return;
+        const { wx, wy } = canvasToWorld(e);
         const h = nearestHazard();
-        if (h && Math.abs(wx - h.x) < h.radius && Math.abs(wy - floors[h.floor].y) < 160) secureNearestHazard();
+        const tappedHazard = h && Math.abs(wx - h.x) < h.radius && Math.abs(wy - floors[h.floor].y) < 160;
+        if (h && (tappedHazard || e.pointerType === "touch")) secureNearestHazard();
     });
 
     function toggleFullscreen() {
@@ -273,6 +324,52 @@
     }
     ui.startBtn.addEventListener("click", startGame);
     ui.restartBtn.addEventListener("click", resetGame);
+
+    function releaseMovement() {
+        ["left", "right", "up", "down"].forEach((dir) => {
+            state.pressed[dir] = false;
+            const btn = document.querySelector(`[data-control="${dir}"]`);
+            if (btn) btn.classList.remove("active");
+        });
+    }
+
+    function bindTouchControl(btn) {
+        if (!btn) return;
+        const dir = btn.dataset.control;
+        const start = (e) => {
+            e.preventDefault();
+            if (state.mode !== "playing" || state.pause) return;
+            state.pressed[dir] = true;
+            btn.classList.add("active");
+        };
+        const end = (e) => {
+            if (e) e.preventDefault();
+            state.pressed[dir] = false;
+            btn.classList.remove("active");
+        };
+        btn.addEventListener("pointerdown", start);
+        btn.addEventListener("pointerup", end);
+        btn.addEventListener("pointercancel", end);
+        btn.addEventListener("pointerleave", end);
+        btn.addEventListener("blur", end);
+        btn.addEventListener("keydown", (e) => {
+            if ((e.key === " " || e.key === "Enter") && !e.repeat) start(e);
+        });
+        btn.addEventListener("keyup", (e) => {
+            if (e.key === " " || e.key === "Enter") end(e);
+        });
+    }
+
+    document.querySelectorAll("[data-control]").forEach(bindTouchControl);
+    ui.secureBtn.addEventListener("click", () => {
+        if (state.mode === "playing" && !state.pause) secureNearestHazard();
+    });
+    ui.pauseBtn.addEventListener("click", togglePause);
+    ui.mobileChecklistToggle.addEventListener("click", () => {
+        const isOpen = ui.mobileChecklistToggle.getAttribute("aria-expanded") === "true";
+        ui.mobileChecklistToggle.setAttribute("aria-expanded", String(!isOpen));
+        ui.mobileChecklistPanel.hidden = isOpen;
+    });
 
     // ── Help modal ────────────────────────────────────────────
     let currentSlide = 0;
@@ -529,7 +626,7 @@
             ctx.moveTo(h.x - 5, y - 96); ctx.lineTo(h.x - 1, y - 91); ctx.lineTo(h.x + 6, y - 102);
             ctx.stroke();
         } else if (state.nearestHazardId === h.id) {
-            const label = "SPACE to secure";
+            const label = actionPrompt();
             ctx.font = "700 15px Inter, sans-serif";
             const tw = ctx.measureText(label).width;
             const padX = 16, padY = 9;
@@ -600,16 +697,64 @@
         const f = currentFloor();
         ui.zone.textContent = state.player.climbing ? "On ladder" : f.label;
         ui.status.textContent = near && !near.found ? `${near.label} — ${near.detail}` : state.statusText;
+        ui.mobileProgress.textContent = `${state.found} / ${state.hazards.length}`;
+        ui.secureBtn.disabled = !(state.mode === "playing" && !state.pause && near && !near.found);
+        ui.secureBtn.classList.toggle("active", !ui.secureBtn.disabled);
+        ui.pauseBtn.setAttribute("aria-pressed", String(state.pause));
+        ui.pauseBtn.textContent = state.pause ? "Resume" : "Pause";
 
         ui.list.innerHTML = "";
+        ui.mobileList.innerHTML = "";
         for (const h of state.hazards) {
             const li = document.createElement("li");
             li.textContent = h.label;
             li.className = h.found ? "done" : "";
             li.setAttribute("aria-label", `${h.label}${h.found ? ", secured" : ", not secured"}`);
             ui.list.appendChild(li);
+
+            const mobileLi = li.cloneNode(true);
+            ui.mobileList.appendChild(mobileLi);
         }
     }
+
+    function renderGameToText() {
+        const near = nearestHazard();
+        const payload = {
+            coordinateSystem: "World origin is the top-left of the construction artwork; x increases right, y increases down.",
+            mode: state.mode,
+            paused: state.pause,
+            player: {
+                x: Math.round(state.player.x),
+                y: Math.round(state.player.y),
+                floor: currentFloor().id,
+                zone: state.player.climbing ? "On ladder" : currentFloor().label,
+                climbing: Boolean(state.player.climbing)
+            },
+            nearestHazard: near ? { id: near.id, label: near.label, floor: floors[near.floor].id, x: near.x } : null,
+            hazardsFound: state.found,
+            hazardsTotal: state.hazards.length,
+            hazards: state.hazards.map((h) => ({ id: h.id, label: h.label, found: h.found, floor: floors[h.floor].id, x: h.x })),
+            timer: Math.ceil(state.timer),
+            risk: Math.round(state.risk),
+            controls: {
+                touchLayout: isTouchLayout(),
+                secureEnabled: Boolean(ui.secureBtn && !ui.secureBtn.disabled),
+                pressed: { ...state.pressed }
+            }
+        };
+        return JSON.stringify(payload);
+    }
+
+    window.render_game_to_text = renderGameToText;
+    window.advanceTime = function advanceTime(ms) {
+        const steps = Math.max(1, Math.round(ms / (1000 / 60)));
+        for (let i = 0; i < steps; i += 1) {
+            if (state.mode === "playing" && !state.pause) update(1 / 60);
+            updateCamera(1 / 60);
+        }
+        render();
+        return renderGameToText();
+    };
 
     // ── Main loop ─────────────────────────────────────────────
     function loop(ts) {
@@ -622,6 +767,7 @@
         requestAnimationFrame(loop);
     }
 
+    gameReady = true;
     resetGame();
     updateCamera(0, true);
     requestAnimationFrame(loop);

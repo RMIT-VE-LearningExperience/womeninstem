@@ -76,6 +76,27 @@
         <span><b>F</b> Fullscreen</span>
     </div>
 
+    <div id="mobile-checklist" class="mobile-checklist" role="region" aria-label="Mobile hazard checklist">
+        <button id="mobile-checklist-toggle" class="mobile-checklist-toggle" type="button" aria-expanded="false" aria-controls="mobile-checklist-panel">
+            <span>Checklist</span>
+            <strong id="mobile-progress">0 / 5</strong>
+        </button>
+        <div id="mobile-checklist-panel" class="mobile-checklist-panel" hidden>
+            <ul id="mobile-hazard-list"></ul>
+        </div>
+    </div>
+
+    <div id="mobile-controls" class="mobile-controls" role="group" aria-label="Touch controls">
+        <div class="mobile-dpad" aria-label="Movement controls">
+            <button class="touch-btn touch-btn-up" type="button" data-control="up" aria-label="Climb up">&uarr;</button>
+            <button class="touch-btn touch-btn-left" type="button" data-control="left" aria-label="Move left">&larr;</button>
+            <button class="touch-btn touch-btn-right" type="button" data-control="right" aria-label="Move right">&rarr;</button>
+            <button class="touch-btn touch-btn-down" type="button" data-control="down" aria-label="Climb down">&darr;</button>
+        </div>
+        <button id="secure-btn" class="touch-action-btn" type="button" disabled>Secure</button>
+        <button id="pause-btn" class="touch-pause-btn" type="button" aria-pressed="false">Pause</button>
+    </div>
+
     <section class="overlay visible" id="start-overlay" role="dialog" aria-modal="true" aria-labelledby="start-title">
         <div class="overlay-card">
             <p class="eyebrow">Safety Briefing</p>
@@ -113,8 +134,8 @@
                     <ul>
                         <li><strong>Left / Right:</strong> Walk along the current level</li>
                         <li><strong>Up / Down:</strong> Climb ladders between levels when you are nearby</li>
-                        <li><strong>Spacebar / Enter:</strong> Secure a hazard when you are standing close to it</li>
-                        <li><strong>P:</strong> Pause or resume the shift</li>
+                        <li><strong>Spacebar / Enter / Secure:</strong> Secure a hazard when you are standing close to it</li>
+                        <li><strong>P / Pause:</strong> Pause or resume the shift</li>
                     </ul>
                 </div>
                 <div class="slide" data-slide="2">
@@ -122,7 +143,7 @@
                     <ol>
                         <li>Start on the ground level and work your way up through the ladders</li>
                         <li>Use the checklist to track which hazards are still active</li>
-                        <li>When the status bar names a hazard, press Space to secure it</li>
+                        <li>When the status bar names a hazard, press Space or tap Secure to secure it</li>
                         <li>Keep moving so you can clear every zone before the timer reaches zero</li>
                     </ol>
                 </div>
