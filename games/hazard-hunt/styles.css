@@ -555,13 +555,14 @@ a:focus-visible {
     font: inherit;
     font-weight: 800;
     cursor: pointer;
-    background: transparent;
-    color: #193E75;
+    background: #193E75;
+    color: #F5C942;
     text-decoration: none;
 }
 
 .secondary-btn:hover {
-    background: rgba(25, 62, 117, 0.08);
+    background: #234c8c;
+    border-color: #234c8c;
 }
 
 .secondary-btn:focus-visible {
