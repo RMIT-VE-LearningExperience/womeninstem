@@ -424,6 +424,8 @@ body {
 
 /* Buttons */
 .btn {
+    appearance: none;
+    -webkit-appearance: none;
     background-color: #667eea;
     color: white;
     border: none;

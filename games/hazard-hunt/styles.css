@@ -518,6 +518,8 @@ body {
 }
 
 .primary-btn {
+    appearance: none;
+    -webkit-appearance: none;
     border: 2px solid #F5C942;
     border-radius: 999px;
     padding: 10px 20px;
