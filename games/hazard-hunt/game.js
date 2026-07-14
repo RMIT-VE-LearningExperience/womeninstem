@@ -117,7 +117,7 @@
     const LADDER_GRAB_RANGE = 46;
 
     const baseHazards = [
-        { id: "spill", label: "Liquid spill near scaffold", detail: "Slip hazard at the scaffold access point.", floor: 0, x: 400, radius: 70, type: "spill" },
+        { id: "spill", label: "Liquid spill near scaffold", detail: "Slip hazard at the scaffold access point.", floor: 0, x: 600, radius: 70, type: "spill" },
         { id: "cable", label: "Live cable across walkway", detail: "Trip and electric shock risk on Level 1.", floor: 1, x: 700, radius: 70, type: "cable" },
         { id: "hole", label: "Unguarded floor penetration", detail: "Open service hole in the Level 2 slab.", floor: 2, x: 1050, radius: 72, type: "hole" },
         { id: "ladder", label: "Untied access ladder", detail: "The Level 1 access ladder is not tied off at the top.", floor: 1, x: 900, radius: 60, type: "laddertie" },
