@@ -14,6 +14,7 @@
         endKicker: document.getElementById("end-kicker"),
         endTitle: document.getElementById("end-title"),
         endSummary: document.getElementById("end-summary"),
+        endWhy: document.getElementById("end-why"),
         fixOverlay: document.getElementById("fix-overlay"),
         fixTitle: document.getElementById("fix-title"),
         fixSummary: document.getElementById("fix-summary"),
@@ -283,6 +284,9 @@
         ui.endSummary.textContent = win
             ? `You secured ${state.found} of ${state.hazards.length} hazards with ${Math.round(state.risk)}% residual risk and ${Math.ceil(state.timer)}s left.`
             : `You secured ${state.found} of ${state.hazards.length} hazards before ${state.timer <= 0 ? "time expired." : "risk reached 100%."}`;
+        ui.endWhy.textContent = win
+            ? "This is what an OH&S officer does on a real site: walk every level, spot hazards like unsecured ladders and exposed edges before anyone else is exposed to them, and make them safe. Catching risks before the crew clocks on is what keeps a workplace injury-free."
+            : "On a real site, hazards left unresolved are how people get hurt. OH&S officers exist to find and fix these risks before work starts. Take another pass and make sure every hazard is secured before time runs out.";
         state.statusText = win ? "Great inspection. The crew can start work safely." : "Reset the site and run the inspection again.";
         syncUi(null);
     }
@@ -597,6 +601,7 @@
         drawLadders();
         for (const h of state.hazards) drawHazard(h);
         drawPlayer();
+        drawActionPrompt();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
@@ -727,26 +732,32 @@
             ctx.beginPath();
             ctx.moveTo(h.x - 5, y - 96); ctx.lineTo(h.x - 1, y - 91); ctx.lineTo(h.x + 6, y - 102);
             ctx.stroke();
-        } else if (state.nearestHazardId === h.id) {
-            const label = actionPrompt();
-            ctx.font = "700 15px Inter, sans-serif";
-            const tw = ctx.measureText(label).width;
-            const padX = 16, padY = 9;
-            const pw = tw + padX * 2;
-            const ph = 15 + padY * 2;
-            const px = h.x - pw / 2;
-            const py = y - SPRITE_H - 26 - ph; // clear of the character's head
-            ctx.fillStyle = "rgba(23, 53, 83, 0.92)";
-            ctx.beginPath();
-            if (ctx.roundRect) ctx.roundRect(px, py, pw, ph, ph / 2);
-            else ctx.rect(px, py, pw, ph);
-            ctx.fill();
-            ctx.fillStyle = "#ffffff";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(label, h.x, py + ph / 2 + 1);
-            ctx.textBaseline = "alphabetic";
         }
+    }
+
+    function drawActionPrompt() {
+        const h = state.hazards.find((hazard) => !hazard.found && hazard.id === state.nearestHazardId);
+        if (!h) return;
+        const y = floors[h.floor].y;
+        const label = actionPrompt();
+        ctx.font = "700 15px Inter, sans-serif";
+        const tw = ctx.measureText(label).width;
+        const padX = 16, padY = 9;
+        const pw = tw + padX * 2;
+        const ph = 15 + padY * 2;
+        const px = h.x - pw / 2;
+        const py = y - SPRITE_H - 26 - ph; // clear of the character's head
+        ctx.fillStyle = "rgba(23, 53, 83, 0.92)";
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(px, py, pw, ph, ph / 2);
+        else ctx.rect(px, py, pw, ph);
+        ctx.fill();
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(label, h.x, py + ph / 2 + 1);
+        ctx.textBaseline = "alphabetic";
+        ctx.textAlign = "start";
     }
 
     function riskPulseColor() {
