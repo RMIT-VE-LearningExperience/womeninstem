@@ -211,6 +211,10 @@ body {
     text-align: center;
 }
 
+.mobile-status-toggle {
+    display: none;
+}
+
 /* ── Controls hint (bottom left) ──────────────────────── */
 #controls-hint {
     position: fixed;
@@ -701,10 +705,37 @@ a:focus-visible {
         display: flex;
     }
 
+    .mobile-status-toggle {
+        position: fixed;
+        right: calc(max(12px, env(safe-area-inset-right)) + 68px);
+        bottom: calc(132px + env(safe-area-inset-bottom));
+        z-index: 62;
+        width: 54px;
+        height: 54px;
+        border: 2px solid rgba(23, 53, 83, 0.14);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.95);
+        color: #193E75;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font: inherit;
+        font-size: 1.35rem;
+        font-weight: 900;
+        box-shadow: 0 8px 18px rgba(16, 34, 47, 0.18);
+        backdrop-filter: blur(6px);
+        pointer-events: auto;
+    }
+
+    .mobile-status-toggle[aria-expanded="true"] {
+        background: #F5C942;
+    }
+
     #status-bar {
+        display: none;
         left: max(12px, env(safe-area-inset-left));
         right: max(12px, env(safe-area-inset-right));
-        bottom: calc(172px + env(safe-area-inset-bottom));
+        bottom: calc(194px + env(safe-area-inset-bottom));
         transform: none;
         max-width: none;
         padding: 8px 12px;
@@ -714,6 +745,50 @@ a:focus-visible {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    body.mobile-status-open #status-bar {
+        display: block;
+    }
+
+    .mobile-checklist {
+        left: auto;
+        right: max(12px, env(safe-area-inset-right));
+        bottom: calc(132px + env(safe-area-inset-bottom));
+        width: 62px;
+    }
+
+    .mobile-checklist-toggle {
+        min-width: 62px;
+        width: 62px;
+        min-height: 54px;
+        border-radius: 18px;
+        padding: 5px 6px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1px;
+    }
+
+    .mobile-checklist-toggle span {
+        font-size: 0.5rem;
+        letter-spacing: 0.04em;
+    }
+
+    .mobile-checklist-toggle strong {
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .mobile-checklist-toggle[aria-expanded="true"] {
+        background: #F5C942;
+    }
+
+    .mobile-checklist-panel {
+        position: absolute;
+        right: 0;
+        bottom: 62px;
+        width: min(330px, calc(100vw - 24px));
+        margin-bottom: 0;
     }
 
     .overlay {
@@ -736,10 +811,18 @@ a:focus-visible {
         padding: 4px 7px;
     }
 
+    .mobile-status-toggle {
+        right: calc(max(12px, env(safe-area-inset-right)) + 76px);
+        bottom: max(12px, env(safe-area-inset-bottom));
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+    }
+
     #status-bar {
         left: 190px;
         right: calc(max(12px, env(safe-area-inset-right)) + 150px);
-        bottom: max(12px, env(safe-area-inset-bottom));
+        bottom: calc(64px + env(safe-area-inset-bottom));
     }
 
     .mobile-controls {
@@ -779,9 +862,10 @@ a:focus-visible {
     }
 
     .mobile-checklist {
-        left: 190px;
-        right: calc(max(12px, env(safe-area-inset-right)) + 80px);
-        bottom: calc(58px + env(safe-area-inset-bottom));
+        left: auto;
+        right: calc(max(12px, env(safe-area-inset-right)) + 4px);
+        bottom: calc(64px + env(safe-area-inset-bottom));
+        width: 62px;
     }
 
     .mobile-checklist-toggle {
@@ -802,12 +886,18 @@ a:focus-visible {
     }
 
     .mobile-checklist {
-        left: 28px;
+        left: auto;
         right: 28px;
-        bottom: calc(132px + env(safe-area-inset-bottom));
+        bottom: calc(140px + env(safe-area-inset-bottom));
+        width: 62px;
+    }
+
+    .mobile-status-toggle {
+        right: 102px;
+        bottom: calc(140px + env(safe-area-inset-bottom));
     }
 
     #status-bar {
-        bottom: calc(182px + env(safe-area-inset-bottom));
+        bottom: calc(202px + env(safe-area-inset-bottom));
     }
 }

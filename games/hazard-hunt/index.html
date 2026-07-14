@@ -63,8 +63,11 @@
     </div>
 
     <!-- Status bar -->
+    <button id="mobile-status-toggle" class="mobile-status-toggle" type="button" aria-label="Show status message" aria-expanded="false" aria-controls="status-bar">
+        <span aria-hidden="true">i</span>
+    </button>
     <div id="status-bar" role="status" aria-live="polite" aria-atomic="true">
-        <span id="status-text">Inspect each flashing hazard. Stand nearby and press space to secure it.</span>
+        <span id="status-text">Inspect each flashing hazard. Stand nearby and secure it.</span>
     </div>
 
     <!-- Controls hint -->
@@ -78,7 +81,7 @@
 
     <div id="mobile-checklist" class="mobile-checklist" role="region" aria-label="Mobile hazard checklist">
         <button id="mobile-checklist-toggle" class="mobile-checklist-toggle" type="button" aria-expanded="false" aria-controls="mobile-checklist-panel">
-            <span>Checklist</span>
+            <span>List</span>
             <strong id="mobile-progress">0 / 5</strong>
         </button>
         <div id="mobile-checklist-panel" class="mobile-checklist-panel" hidden>

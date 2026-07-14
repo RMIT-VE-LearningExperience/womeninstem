@@ -19,6 +19,7 @@
         mobileControls: document.getElementById("mobile-controls"),
         secureBtn: document.getElementById("secure-btn"),
         pauseBtn: document.getElementById("pause-btn"),
+        mobileStatusToggle: document.getElementById("mobile-status-toggle"),
         mobileChecklistToggle: document.getElementById("mobile-checklist-toggle"),
         mobileChecklistPanel: document.getElementById("mobile-checklist-panel"),
         mobileProgress: document.getElementById("mobile-progress"),
@@ -370,6 +371,11 @@
         ui.mobileChecklistToggle.setAttribute("aria-expanded", String(!isOpen));
         ui.mobileChecklistPanel.hidden = isOpen;
     });
+    ui.mobileStatusToggle.addEventListener("click", () => {
+        const isOpen = ui.mobileStatusToggle.getAttribute("aria-expanded") === "true";
+        ui.mobileStatusToggle.setAttribute("aria-expanded", String(!isOpen));
+        document.body.classList.toggle("mobile-status-open", !isOpen);
+    });
 
     // ── Help modal ────────────────────────────────────────────
     let currentSlide = 0;
@@ -533,7 +539,7 @@
         if (!h.found) {
             ctx.save();
             ctx.globalAlpha = 0.25 + 0.3 * pulse;
-            ctx.fillStyle = colors.hazard;
+            ctx.fillStyle = riskPulseColor();
             ctx.beginPath();
             ctx.ellipse(h.x, y - 4, h.radius, 22, 0, 0, Math.PI * 2);
             ctx.fill();
@@ -645,6 +651,16 @@
             ctx.fillText(label, h.x, py + ph / 2 + 1);
             ctx.textBaseline = "alphabetic";
         }
+    }
+
+    function riskPulseColor() {
+        const t = Math.max(0, Math.min(1, state.risk / 100));
+        const yellow = { r: 255, g: 176, b: 0 };
+        const red = { r: 210, g: 54, b: 42 };
+        const r = Math.round(yellow.r + (red.r - yellow.r) * t);
+        const g = Math.round(yellow.g + (red.g - yellow.g) * t);
+        const b = Math.round(yellow.b + (red.b - yellow.b) * t);
+        return `rgb(${r}, ${g}, ${b})`;
     }
 
     function drawSign(x, y) {
