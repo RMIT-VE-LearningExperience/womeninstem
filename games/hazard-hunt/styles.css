@@ -456,6 +456,31 @@ body {
     padding-left: 18px;
 }
 
+.fix-card {
+    border-top: 8px solid var(--safe);
+}
+
+.fix-explanation {
+    margin: 18px 0 22px;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(31, 122, 83, 0.1);
+    border: 2px solid rgba(31, 122, 83, 0.18);
+}
+
+.fix-explanation h3 {
+    margin: 0 0 8px;
+    color: var(--safe);
+    font-size: 0.95rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.fix-explanation p {
+    margin: 0;
+}
+
 .eyebrow {
     text-transform: uppercase;
     letter-spacing: 0.12em;

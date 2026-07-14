@@ -14,6 +14,11 @@
         endKicker: document.getElementById("end-kicker"),
         endTitle: document.getElementById("end-title"),
         endSummary: document.getElementById("end-summary"),
+        fixOverlay: document.getElementById("fix-overlay"),
+        fixTitle: document.getElementById("fix-title"),
+        fixSummary: document.getElementById("fix-summary"),
+        fixWhy: document.getElementById("fix-why"),
+        fixContinueBtn: document.getElementById("fix-continue-btn"),
         startBtn: document.getElementById("start-btn"),
         restartBtn: document.getElementById("restart-btn"),
         mobileControls: document.getElementById("mobile-controls"),
@@ -118,11 +123,61 @@
     const LADDER_GRAB_RANGE = 46;
 
     const baseHazards = [
-        { id: "spill", label: "Liquid spill near scaffold", detail: "Slip hazard at the scaffold access point.", floor: 0, x: 600, radius: 70, type: "spill" },
-        { id: "cable", label: "Live cable across walkway", detail: "Trip and electric shock risk on Level 1.", floor: 1, x: 700, radius: 70, type: "cable" },
-        { id: "hole", label: "Unguarded floor penetration", detail: "Open service hole in the Level 2 slab.", floor: 2, x: 1050, radius: 72, type: "hole" },
-        { id: "ladder", label: "Untied access ladder", detail: "The Level 1 access ladder is not tied off at the top.", floor: 1, x: 900, radius: 60, type: "laddertie" },
-        { id: "edge", label: "Missing edge protection", detail: "Unprotected edge on the roof deck.", floor: 3, x: 1270, radius: 76, type: "edge" }
+        {
+            id: "spill",
+            label: "Liquid spill near scaffold",
+            detail: "Slip hazard at the scaffold access point.",
+            fix: "You isolated the area and cleaned up the liquid spill at the scaffold access point.",
+            why: "Spills can cause slips, trips, and falls, especially near access points where workers are carrying tools or materials. Cleaning the spill and keeping the walkway clear helps everyone move through the site safely.",
+            floor: 0,
+            x: 600,
+            radius: 70,
+            type: "spill"
+        },
+        {
+            id: "cable",
+            label: "Live cable across walkway",
+            detail: "Trip and electric shock risk on Level 1.",
+            fix: "You removed the live cable from the walkway and made the route safe to pass.",
+            why: "Loose or live leads across walkways can trip workers and may create an electric shock risk if damaged. Cables should be isolated, protected, or routed away from pedestrian paths.",
+            floor: 1,
+            x: 700,
+            radius: 70,
+            type: "cable"
+        },
+        {
+            id: "hole",
+            label: "Unguarded floor penetration",
+            detail: "Open service hole in the Level 2 slab.",
+            fix: "You covered and marked the floor penetration so workers cannot step into it.",
+            why: "Open penetrations can cause serious falls or leg injuries. They need a secure cover, barrier, or guardrail that is clearly marked and strong enough to prevent someone falling through.",
+            floor: 2,
+            x: 1050,
+            radius: 72,
+            type: "hole"
+        },
+        {
+            id: "ladder",
+            label: "Untied access ladder",
+            detail: "The Level 1 access ladder is not tied off at the top.",
+            fix: "You tied off and secured the access ladder before anyone used it.",
+            why: "An unsecured ladder can shift, slip, or tip while someone is climbing. Tying it off and checking the base reduces the chance of falls from height.",
+            floor: 1,
+            x: 900,
+            radius: 60,
+            type: "laddertie"
+        },
+        {
+            id: "edge",
+            label: "Missing edge protection",
+            detail: "Unprotected edge on the roof deck.",
+            fix: "You installed edge protection around the exposed roof deck edge.",
+            why: "Unprotected edges create a high-risk fall hazard. Guardrails, barriers, or other edge protection help stop workers and materials from falling from height.",
+            floor: 3,
+            x: 1270,
+            radius: 76,
+            type: "edge"
+        }
     ];
 
     // ── Sprites ───────────────────────────────────────────────
@@ -173,6 +228,9 @@
         statusText: "Inspect each flashing hazard. Stand nearby and secure it.",
         nearestHazardId: null,
         pause: false,
+        fixModalOpen: false,
+        pendingFinish: false,
+        lastFixedHazard: null,
         pulse: 0,
         pressed: Object.create(null),
         lastTimestamp: 0
@@ -189,12 +247,16 @@
         state.timer = 90;
         state.risk = 0;
         state.pause = false;
+        state.fixModalOpen = false;
+        state.pendingFinish = false;
+        state.lastFixedHazard = null;
         state.pulse = 0;
         state.nearestHazardId = null;
         state.statusText = "Inspect each flashing hazard. Stand nearby and secure it.";
         state.lastTimestamp = 0;
         ui.startOverlay.classList.add("visible");
         ui.endOverlay.classList.remove("visible");
+        ui.fixOverlay.classList.remove("visible");
         ui.startBtn.focus();
         updateCamera(0, true);
         syncUi(null);
@@ -205,12 +267,15 @@
         state.pause = false;
         ui.startOverlay.classList.remove("visible");
         ui.endOverlay.classList.remove("visible");
+        ui.fixOverlay.classList.remove("visible");
         state.statusText = "Shift live. Walk the floors and climb ladders to reach every hazard.";
         syncUi(null);
     }
 
     function finishGame(win) {
         state.mode = win ? "won" : "lost";
+        state.fixModalOpen = false;
+        ui.fixOverlay.classList.remove("visible");
         ui.endOverlay.classList.add("visible");
         ui.restartBtn.focus();
         ui.endKicker.textContent = win ? "Shift Complete" : "Site Unsafe";
@@ -222,8 +287,33 @@
         syncUi(null);
     }
 
+    function showFixModal(h) {
+        state.pause = true;
+        state.fixModalOpen = true;
+        state.lastFixedHazard = h;
+        releaseMovement();
+        ui.fixTitle.textContent = h.label;
+        ui.fixSummary.textContent = h.fix;
+        ui.fixWhy.textContent = h.why;
+        ui.fixContinueBtn.textContent = state.pendingFinish ? "Finish Inspection" : "Continue Inspection";
+        ui.fixOverlay.classList.add("visible");
+        ui.fixContinueBtn.focus();
+        syncUi(null);
+    }
+
+    function closeFixModal() {
+        if (!state.fixModalOpen) return;
+        ui.fixOverlay.classList.remove("visible");
+        state.fixModalOpen = false;
+        const shouldFinish = state.pendingFinish;
+        state.pendingFinish = false;
+        state.pause = false;
+        if (shouldFinish) finishGame(true);
+        else syncUi(nearestHazard());
+    }
+
     function togglePause() {
-        if (state.mode !== "playing") return;
+        if (state.mode !== "playing" || state.fixModalOpen) return;
         state.pause = !state.pause;
         state.statusText = state.pause ? "Paused." : "Back on shift.";
         releaseMovement();
@@ -264,12 +354,12 @@
         state.player.securingTimer = 0.6;
         state.statusText = `Secured: ${h.label}. ${state.hazards.length - state.found} remaining.`;
         if (state.found >= state.hazards.length) {
-            // let the player see the last fix before the end modal appears
             state.finishing = true;
             state.statusText = `Secured: ${h.label}. Site clear!`;
-            setTimeout(() => finishGame(true), 1800);
+            state.pendingFinish = true;
         }
         syncUi(null);
+        showFixModal(h);
     }
 
     // ── Input ─────────────────────────────────────────────────
@@ -283,6 +373,11 @@
     window.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && document.getElementById("helpModal").classList.contains("active")) {
             window.closeHelp();
+            e.preventDefault();
+            return;
+        }
+        if ((e.key === " " || e.key === "Enter") && state.fixModalOpen) {
+            closeFixModal();
             e.preventDefault();
             return;
         }
@@ -325,6 +420,7 @@
     }
     ui.startBtn.addEventListener("click", startGame);
     ui.restartBtn.addEventListener("click", resetGame);
+    ui.fixContinueBtn.addEventListener("click", closeFixModal);
 
     function releaseMovement() {
         ["left", "right", "up", "down"].forEach((dir) => {
@@ -747,6 +843,13 @@
                 climbing: Boolean(state.player.climbing)
             },
             nearestHazard: near ? { id: near.id, label: near.label, floor: floors[near.floor].id, x: near.x } : null,
+            fixModal: state.fixModalOpen && state.lastFixedHazard ? {
+                id: state.lastFixedHazard.id,
+                title: state.lastFixedHazard.label,
+                summary: state.lastFixedHazard.fix,
+                why: state.lastFixedHazard.why,
+                pendingFinish: state.pendingFinish
+            } : null,
             hazardsFound: state.found,
             hazardsTotal: state.hazards.length,
             hazards: state.hazards.map((h) => ({ id: h.id, label: h.label, found: h.found, floor: floors[h.floor].id, x: h.x })),

@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260714-1">
+    <link rel="stylesheet" href="styles.css?v=20260714-2">
     <link rel="stylesheet" href="../../nav.css?v=1.1.7">
 </head>
 <body>
@@ -127,6 +127,19 @@
         </div>
     </section>
 
+    <section class="overlay" id="fix-overlay" role="dialog" aria-modal="true" aria-labelledby="fix-title" aria-describedby="fix-summary fix-why">
+        <div class="overlay-card fix-card">
+            <p class="eyebrow">Hazard Fixed</p>
+            <h2 id="fix-title">Hazard secured</h2>
+            <p id="fix-summary"></p>
+            <div class="fix-explanation">
+                <h3>Why this matters</h3>
+                <p id="fix-why"></p>
+            </div>
+            <button id="fix-continue-btn" class="primary-btn" type="button">Continue Inspection</button>
+        </div>
+    </section>
+
     <div class="modal-overlay" id="helpModal">
         <div class="modal">
             <h2>How to Play</h2>
@@ -168,7 +181,7 @@
         </div>
     </div>
 
-    <script src="game.js?v=20260714-1"></script>
+    <script src="game.js?v=20260714-2"></script>
     <script src="../../nav.js?v=1.0.0"></script>
 </body>
 </html>
