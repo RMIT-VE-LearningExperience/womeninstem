@@ -278,13 +278,12 @@ function handlePlayAgain() {
 }
 
 /**
- * Handle exit to main menu
+ * Handle exit to mini games menu
  */
 function handleExit() {
-    console.log('👋 Exiting to main menu...');
+    console.log('👋 Exiting to mini games menu...');
 
-    // Navigate back to welcome page
-    window.location.href = '../../index.html';
+    window.location.href = '../../mini-games.html';
 }
 
 /**

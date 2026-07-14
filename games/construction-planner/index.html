@@ -1030,10 +1030,18 @@ padding-bottom: 60px;
     margin-bottom: 20px;
   }
 
-  .success-card button {
+  .success-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .success-card button,
+  .success-secondary-btn {
     background: #f5c542;
     color: #1a2744;
-    border: none;
+    border: 2px solid #f5c542;
     padding: 14px 40px;
     border-radius: 14px;
     font-family: 'Inter', sans-serif;
@@ -1041,9 +1049,20 @@ padding-bottom: 60px;
     font-weight: 900;
     cursor: pointer;
     transition: transform 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .success-card button:active { transform: scale(0.95); }
+  .success-card button:active,
+  .success-secondary-btn:active { transform: scale(0.95); }
+
+  .success-secondary-btn {
+    background: #1a2744;
+    color: #f5c542;
+    border-color: #1a2744;
+  }
 
   /* Help Modal */
   .modal-overlay {
@@ -2183,7 +2202,10 @@ padding-bottom: 60px;
     <div class="success-icon">🎉</div>
     <h2>Great Job!</h2>
     <p>You've successfully planned the crew schedule! All workers are assigned, the work order is correct, and the weather is safe.</p>
-    <button onclick="resetGame(); document.getElementById('successOverlay').classList.remove('active');">Play Again</button>
+    <div class="success-actions">
+      <button onclick="resetGame(); document.getElementById('successOverlay').classList.remove('active');">Play Again</button>
+      <a href="../../mini-games.html" class="success-secondary-btn">More Mini Games</a>
+    </div>
   </div>
 </div>
 

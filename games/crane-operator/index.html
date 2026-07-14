@@ -876,6 +876,40 @@
     box-shadow: none;
   }
 
+  .end-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .end-actions #restartBtn {
+    margin-top: 0;
+  }
+
+  .end-secondary-btn {
+    margin-top: 28px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    padding: 0.85em 2.2em;
+    background: #193E75;
+    color: #F0C638;
+    border: 2px solid #193E75;
+    border-radius: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .end-actions .end-secondary-btn {
+    margin-top: 0;
+  }
+
   #endScreen.lose-mode {
     background: rgba(230, 30, 42, 0.82);
   }
@@ -1295,7 +1329,10 @@
     <h2 id="endTitle">Job Complete!</h2>
     <p id="endLead"></p>
     <p id="endMsg">All crates delivered.</p>
-    <button id="restartBtn">Play Again</button>
+    <div class="end-actions">
+      <button id="restartBtn">Play Again</button>
+      <a href="../../mini-games.html" id="moreGamesBtn" class="end-secondary-btn">More Mini Games</a>
+    </div>
   </div>
 </div>
 

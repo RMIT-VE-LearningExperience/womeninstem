@@ -383,6 +383,25 @@
       transition: transform 0.1s;
     }
     #gameover-try-btn:hover { transform: scale(1.06); }
+    #gameover-more-games-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 16px;
+      padding: 12px 28px;
+      background: #1a2a4a;
+      border: 2px solid #1a2a4a;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: clamp(13px, 1.6vw, 16px);
+      font-weight: 800;
+      color: #f5c842;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      transition: transform 0.1s;
+    }
+    #gameover-more-games-btn:hover { transform: scale(1.04); }
 
     /* Help modal */
     /* Help modal — matches crane-operator style */
@@ -744,6 +763,31 @@
       transition: transform 0.1s;
     }
     #play-again-btn:hover { transform: scale(1.05); }
+    #win-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+    #win-actions #play-again-btn { margin-top: 0; }
+    #more-games-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 12px;
+      padding: 16px 40px;
+      background: #1a2a4a;
+      border: 2px solid #1a2a4a;
+      border-radius: 14px;
+      font-size: clamp(15px,2vw,20px);
+      font-weight: 700;
+      color: #f5c842;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.1s;
+    }
+    #win-actions #more-games-btn { margin-top: 0; }
+    #more-games-btn:hover { transform: scale(1.05); }
 
     /* ── Orientation overlay (mobile landscape → ask to rotate) ── */
     .orientation-overlay {
@@ -1149,6 +1193,7 @@
   <div id="gameover-card">
     <h2 id="gameover-title">Game Over</h2>
     <p>You made too many mistakes on this job site.<br>Review the correct parts and try again!</p>
+    <a href="../../mini-games.html" id="gameover-more-games-btn">More Mini Games</a>
     <button id="gameover-try-btn">TRY<br>AGAIN</button>
   </div>
 </div>
@@ -1157,7 +1202,10 @@
 <div id="win-screen" role="dialog" aria-modal="true" aria-labelledby="win-title">
   <h2 id="win-title">Well done!</h2>
   <p>All pipes are connected correctly.</p>
-  <button id="play-again-btn">Play Again</button>
+  <div id="win-actions">
+    <button id="play-again-btn">Play Again</button>
+    <a href="../../mini-games.html" id="more-games-btn">More Mini Games</a>
+  </div>
 </div>
 
 <!-- Screen-reader live region for game announcements -->
