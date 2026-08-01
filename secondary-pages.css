@@ -212,9 +212,10 @@ body.page-secondary.credits-page .menu-btn {
 }
 
 .about-intro-image {
+    aspect-ratio: 4 / 3;
     border-radius: 16px;
     overflow: hidden;
-    min-height: 300px;
+    min-height: 0;
     background: #d7dce2;
 }
 
@@ -407,6 +408,14 @@ body.page-secondary.credits-page .menu-btn {
     min-height: 360px;
 }
 
+.about-media-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+    object-fit: cover;
+}
+
 .about-feature-list {
     background: #ffffff;
     padding: clamp(24px, 3vw, 38px);
@@ -552,7 +561,12 @@ body.page-secondary.credits-page .menu-btn {
 }
 
 .about-team-image {
-    min-height: 280px;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+    object-fit: cover;
+    border-radius: 16px;
 }
 
 .about-contributors {
