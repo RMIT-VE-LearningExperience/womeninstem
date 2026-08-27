@@ -162,83 +162,78 @@
       ]
     },
     {
-      "name": "Quantity Surveyor",
-      "salary_range": "$70,000 - $140,000",
-      "overview": "Quantity surveyors are cost experts who plan, manage and report on construction costs from early design through to project completion.",
-      "video_url": "https://youtu.be/vefdTWuPqDQ",
-      "person_name": "Sophie Ly",
-      "person_thumbnail": "images/video_profiles/sophie_square.jpg",
+      "name": "Crane Operator",
+      "salary_range": "$70,000 - $130,000",
+      "overview": "Crane operators operate lifting equipment to move heavy materials and equipment safely around construction sites.",
       "core_skills": [
-        "Cost planning",
-        "Analytical thinking",
-        "Attention to detail",
+        "Technical precision",
+        "Safety awareness",
+        "Coordination",
+        "Communication",
         "Problem-solving",
-        "Financial management",
-        "Negotiation",
-        "Organisation",
-        "IT and digital modelling"
+        "Focus"
       ],
       "core_education": [
-        "Bachelor of Construction Management",
-        "Graduate Diploma of Construction Management"
+        "Certificate III in Rigging or Crane Operations",
+        "High Risk Work Licence"
       ],
-      "work_style": "Analytical-Formal",
+      "work_style": "HandsOn-Structured",
+      "video_url": "https://youtu.be/squdmqLmOhI",
+      "person_name": "Kathryn Webb",
+      "person_thumbnail": "images/video_profiles/kat_square.jpg",
+      "person_bio": "Kathryn (Kat) Webb works in a crane crew as a crane operator and also does dogging and rigging. She began through a traineeship pathway and now helps deliver safe lifts on site, coordinating closely with the crew using hand signals, radios and pre-start planning.",
       "levels": [
         {
-          "title": "Graduate Quantity Surveyor",
-          "summary": "Supports senior QS staff with measurement, basic cost plans and financial reporting.",
-          "typical_experience": "Recent graduate or final-year student in construction management or related field.",
+          "title": "Trainee Crane Operator",
+          "summary": "Learns basic crane operations, hand signals and safety procedures under supervision.",
+          "typical_experience": "Entry-level role, often moving from general labouring or dogging.",
           "progresses_to": [
-            "Quantity Surveyor"
+            "Crane Operator"
           ],
           "related_roles": [
-            "Junior Estimator",
-            "Assistant Contract Administrator"
+            "Dogman / Rigger",
+            "General Labourer"
           ]
         },
         {
-          "title": "Quantity Surveyor",
-          "summary": "Prepares detailed cost plans, bills of quantities and monitors project costs during construction.",
-          "typical_experience": "3 years in a QS or estimating role.",
+          "title": "Crane Operator",
+          "summary": "Operates cranes to lift and move materials safely on site within a team.",
+          "typical_experience": "Completed training and licence requirements.",
           "progresses_to": [
-            "Senior Quantity Surveyor"
+            "Senior Crane Operator"
           ],
           "related_roles": [
-            "Building Estimator",
-            "Contract Administrator",
-            "Project Coordinator"
+            "Heavy Vehicle Operator",
+            "Site Supervisor (logistics)"
           ]
         },
         {
-          "title": "Senior Quantity Surveyor",
-          "summary": "Leads cost management on major projects and provides strategic cost advice to clients and project teams.",
-          "typical_experience": "Extensive QS experience and responsibility for large or complex projects.",
+          "title": "Senior Crane Operator",
+          "summary": "Handles complex lifts, mentors junior operators and works closely with site management on lift planning.",
+          "typical_experience": "Strong experience operating cranes on busy sites.",
           "progresses_to": [
-            "Commercial Manager (QS)"
+            "Crane Supervisor"
           ],
           "related_roles": [
-            "Senior Estimator",
-            "Senior Contract Administrator",
-            "Project Manager"
+            "Crane Supervisor",
+            "Construction Manager (logistics focus)"
           ]
         },
         {
-          "title": "Commercial Manager (QS)",
-          "summary": "Manages the commercial performance of multiple projects or a portfolio, including risk, claims and high-level reporting.",
-          "typical_experience": "Senior QS/estimating background with leadership responsibilities.",
-          "progresses_to": [
-            "Commercial Director"
-          ],
+          "title": "Crane Supervisor / Lift Planner",
+          "summary": "Plans lifts, coordinates teams and ensures compliance with lift plans and safety requirements.",
+          "typical_experience": "Senior crane or rigging background with planning responsibilities.",
+          "progresses_to": [],
           "related_roles": [
-            "Commercial Manager (Estimating Focus)",
+            "Site Manager",
             "Construction Manager"
           ]
         }
       ],
       "related_roles": [
-        "Building Estimator",
-        "Contract Administrator",
-        "Project Manager"
+        "Heavy Vehicle Operator",
+        "Construction Manager",
+        "Site Supervisor"
       ]
     },
     {
@@ -544,82 +539,6 @@
       ]
     },
     {
-      "name": "Health and Safety Officer",
-      "salary_range": "$65,000 - $115,000",
-      "overview": "Health and safety officers focus on keeping workers safe, ensuring legal compliance and promoting a positive safety culture.",
-      "video_url": "https://youtu.be/6Va6cb6VXzY",
-      "person_name": "Bailey Griffiths",
-      "person_thumbnail": "images/video_profiles/bailey_square.jpg",
-      "person_bio": "Bailey Griffiths is a Safety Coordinator at Acciona with experience in civil construction. After studying building and construction at RMIT, Bailey moved into safety and now works closely with engineers and supervisors to run inductions, lead site safety walks, check critical documentation and deliver training that protects both workers and the wider public.",
-      "core_skills": [
-        "Risk assessment",
-        "Attention to detail",
-        "Communication",
-        "Organisation",
-        "Compliance management",
-        "Training",
-        "Leadership"
-      ],
-      "core_education": [
-        "Certificate IV in Work Health and Safety",
-        "Diploma of Work Health and Safety"
-      ],
-      "work_style": "Compliance-Formal",
-      "levels": [
-        {
-          "title": "Assistant Safety Officer",
-          "summary": "Supports the WHS team with inspections, incident reporting and toolbox talks.",
-          "typical_experience": "Entry-level role, often with trade or site experience.",
-          "progresses_to": [
-            "Health and Safety Officer"
-          ],
-          "related_roles": [
-            "Site Supervisor",
-            "Leading Hand"
-          ]
-        },
-        {
-          "title": "Health and Safety Officer",
-          "summary": "Conducts site inspections, risk assessments and safety training and supports investigations.",
-          "typical_experience": " 3 years in WHS roles or relevant on-site experience.",
-          "progresses_to": [
-            "Senior Safety Officer"
-          ],
-          "related_roles": [
-            "Site Manager",
-            "Construction Manager"
-          ]
-        },
-        {
-          "title": "Senior Safety Officer",
-          "summary": "Leads safety on major projects, coaches teams and drives safety initiatives.",
-          "typical_experience": "Extensive WHS experience on large and complex projects.",
-          "progresses_to": [
-            "Safety Manager"
-          ],
-          "related_roles": [
-            "Safety Manager",
-            "Operations Manager"
-          ]
-        },
-        {
-          "title": "Safety Manager",
-          "summary": "Oversees WHS across multiple projects or an organisation, setting policy and strategy.",
-          "typical_experience": "Senior WHS background and leadership capability.",
-          "progresses_to": [],
-          "related_roles": [
-            "HSE Director",
-            "Operations Manager"
-          ]
-        }
-      ],
-      "related_roles": [
-        "Construction Manager",
-        "Project Manager",
-        "Site Supervisor"
-      ]
-    },
-    {
       "name": "Environmental Coordinator",
       "salary_range": "$70,000 - $120,000",
       "overview": "Environmental coordinators manage environmental risks on construction sites, helping teams control dust, water runoff, noise and compliance impacts while works are underway.",
@@ -698,6 +617,82 @@
         "Project Engineer",
         "Site Supervisor",
         "Construction Manager"
+      ]
+    },
+    {
+      "name": "Health and Safety Officer",
+      "salary_range": "$65,000 - $115,000",
+      "overview": "Health and safety officers focus on keeping workers safe, ensuring legal compliance and promoting a positive safety culture.",
+      "video_url": "https://youtu.be/6Va6cb6VXzY",
+      "person_name": "Bailey Griffiths",
+      "person_thumbnail": "images/video_profiles/bailey_square.jpg",
+      "person_bio": "Bailey Griffiths is a Safety Coordinator at Acciona with experience in civil construction. After studying building and construction at RMIT, Bailey moved into safety and now works closely with engineers and supervisors to run inductions, lead site safety walks, check critical documentation and deliver training that protects both workers and the wider public.",
+      "core_skills": [
+        "Risk assessment",
+        "Attention to detail",
+        "Communication",
+        "Organisation",
+        "Compliance management",
+        "Training",
+        "Leadership"
+      ],
+      "core_education": [
+        "Certificate IV in Work Health and Safety",
+        "Diploma of Work Health and Safety"
+      ],
+      "work_style": "Compliance-Formal",
+      "levels": [
+        {
+          "title": "Assistant Safety Officer",
+          "summary": "Supports the WHS team with inspections, incident reporting and toolbox talks.",
+          "typical_experience": "Entry-level role, often with trade or site experience.",
+          "progresses_to": [
+            "Health and Safety Officer"
+          ],
+          "related_roles": [
+            "Site Supervisor",
+            "Leading Hand"
+          ]
+        },
+        {
+          "title": "Health and Safety Officer",
+          "summary": "Conducts site inspections, risk assessments and safety training and supports investigations.",
+          "typical_experience": " 3 years in WHS roles or relevant on-site experience.",
+          "progresses_to": [
+            "Senior Safety Officer"
+          ],
+          "related_roles": [
+            "Site Manager",
+            "Construction Manager"
+          ]
+        },
+        {
+          "title": "Senior Safety Officer",
+          "summary": "Leads safety on major projects, coaches teams and drives safety initiatives.",
+          "typical_experience": "Extensive WHS experience on large and complex projects.",
+          "progresses_to": [
+            "Safety Manager"
+          ],
+          "related_roles": [
+            "Safety Manager",
+            "Operations Manager"
+          ]
+        },
+        {
+          "title": "Safety Manager",
+          "summary": "Oversees WHS across multiple projects or an organisation, setting policy and strategy.",
+          "typical_experience": "Senior WHS background and leadership capability.",
+          "progresses_to": [],
+          "related_roles": [
+            "HSE Director",
+            "Operations Manager"
+          ]
+        }
+      ],
+      "related_roles": [
+        "Construction Manager",
+        "Project Manager",
+        "Site Supervisor"
       ]
     },
     {
@@ -1029,78 +1024,83 @@
       ]
     },
     {
-      "name": "Crane Operator",
-      "salary_range": "$70,000 - $130,000",
-      "overview": "Crane operators operate lifting equipment to move heavy materials and equipment safely around construction sites.",
+      "name": "Quantity Surveyor",
+      "salary_range": "$70,000 - $140,000",
+      "overview": "Quantity surveyors are cost experts who plan, manage and report on construction costs from early design through to project completion.",
+      "video_url": "https://youtu.be/vefdTWuPqDQ",
+      "person_name": "Sophie Ly",
+      "person_thumbnail": "images/video_profiles/sophie_square.jpg",
       "core_skills": [
-        "Technical precision",
-        "Safety awareness",
-        "Coordination",
-        "Communication",
+        "Cost planning",
+        "Analytical thinking",
+        "Attention to detail",
         "Problem-solving",
-        "Focus"
+        "Financial management",
+        "Negotiation",
+        "Organisation",
+        "IT and digital modelling"
       ],
       "core_education": [
-        "Certificate III in Rigging or Crane Operations",
-        "High Risk Work Licence"
+        "Bachelor of Construction Management",
+        "Graduate Diploma of Construction Management"
       ],
-      "work_style": "HandsOn-Structured",
-      "video_url": "https://youtu.be/squdmqLmOhI",
-      "person_name": "Kathryn Webb",
-      "person_thumbnail": "images/video_profiles/kat_square.jpg",
-      "person_bio": "Kathryn (Kat) Webb works in a crane crew as a crane operator and also does dogging and rigging. She began through a traineeship pathway and now helps deliver safe lifts on site, coordinating closely with the crew using hand signals, radios and pre-start planning.",
+      "work_style": "Analytical-Formal",
       "levels": [
         {
-          "title": "Trainee Crane Operator",
-          "summary": "Learns basic crane operations, hand signals and safety procedures under supervision.",
-          "typical_experience": "Entry-level role, often moving from general labouring or dogging.",
+          "title": "Graduate Quantity Surveyor",
+          "summary": "Supports senior QS staff with measurement, basic cost plans and financial reporting.",
+          "typical_experience": "Recent graduate or final-year student in construction management or related field.",
           "progresses_to": [
-            "Crane Operator"
+            "Quantity Surveyor"
           ],
           "related_roles": [
-            "Dogman / Rigger",
-            "General Labourer"
+            "Junior Estimator",
+            "Assistant Contract Administrator"
           ]
         },
         {
-          "title": "Crane Operator",
-          "summary": "Operates cranes to lift and move materials safely on site within a team.",
-          "typical_experience": "Completed training and licence requirements.",
+          "title": "Quantity Surveyor",
+          "summary": "Prepares detailed cost plans, bills of quantities and monitors project costs during construction.",
+          "typical_experience": "3 years in a QS or estimating role.",
           "progresses_to": [
-            "Senior Crane Operator"
+            "Senior Quantity Surveyor"
           ],
           "related_roles": [
-            "Heavy Vehicle Operator",
-            "Site Supervisor (logistics)"
+            "Building Estimator",
+            "Contract Administrator",
+            "Project Coordinator"
           ]
         },
         {
-          "title": "Senior Crane Operator",
-          "summary": "Handles complex lifts, mentors junior operators and works closely with site management on lift planning.",
-          "typical_experience": "Strong experience operating cranes on busy sites.",
+          "title": "Senior Quantity Surveyor",
+          "summary": "Leads cost management on major projects and provides strategic cost advice to clients and project teams.",
+          "typical_experience": "Extensive QS experience and responsibility for large or complex projects.",
           "progresses_to": [
-            "Crane Supervisor"
+            "Commercial Manager (QS)"
           ],
           "related_roles": [
-            "Crane Supervisor",
-            "Construction Manager (logistics focus)"
+            "Senior Estimator",
+            "Senior Contract Administrator",
+            "Project Manager"
           ]
         },
         {
-          "title": "Crane Supervisor / Lift Planner",
-          "summary": "Plans lifts, coordinates teams and ensures compliance with lift plans and safety requirements.",
-          "typical_experience": "Senior crane or rigging background with planning responsibilities.",
-          "progresses_to": [],
+          "title": "Commercial Manager (QS)",
+          "summary": "Manages the commercial performance of multiple projects or a portfolio, including risk, claims and high-level reporting.",
+          "typical_experience": "Senior QS/estimating background with leadership responsibilities.",
+          "progresses_to": [
+            "Commercial Director"
+          ],
           "related_roles": [
-            "Site Manager",
+            "Commercial Manager (Estimating Focus)",
             "Construction Manager"
           ]
         }
       ],
       "related_roles": [
-        "Heavy Vehicle Operator",
-        "Construction Manager",
-        "Site Supervisor"
+        "Building Estimator",
+        "Contract Administrator",
+        "Project Manager"
       ]
     },
     {
