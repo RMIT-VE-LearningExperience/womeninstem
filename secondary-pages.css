@@ -75,16 +75,6 @@ body.page-secondary.mini-games-page .menu-btn {
     height: 68px;
 }
 
-/* Credits page keeps menu pinned in the same top-right spot */
-body.page-secondary.credits-page .menu-btn {
-    position: fixed;
-    top: 26px;
-    right: 26px;
-    margin: 0;
-    width: 68px;
-    height: 68px;
-}
-
 .page-corner-logo {
     position: absolute;
     top: 20px;
@@ -989,12 +979,6 @@ body.keyboard-user .games-grid:focus-within .games-kb-hint {
         margin: 0;
     }
 
-    body.page-secondary.credits-page .menu-btn {
-        top: 14px;
-        right: 14px;
-        margin: 0;
-    }
-
     .page-corner-logo {
         top: 10px;
         left: 14px;
@@ -1154,13 +1138,6 @@ body.keyboard-user .games-grid:focus-within .games-kb-hint {
         height: 68px;
     }
 
-    body.page-secondary.credits-page .menu-btn {
-        top: 12px;
-        right: 12px;
-        margin: 0;
-        width: 68px;
-        height: 68px;
-    }
 }
 
 @media (max-width: 768px) {

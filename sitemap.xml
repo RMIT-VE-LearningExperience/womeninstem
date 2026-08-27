@@ -31,11 +31,6 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://constructyourcareer.org.au/credits.html</loc>
-    <priority>0.5</priority>
-    <changefreq>yearly</changefreq>
-  </url>
-  <url>
     <loc>https://constructyourcareer.org.au/contact.html</loc>
     <priority>0.5</priority>
     <changefreq>yearly</changefreq>
