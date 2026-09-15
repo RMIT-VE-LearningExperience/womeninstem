@@ -811,10 +811,13 @@
     text-align: center;
     z-index: 200;
     padding: 40px;
+    overflow-y: auto;
   }
 
   #endScreen .end-card {
     width: min(1020px, calc(100vw - 120px));
+    margin-block: auto;
+    flex-shrink: 0;
     background: #efefef;
     border-radius: 30px;
     padding: 46px 60px 46px;
@@ -857,7 +860,7 @@
     line-height: 1.32;
     font-weight: 500;
     margin: 0;
-    max-width: calc(100% - 240px);
+    max-width: 100%;
   }
 
   #restartBtn {
@@ -881,7 +884,9 @@
   .end-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 24px;
+    margin-top: 32px;
+    align-items: center;
     justify-content: center;
   }
 
@@ -917,9 +922,8 @@
   }
 
   #endScreen.lose-mode #restartBtn {
-    position: absolute;
-    right: 48px;
-    bottom: 36px;
+    position: static;
+    flex-shrink: 0;
     width: 136px;
     height: 136px;
     margin-top: 0;
@@ -958,7 +962,7 @@
       position: static;
       width: 110px;
       height: 110px;
-      margin: 24px auto 0;
+      margin: 0;
       font-size: 1.95rem;
       display: block;
     }
@@ -1812,6 +1816,22 @@ function applyDrumCollisionDamage(impactX, impactY, amount = 25) {
   }
 }
 
+function updateWireSegments() {
+  const anchorX = trolley.x;
+  const anchorY = WORLD.craneTopY + WIRE_ANCHOR_Y_OFFSET;
+  const dx = hook.x - anchorX;
+  const dy = hook.y - anchorY;
+  const length = Math.hypot(dx, dy) || 1;
+  const bendLimit = Math.min(6, length * 0.02);
+  const bend = Math.max(-bendLimit, Math.min(bendLimit, -trolley.speed * 0.008));
+  for (let i = 0; i <= WIRE_SEG_COUNT; i++) {
+    const t = i / WIRE_SEG_COUNT;
+    const offset = Math.sin(t * Math.PI) * bend;
+    wireSegments[i].x = anchorX + dx * t + (dy / length) * offset;
+    wireSegments[i].y = anchorY + dy * t - (dx / length) * offset;
+  }
+}
+
 function updatePhysics(dt) {
   const frameDrumHitIds = new Set();
   const autoLowerActive = gameState === 'playing' && performance.now() < autoLowerUntil;
@@ -1848,23 +1868,12 @@ function updatePhysics(dt) {
   const targetHookX = anchorX + Math.sin(hook.angle) * trolley.ropeLength;
   const targetHookY = anchorY + Math.cos(hook.angle) * trolley.ropeLength;
 
-  wireSegments[0].x = anchorX;
-  wireSegments[0].y = anchorY;
-
-  for (let i = 1; i <= WIRE_SEG_COUNT; i++) {
-    const t = i / WIRE_SEG_COUNT;
-    const targetX = anchorX + (targetHookX - anchorX) * t;
-    const targetY = anchorY + (targetHookY - anchorY) * t;
-    const speedSag = Math.abs(trolley.speed) * 0.015;
-    const sag = Math.sin(t * Math.PI) * (trolley.ropeLength * 0.018 + Math.abs(hook.angleVel) * 4 + speedSag);
-    const lateralDrag = -trolley.speed * 0.12 * Math.sin(t * Math.PI);
-    const lerpSpeed = 0.08 + (1 - Math.sin(t * Math.PI)) * 0.06;
-    wireSegments[i].x += (targetX + lateralDrag - wireSegments[i].x) * lerpSpeed;
-    wireSegments[i].y += (targetY + sag - wireSegments[i].y) * lerpSpeed;
-  }
-
-  hook.x = wireSegments[WIRE_SEG_COUNT].x;
-  hook.y = wireSegments[WIRE_SEG_COUNT].y;
+  // Preserve the hook's inertia, but keep the tensioned cable close to the
+  // anchor-to-hook line. Independently lagging segments caused deep arcs.
+  const hookFollow = 1 - Math.pow(0.86, dt * 60);
+  hook.x += (targetHookX - hook.x) * hookFollow;
+  hook.y += (targetHookY - hook.y) * hookFollow;
+  updateWireSegments();
   let currentWireAngle = -Math.atan2(
     wireSegments[WIRE_SEG_COUNT].x - wireSegments[WIRE_SEG_COUNT - 1].x,
     wireSegments[WIRE_SEG_COUNT].y - wireSegments[WIRE_SEG_COUNT - 1].y
@@ -1976,6 +1985,7 @@ function updatePhysics(dt) {
     if (trolley.ropeLength > maxLenGround) trolley.ropeLength = maxLenGround;
   }
 
+  updateWireSegments();
   const prevSeg = wireSegments[WIRE_SEG_COUNT - 1];
   const lastSeg = wireSegments[WIRE_SEG_COUNT];
   currentWireAngle = -Math.atan2(lastSeg.x - prevSeg.x, lastSeg.y - prevSeg.y);
