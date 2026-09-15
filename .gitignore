@@ -1,3 +1,10 @@
 node_modules/
 output/
 .DS_Store
+# Android wrapper build outputs, generated APKs, and local video files (site uses YouTube links)
+android/build/
+android/app/build/
+android/.gradle/
+*.hprof
+apk/
+videos/

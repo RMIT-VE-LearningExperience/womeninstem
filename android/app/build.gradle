@@ -1,0 +1,92 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "au.org.buildyourpath.app"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "au.org.buildyourpath.app"
+        minSdk 23
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs = ["$buildDir/generated/assets"]
+        }
+    }
+
+    androidResources {
+        noCompress += ["mp4"]
+    }
+}
+
+dependencies {
+    implementation "androidx.webkit:webkit:1.12.1"
+}
+
+tasks.register("stageWebAssets") {
+    def projectRoot = rootProject.projectDir.parentFile
+    def destination = layout.buildDirectory.dir("generated/assets/www")
+    def includeVideos = providers.gradleProperty("includeVideos").map { it.toBoolean() }.orElse(false)
+    def localVideoMap = [
+        "Quantity Surveyor"        : "videos/quantity-surveyor-sophie-ly.mp4",
+        "Construction Manager"     : "videos/construction-manager-brett-kavanagh.mp4",
+        "Health and Safety Officer": "videos/health-and-safety-officer-bailey-griffiths.mp4",
+        "Environmental Coordinator": "videos/environmental-coordinator-alexandra-seerungen.mp4",
+        "Crane Operator"           : "videos/crane-operator-kathryn-webb.mp4",
+        "Site Supervisor"          : "videos/site-supervisor-jackson-coulthard.mp4"
+    ]
+
+    inputs.dir(projectRoot)
+    inputs.property("includeVideos", includeVideos)
+    outputs.dir(destination)
+
+    doLast {
+        def shouldIncludeVideos = includeVideos.get()
+        def outputDir = destination.get().asFile
+        delete(outputDir)
+        outputDir.mkdirs()
+
+        copy {
+            from(projectRoot)
+            into(outputDir)
+            exclude ".git/**"
+            exclude ".claude/**"
+            exclude ".DS_Store"
+            exclude "android/**"
+            exclude "apk/**"
+            exclude "archive/**"
+            exclude "demo/**"
+            exclude "games/**/archive/**"
+            exclude "**/.DS_Store"
+            exclude "node_modules/**"
+            exclude "output/**"
+            if (!shouldIncludeVideos) {
+                exclude "videos/**"
+            }
+        }
+
+        def wisFile = new File(outputDir, "wis.json")
+        if (wisFile.exists()) {
+            def json = new JsonSlurper().parse(wisFile)
+            json.roles?.each { role ->
+                if (role instanceof Map && role.containsKey("video_url")) {
+                    role.video_url = shouldIncludeVideos ? (localVideoMap[role.name] ?: "") : ""
+                }
+            }
+            wisFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(json)) + System.lineSeparator()
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn("stageWebAssets")
+}
